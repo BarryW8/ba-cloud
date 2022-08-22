@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: smart-user
+  main:
+    allow-bean-definition-overriding: true
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        server-addr: 172.22.134.6:8848 #Nacos配置中心地址
+        file-extension: yaml #文件拓展格式
+        name: ${spring.application.name}
+        namespace: smart-user
+      discovery:
+        server-addr: ${spring.cloud.nacos.config.server-addr}
+        namespace: ${spring.cloud.nacos.config.namespace}
