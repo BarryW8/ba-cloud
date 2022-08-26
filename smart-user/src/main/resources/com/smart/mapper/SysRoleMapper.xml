@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smart.mapper.SysRoleMapper">
+    <resultMap id="BaseResultMap" type="com.smart.model.user.SysRole">
+        <id column="sys_id" property="id"/>
+        <result column="role_name" property="roleName"/>
+        <result column="status" property="status"/>
+        <result column="is_manager" property="isManager"/>
+        <result column="order_by" property="orderBy"/>
+        <result column="note" property="note"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="create_user_name" property="createUserName"/>
+        <result column="last_time" property="lastTime"/>
+        <result column="last_user_id" property="lastUserId"/>
+        <result column="last_user_name" property="lastUserName"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        sys_id,
+        role_name,
+        status,
+        is_manager,
+        order_by,
+        note,
+        create_time,
+        create_user_id,
+        create_user_name,
+        last_time,
+        last_user_id,
+        last_user_name
+    </sql>
+
+    <insert id="save">
+        insert into sys_role (
+            sys_id,
+            role_name,
+            status,
+            order_by,
+            note,
+            create_time,
+            create_user_id,
+            create_user_name
+        ) values (
+             #{id},
+             #{roleName},
+             #{status},
+             #{orderBy},
+             #{note},
+             #{createTime},
+             #{createUserId},
+             #{createUserName}
+        )
+    </insert>
+
+    <!-- 逻辑删除 -->
+    <update id="deleteBySm">
+        update sys_role set is_delete=1, last_user_id=#{delUser}, last_user_name=#{delUserName}, last_time=#{delDate}
+        where sys_id=#{modelId}
+    </update>
+
+    <update id="update">
+        update sys_role
+        set
+            role_name = #{roleName},
+            status = #{status},
+            order_by = #{orderBy},
+            note = #{note},
+            last_time = #{lastTime},
+            last_user_id = #{lastUserId},
+            last_user_name = #{lastUserName}
+        where sys_id = #{id}
+    </update>
+
+    <select id="findById" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_role
+        where is_delete=0 and sys_id = #{id}
+    </select>
+
+    <select id="findPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_role
+        where is_delete = 0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+        order by order_by desc,create_time desc
+        limit #{page},#{pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*)
+        from sys_role
+        where is_delete = 0
+        <if test="tmpSql != '' and tmpSql != null">
+            ${tmpSql}
+        </if>
+    </select>
+
+    <select id="findList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        FROM sys_role WHERE is_delete=0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+    </select>
+
+    <select id="nameUnique" resultType="java.lang.Integer">
+        select count(*)
+        from sys_role
+        where is_delete = 0
+        and role_name = #{name}
+        <if test="id != null and id != ''">
+            and sys_id != #{id}
+        </if>
+    </select>
+
+</mapper>
