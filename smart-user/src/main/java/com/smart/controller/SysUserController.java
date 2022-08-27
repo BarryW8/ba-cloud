@@ -126,11 +126,13 @@ public class SysUserController extends BaseController implements BaseCommonContr
     public JsonData login(@RequestBody @Valid UserLoginDTO dto) {
         // 以下按之前的逻辑即可
         List<SysUser> userList = sysUserService.findList(" and user_name = '" + dto.getUsername() + "'");
-        if (!CollectionUtils.isEmpty(userList) && userList.size() == 1) {
+        if (!CollectionUtils.isEmpty(userList)) {
+            if (userList.size() != 1) {
+                return JsonData.buildError("账号异常");
+            }
             // 已注册
             SysUser user = userList.get(0);
             if (user.getUserStatus() != 0) {
-                // 账号已停用
                 return JsonData.buildError("账号已停用");
             }
             if (dto.getPassword().equals(user.getPassword())) {
@@ -139,13 +141,11 @@ public class SysUserController extends BaseController implements BaseCommonContr
                 loginUser.setUserId(user.getId());
                 String accessToken = JWTUtil.geneJsonWebToken(loginUser);
                 return JsonData.buildSuccess(accessToken);
-            } else {
-                return JsonData.buildError("账号密码错误");
             }
-        } else {
-            // 未注册
-            return JsonData.buildError("账号不存在");
+            return JsonData.buildError("账号密码错误");
         }
+        // 未注册
+        return JsonData.buildError("账号不存在");
     }
 
     @GetMapping("userInfo")

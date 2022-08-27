@@ -14,7 +14,6 @@ import java.util.Date;
 @Slf4j
 public class JWTUtil {
 
-
     /**
      * token 过期时间，正常是7天，方便测试我们改为70
      */
