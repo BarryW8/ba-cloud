@@ -20,5 +20,4 @@ public interface BaseService<T> {
 
     public PageView<T> findPage(int page, int pageSize, String sql, String params);
 
-    public int nameUnique(Long modelId, String name);
 }

@@ -10,14 +10,8 @@ import java.util.List;
  */
 public interface BaseMapper<T> {
 
-	/**
-	 * add
-	 */
 	public int save(T t);
 
-	/**
-	 * update
-	 */
 	public int update(T t);
 
 	public List<T> findList(@Param("sql") String sql);
@@ -30,5 +24,4 @@ public interface BaseMapper<T> {
 
 	public T findById(@Param("id") Long id);
 
-	public int nameUnique(@Param("id") Long id, @Param("name") String name);
 }

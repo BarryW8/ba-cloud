@@ -65,10 +65,4 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
         return pageModel;
     }
 
-    @Override
-    public int nameUnique(Long modelId, String name) {
-        return sysUserRoleMapper.nameUnique(modelId, name);
-    }
-
-
 }

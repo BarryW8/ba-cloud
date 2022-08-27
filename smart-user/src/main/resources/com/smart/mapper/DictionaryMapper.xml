@@ -15,9 +15,9 @@
         <result column="create_time" property="createTime"/>
         <result column="create_user_id" property="createUserId"/>
         <result column="create_user_name" property="createUserName"/>
-        <result column="last_time" property="lastTime"/>
-        <result column="last_user_id" property="lastUserId"/>
-        <result column="last_user_name" property="lastUserName"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user_id" property="updateUserId"/>
+        <result column="update_user_name" property="updateUserName"/>
     </resultMap>
 
     <resultMap id="listMap" type="com.smart.vo.DictionaryVO">
@@ -43,9 +43,9 @@
         create_time,
         create_user_id,
         create_user_name,
-        last_time,
-        last_user_id,
-        last_user_name
+        update_time,
+        update_user_id,
+        update_user_name
     </sql>
 
     <insert id="save">
@@ -80,13 +80,13 @@
 
     <!-- 逻辑删除 -->
     <update id="deleteBySm">
-        update dictionary set is_delete=1, last_user_id=#{delUser}, last_user_name=#{delUserName}, last_time=#{delDate}
+        update dictionary set is_delete=1, update_user_id=#{delUser}, update_user_name=#{delUserName}, update_time=#{delDate}
         where sys_id=#{modelId}
     </update>
 
   	<!-- 逻辑删除 -->
     <update id="batchDeleteBySm">
-        update dictionary set is_delete=1, last_user_id=#{delUser}, last_user_name=#{delUserName}, last_time=#{delDate}
+        update dictionary set is_delete=1, update_user_id=#{delUser}, update_user_name=#{delUserName}, update_time=#{delDate}
         where sys_id in
         <foreach collection="ids" open="(" separator="," close=")" item="id">
         #{id}
@@ -101,9 +101,9 @@
             status = #{status},
             order_by = #{orderBy},
             note = #{note},
-            last_time = #{lastTime},
-            last_user_id = #{lastUserId},
-            last_user_name = #{lastUserName}
+            update_time = #{updateTime},
+            update_user_id = #{updateUserId},
+            update_user_name = #{updateUserName}
         where sys_id = #{id}
     </update>
 
@@ -141,16 +141,6 @@
         FROM dictionary WHERE is_delete=0
         <if test="sql != '' and sql != null">
             ${sql}
-        </if>
-    </select>
-
-    <select id="nameUnique" resultType="java.lang.Integer">
-        select count(*)
-        from dictionary
-        where is_delete = 0
-        and name = #{name}
-        <if test="id != null and id != ''">
-            and sys_id != #{id}
         </if>
     </select>
 

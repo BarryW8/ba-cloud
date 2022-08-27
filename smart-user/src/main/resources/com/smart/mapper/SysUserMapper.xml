@@ -5,7 +5,7 @@
         <id column="sys_id" property="id"/>
         <result column="user_code" property="userCode"/>
         <result column="user_name" property="userName"/>
-        <result column="true_name" property="trueName"/>
+        <result column="true_name" property="realName"/>
         <result column="telephone" property="telephone"/>
         <result column="email" property="email"/>
         <result column="sex" property="sex"/>
@@ -15,9 +15,9 @@
         <result column="create_time" property="createTime"/>
         <result column="create_user_id" property="createUserId"/>
         <result column="create_user_name" property="createUserName"/>
-        <result column="last_time" property="lastTime"/>
-        <result column="last_user_id" property="lastUserId"/>
-        <result column="last_user_name" property="lastUserName"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user_id" property="updateUserId"/>
+        <result column="update_user_name" property="updateUserName"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -35,9 +35,9 @@
         create_time,
         create_user_id,
         create_user_name,
-        last_time,
-        last_user_id,
-        last_user_name
+        update_time,
+        update_user_id,
+        update_user_name
     </sql>
 
     <insert id="save">
@@ -61,7 +61,7 @@
              #{userCode},
              #{userName},
              #{password},
-             #{trueName},
+             #{realName},
              #{telephone},
              #{email},
              #{sex},
@@ -76,7 +76,7 @@
 
     <!-- 逻辑删除 -->
     <update id="deleteBySm">
-        update sys_user set is_delete=1, last_user_id=#{delUser}, last_user_name=#{delUserName}, last_time=#{delDate}
+        update sys_user set is_delete=1, update_user_id=#{delUser}, update_user_name=#{delUserName}, update_time=#{delDate}
         where sys_id=#{modelId}
     </update>
 
@@ -85,16 +85,16 @@
         set
             user_code = #{userCode},
             user_name = #{userName},
-            true_name = #{trueName},
+            true_name = #{realName},
             telephone = #{telephone},
             email = #{email},
             sex = #{sex},
             user_status = #{userStatus},
             order_by = #{orderBy},
             note = #{note},
-            last_time = #{lastTime},
-            last_user_id = #{lastUserId},
-            last_user_name = #{lastUserName}
+            update_time = #{updateTime},
+            update_user_id = #{updateUserId},
+            update_user_name = #{updateUserName}
         where sys_id = #{id}
     </update>
 
@@ -132,16 +132,6 @@
         FROM sys_user WHERE is_delete=0
         <if test="sql != '' and sql != null">
             ${sql}
-        </if>
-    </select>
-
-    <select id="nameUnique" resultType="java.lang.Integer">
-        select count(*)
-        from sys_user
-        where is_delete = 0
-        and user_name = #{name}
-        <if test="id != null and id != ''">
-            and sys_id != #{id}
         </if>
     </select>
 

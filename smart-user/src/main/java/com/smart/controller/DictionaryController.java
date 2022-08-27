@@ -80,9 +80,9 @@ public class DictionaryController extends BaseController implements BaseCommonCo
             count = dictionaryService.save(dictionary);
         } else {
             //编辑
-            dictionary.setLastUserId(1000L);
-            dictionary.setLastUserName("ceshi");
-            dictionary.setLastTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
+            dictionary.setUpdateUserId(1000L);
+            dictionary.setUpdateUserName("ceshi");
+            dictionary.setUpdateTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
             count = dictionaryService.update(dictionary);
         }
         if (count > 0) {
@@ -121,12 +121,6 @@ public class DictionaryController extends BaseController implements BaseCommonCo
     public JsonData getList() {
         List<DictionaryVO> list = dictionaryService.getList();
         return JsonData.buildSuccess(builder(list));
-    }
-
-    @GetMapping("nameUnique")
-    @Override
-    public JsonData nameUnique(@RequestParam Long modelId, @RequestParam String name) {
-        return null;
     }
 
     private List<DictionaryVO> builder(List<DictionaryVO> nodes) {

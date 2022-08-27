@@ -55,7 +55,6 @@ public class SysUserController extends BaseController implements BaseCommonContr
         return JsonData.buildSuccess(sysUserService.findById(modelId));
     }
 
-
     @PostMapping("save")
     @Override
     public JsonData save(@RequestBody SysUser sysUser) {
@@ -63,18 +62,18 @@ public class SysUserController extends BaseController implements BaseCommonContr
         int result;
         if (sysUser.getId() == null) {
             // 初始化密码
-            String defaultPassword = "spom1113";
+            String defaultPassword = "123456";
             sysUser.setPassword(CommonUtils.MD5Lower(CommonUtils.MD5Lower(defaultPassword)));
             sysUser.setId(uidGenerator.getUID());
             sysUser.setCreateUserId(loginUser.getUserId());
-            sysUser.setCreateUserName(loginUser.getTrueName());
-            sysUser.setCreateTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
+            sysUser.setCreateUserName(loginUser.getRealName());
+            sysUser.setCreateTime(getCurrentDate());
             result = sysUserService.save(sysUser);
         } else {
             //编辑
-            sysUser.setLastUserId(loginUser.getUserId());
-            sysUser.setLastUserName(loginUser.getTrueName());
-            sysUser.setLastTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
+            sysUser.setUpdateUserId(loginUser.getUserId());
+            sysUser.setUpdateUserName(loginUser.getRealName());
+            sysUser.setUpdateTime(getCurrentDate());
             result = sysUserService.update(sysUser);
         }
         if (result > 0) {
@@ -98,8 +97,8 @@ public class SysUserController extends BaseController implements BaseCommonContr
         SimpleModel simpleModel = new SimpleModel();
         simpleModel.setModelId(modelId);
         simpleModel.setDelUser(loginUser.getUserId());
-        simpleModel.setDelUserName(loginUser.getTrueName());
-        simpleModel.setDelDate(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
+        simpleModel.setDelUserName(loginUser.getRealName());
+        simpleModel.setDelDate(getCurrentDate());
         int result = sysUserService.deleteBySm(simpleModel);
         if (result > 0) {
             return JsonData.buildSuccess();
@@ -113,22 +112,15 @@ public class SysUserController extends BaseController implements BaseCommonContr
         return JsonData.buildSuccess(sysUserService.findList(condition));
     }
 
-    @GetMapping("nameUnique")
-    @Override
-    public JsonData nameUnique(@RequestParam Long modelId, @RequestParam String name) {
-        return JsonData.buildSuccess(sysUserService.nameUnique(modelId, name));
-    }
-
     private String queryCondition(SysUserPageDTO dto) {
         String keyword = dto.getKeyword();
         StringBuilder sqlBf = new StringBuilder();
         if (StringUtils.isNotEmpty(keyword)) {
             sqlBf.append(" and (user_name like '%").append(keyword).append("%'")
-                    .append(" or true_name like '%").append(keyword).append("%'").append(")");
+                .append(" or true_name like '%").append(keyword).append("%'").append(")");
         }
         return sqlBf.toString();
     }
-
 
     @PostMapping("login")
     public JsonData login(@RequestBody @Valid UserLoginDTO dto) {

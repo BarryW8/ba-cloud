@@ -67,12 +67,12 @@ public class DictionaryVO implements Serializable {
     /**
      * 修改人
      */
-    private Long lastUserId;
+    private Long updateUserId;
 
     /**
      * 修改时间
      */
-    private String lastTime;
+    private String updateTime;
 
     /**
      * 创建人名称
@@ -82,7 +82,7 @@ public class DictionaryVO implements Serializable {
     /**
      * 修改人名称
      */
-    private String lastUserName;
+    private String updateUserName;
 
     private List<DictionaryVO> children = new ArrayList<>();
 

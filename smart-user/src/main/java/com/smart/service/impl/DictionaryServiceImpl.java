@@ -73,11 +73,6 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public int nameUnique(Long modelId, String name) {
-        return dictionaryMapper.nameUnique(modelId, name);
-    }
-
-    @Override
     public List<DictionaryVO> getList() {
         return dictionaryMapper.getList();
     }

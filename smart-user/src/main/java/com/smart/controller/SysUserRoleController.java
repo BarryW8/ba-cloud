@@ -59,14 +59,14 @@ public class SysUserRoleController extends BaseController implements BaseCommonC
         if (sysUserRole.getId() == null) {
             sysUserRole.setId(uidGenerator.getUID());
             sysUserRole.setCreateUserId(currentUser.getUserId());
-            sysUserRole.setCreateUserName(currentUser.getTrueName());
+            sysUserRole.setCreateUserName(currentUser.getRealName());
             sysUserRole.setCreateTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
             result = sysUserRoleService.save(sysUserRole);
         } else {
             //编辑
-            sysUserRole.setLastUserId(currentUser.getUserId());
-            sysUserRole.setLastUserName(currentUser.getTrueName());
-            sysUserRole.setLastTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
+            sysUserRole.setUpdateUserId(currentUser.getUserId());
+            sysUserRole.setUpdateUserName(currentUser.getRealName());
+            sysUserRole.setUpdateTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
             result = sysUserRoleService.update(sysUserRole);
         }
         if (result > 0) {
@@ -108,7 +108,7 @@ public class SysUserRoleController extends BaseController implements BaseCommonC
         SimpleModel simpleModel = new SimpleModel();
         simpleModel.setModelId(modelId);
         simpleModel.setDelUser(currentUser.getUserId());
-        simpleModel.setDelUserName(currentUser.getTrueName());
+        simpleModel.setDelUserName(currentUser.getRealName());
         simpleModel.setDelDate(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
         int result = sysUserRoleService.deleteBySm(simpleModel);
         if (result > 0) {
@@ -123,11 +123,6 @@ public class SysUserRoleController extends BaseController implements BaseCommonC
         return JsonData.buildSuccess(sysUserRoleService.findList(condition));
     }
 
-    @Override
-    public JsonData nameUnique(Long modelId, String name) {
-        return null;
-    }
-
     @PostMapping("authRole")
     public JsonData authRole(@RequestBody @Valid SysUserRoleDTO dto) {
         LoginUser currentUser = getCurrentUser();
@@ -140,9 +135,9 @@ public class SysUserRoleController extends BaseController implements BaseCommonC
             if(userRole.getUserId().equals(dto.getUserId())){
                 //编辑
                 userRole.setRoleId(dto.getRoleId());
-                userRole.setLastUserId(currentUser.getUserId());
-                userRole.setLastUserName(currentUser.getTrueName());
-                userRole.setLastTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
+                userRole.setUpdateUserId(currentUser.getUserId());
+                userRole.setUpdateUserName(currentUser.getRealName());
+                userRole.setUpdateTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
                 result = sysUserRoleService.update(userRole);
             }else{
                 return JsonData.buildError("保存失败!");
@@ -154,7 +149,7 @@ public class SysUserRoleController extends BaseController implements BaseCommonC
             userRole.setRoleId(dto.getRoleId());
             userRole.setUserId(dto.getUserId());
             userRole.setCreateUserId(currentUser.getUserId());
-            userRole.setCreateUserName(currentUser.getTrueName());
+            userRole.setCreateUserName(currentUser.getRealName());
             userRole.setCreateTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
             result = sysUserRoleService.save(userRole);
         }

@@ -113,7 +113,7 @@ public class SysRoleController extends BaseController implements BaseCommonContr
         SimpleModel simpleModel = new SimpleModel();
         simpleModel.setModelId(modelId);
         simpleModel.setDelUser(currentUser.getUserId());
-        simpleModel.setDelUserName(currentUser.getTrueName());
+        simpleModel.setDelUserName(currentUser.getRealName());
         simpleModel.setDelDate(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
         int result = sysRoleService.deleteBySm(simpleModel);
         if (result > 0) {
@@ -126,12 +126,6 @@ public class SysRoleController extends BaseController implements BaseCommonContr
     @Override
     public JsonData findList(@RequestParam String condition) {
         return JsonData.buildSuccess(sysRoleService.findList(condition));
-    }
-
-    @GetMapping("nameUnique")
-    @Override
-    public JsonData nameUnique(@RequestParam Long modelId, @RequestParam String name) {
-        return JsonData.buildSuccess(sysRoleService.nameUnique(modelId, name));
     }
 
     private String queryCondition(SysRolePageDTO dto) {

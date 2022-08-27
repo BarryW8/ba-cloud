@@ -86,11 +86,6 @@ public class SysRoleServiceImpl implements SysRoleService {
         return pageModel;
     }
 
-    @Override
-    public int nameUnique(Long modelId, String name) {
-        return sysRoleMapper.nameUnique(modelId, name);
-    }
-
     @Transactional
     @Override
     public int saveRole(SysRoleDTO dto, LoginUser currentUser) {
@@ -101,14 +96,14 @@ public class SysRoleServiceImpl implements SysRoleService {
         if(role.getId() == null){
             role.setId(uidGenerator.getUID());
             role.setCreateUserId(currentUser.getUserId());
-            role.setCreateUserName(currentUser.getTrueName());
+            role.setCreateUserName(currentUser.getRealName());
             role.setCreateTime(currentDate);
             result = sysRoleMapper.save(role);
         }else{
             //编辑
-            role.setLastUserId(currentUser.getUserId());
-            role.setLastUserName(currentUser.getTrueName());
-            role.setLastTime(currentDate);
+            role.setUpdateUserId(currentUser.getUserId());
+            role.setUpdateUserName(currentUser.getRealName());
+            role.setUpdateTime(currentDate);
             result = sysRoleMapper.update(role);
             if (result > 0) {
                 // 2. 修改成功，删除角色的所有菜单权限
@@ -161,7 +156,7 @@ public class SysRoleServiceImpl implements SysRoleService {
                     roleMenu.setId(uidGenerator.getUID());
                     roleMenu.setMenuAction(entry.getValue());
                     roleMenu.setCreateUserId(currentUser.getUserId());
-                    roleMenu.setCreateUserName(currentUser.getTrueName());
+                    roleMenu.setCreateUserName(currentUser.getRealName());
                     roleMenu.setCreateTime(currentDate);
                     list.add(roleMenu);
                 }

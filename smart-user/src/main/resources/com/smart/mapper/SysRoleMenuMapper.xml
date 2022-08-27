@@ -13,31 +13,31 @@
         <result property="createTime" column="create_time"/>
         <result property="createUserId" column="create_user_id"/>
         <result property="createUserName" column="create_user_name"/>
-        <result property="lastTime" column="last_time"/>
-        <result property="lastUserId" column="last_user_id"/>
-        <result property="lastUserName" column="last_user_name"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateUserId" column="update_user_id"/>
+        <result property="updateUserName" column="update_user_name"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         sys_id
-        ,    role_id,    menu_id,    menu_action,    note,       order_by,    create_time,    create_user_id,    create_user_name,    last_time,    last_user_id,     last_user_name
+        ,    role_id,    menu_id,    menu_action,    note,       order_by,    create_time,    create_user_id,    create_user_name,    update_time,    update_user_id,     update_user_name
     </sql>
 
     <insert id="save" parameterType="com.smart.model.user.SysRoleMenu">
         insert into sys_role_menu (sys_id, role_id, menu_id, menu_action, note, order_by, create_time, create_user_id,
-                                   create_user_name, last_time, last_user_id, last_user_name)
+                                   create_user_name, update_time, update_user_id, update_user_name)
         values (#{id}, #{roleId}, #{menuId}, #{menuAction}, #{note}, #{orderBy}, #{createTime}, #{createUserId},
-                #{createUserName}, #{lastTime}, #{lastUserId}, #{lastUserName})
+                #{createUserName}, #{updateTime}, #{updateUserId}, #{updateUserName})
 
     </insert>
     <insert id="saveList">
         insert into sys_role_menu (sys_id, role_id, menu_id, menu_action, note, order_by, create_time, create_user_id,
-        create_user_name, last_time, last_user_id, last_user_name)
+        create_user_name, update_time, update_user_id, update_user_name)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.id}, #{item.roleId}, #{item.menuId}, #{item.menuAction}, #{item.note}, #{item.orderBy},
-            #{item.createTime}, #{item.createUserId},#{item.createUserName}, #{item.lastTime}, #{item.lastUserId},
-            #{item.lastUserName})
+            #{item.createTime}, #{item.createUserId},#{item.createUserName}, #{item.updateTime}, #{item.updateUserId},
+            #{item.updateUserName})
         </foreach>
     </insert>
 
@@ -45,9 +45,9 @@
     <update id="deleteBySm" parameterType="com.smart.base.SimpleModel">
         update sys_role_menu
         set is_delete=1,
-            last_user_id=#{delUser},
-            last_user_name=#{delUserName},
-            last_time=#{delDate}
+            update_user_id=#{delUser},
+            update_user_name=#{delUserName},
+            update_time=#{delDate}
         where sys_id = #{modelId}
     </update>
 
@@ -60,9 +60,9 @@
             note             = #{note},
             order_by         = #{orderBy},
             create_user_name = #{createUserName},
-            last_time        = #{lastTime},
-            last_user_id     = #{lastUserId},
-            last_user_name   = #{lastUserName}
+            update_time        = #{updateTime},
+            update_user_id     = #{updateUserId},
+            update_user_name   = #{updateUserName}
         where sys_id = #{id}
     </update>
     <delete id="delByRoleId">
@@ -106,16 +106,6 @@
             ${sql}
         </if>
         order by create_time desc,order_by desc
-    </select>
-
-    <select id="nameUnique" resultType="java.lang.Integer">
-        select count(*)
-        from sys_role_menu
-        where is_delete = 0
-        and name = #{name}
-        <if test="id != null and id != ''">
-            and sys_id != #{id}
-        </if>
     </select>
 
 </mapper>

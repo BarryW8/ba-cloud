@@ -16,7 +16,7 @@ public class UserInfoVO {
     /**
      * 真实姓名
      */
-    private String trueName;
+    private String realName;
 
     /**
      * 手机号码

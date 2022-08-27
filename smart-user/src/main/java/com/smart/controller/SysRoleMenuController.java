@@ -55,14 +55,14 @@ public class SysRoleMenuController extends BaseController implements BaseCommonC
         if (sysRoleMenu.getId() == null) {
             sysRoleMenu.setId(uidGenerator.getUID());
             sysRoleMenu.setCreateUserId(currentUser.getUserId());
-            sysRoleMenu.setCreateUserName(currentUser.getTrueName());
+            sysRoleMenu.setCreateUserName(currentUser.getRealName());
             sysRoleMenu.setCreateTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
             result = sysRoleMenuService.save(sysRoleMenu);
         } else {
             //编辑
-            sysRoleMenu.setLastUserId(getCurrentUser().getUserId());
-            sysRoleMenu.setLastUserName(getCurrentUser().getTrueName());
-            sysRoleMenu.setLastTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
+            sysRoleMenu.setUpdateUserId(getCurrentUser().getUserId());
+            sysRoleMenu.setUpdateUserName(getCurrentUser().getRealName());
+            sysRoleMenu.setUpdateTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
             result = sysRoleMenuService.update(sysRoleMenu);
         }
         if (result > 0) {
@@ -98,7 +98,7 @@ public class SysRoleMenuController extends BaseController implements BaseCommonC
         SimpleModel simpleModel = new SimpleModel();
         simpleModel.setModelId(modelId);
         simpleModel.setDelUser(currentUser.getUserId());
-        simpleModel.setDelUserName(currentUser.getTrueName());
+        simpleModel.setDelUserName(currentUser.getRealName());
         simpleModel.setDelDate(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
         int result = sysRoleMenuService.deleteBySm(simpleModel);
         if (result > 0) {
@@ -112,11 +112,5 @@ public class SysRoleMenuController extends BaseController implements BaseCommonC
     public JsonData findList(String condition) {
         return JsonData.buildSuccess(sysRoleMenuService.findList(condition));
     }
-
-    @Override
-    public JsonData nameUnique(Long modelId, String name) {
-        return null;
-    }
-
 
 }

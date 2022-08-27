@@ -5,10 +5,13 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class BaseModel  implements Serializable {
+public class BaseModel implements Serializable {
 
 	private static final long serialVersionUID = 8092408631528470900L;
 
+	/**
+	 * 主键ID
+	 */
 	private Long id;
 
 	/**
@@ -16,6 +19,9 @@ public class BaseModel  implements Serializable {
 	 */
 	private int orderBy;
 
+	/**
+	 * 备注
+	 */
 	private String note;
 
 	/**
@@ -23,16 +29,17 @@ public class BaseModel  implements Serializable {
 	 */
 	private Long createUserId;
 
-	/**
-	 * 修改人
-	 */
-	private Long lastUserId;
-
 	private String createUserName;
 
 	private String createTime;
 
-	private String lastUserName;
+	/**
+	 * 修改人
+	 */
+	private Long updateUserId;
 
-	private String lastTime;
+	private String updateUserName;
+
+	private String updateTime;
+
 }

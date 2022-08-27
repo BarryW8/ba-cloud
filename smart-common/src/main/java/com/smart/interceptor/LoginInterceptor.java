@@ -41,13 +41,13 @@ public class LoginInterceptor implements HandlerInterceptor {
             }
             long userId = Long.parseLong(claims.get("userId").toString());
             String userName = claims.get("userName").toString();
-            String trueName = claims.get("trueName").toString();
+            String realName = claims.get("realName").toString();
             String email = claims.get("email").toString();
             String telephone =claims.get("telephone").toString();
             LoginUser loginUser = LoginUser.builder()
                     .userId(userId)
                     .userName(userName)
-                    .trueName(trueName)
+                    .realName(realName)
                     .email(email)
                     .telephone(telephone)
                     .build();

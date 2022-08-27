@@ -65,10 +65,4 @@ public class SysRoleMenuServiceImpl implements SysRoleMenuService {
         return pageModel;
     }
 
-    @Override
-    public int nameUnique(Long modelId, String name) {
-        return sysRoleMenuMapper.nameUnique(modelId, name);
-    }
-
-
 }

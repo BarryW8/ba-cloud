@@ -67,8 +67,4 @@ public class SysUserServiceImpl implements SysUserService {
         return pageModel;
     }
 
-    @Override
-    public int nameUnique(Long modelId, String name) {
-        return sysUserMapper.nameUnique(modelId, name);
-    }
 }

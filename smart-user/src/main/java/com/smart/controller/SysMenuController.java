@@ -75,9 +75,9 @@ public class SysMenuController extends BaseController implements BaseCommonContr
             result = sysMenuService.save(sysMenu);
         } else {
             //编辑
-            sysMenu.setLastUserId(1000L);
-            sysMenu.setLastUserName("ceshi");
-            sysMenu.setLastTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
+            sysMenu.setUpdateUserId(1000L);
+            sysMenu.setUpdateUserName("ceshi");
+            sysMenu.setUpdateTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
             result = sysMenuService.update(sysMenu);
         }
         if (result > 0) {
@@ -122,12 +122,6 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     public JsonData getList() {
         List<SysMenuVO> menus = sysMenuService.getList();
         return JsonData.buildSuccess(builder(menus));
-    }
-
-    @GetMapping("nameUnique")
-    @Override
-    public JsonData nameUnique(@RequestParam(required = false) Long modelId, @RequestParam String name) {
-        return JsonData.buildSuccess(sysMenuService.nameUnique(modelId, name) > 0);
     }
 
     private List<SysMenuVO> builder(List<SysMenuVO> nodes) {

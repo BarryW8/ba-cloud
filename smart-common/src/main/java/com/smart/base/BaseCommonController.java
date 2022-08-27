@@ -17,5 +17,4 @@ public interface BaseCommonController<T, V extends BasePageDTO> {
 
     public JsonData findPage(V v);
 
-    public JsonData nameUnique(Long modelId, String name);
 }

@@ -52,11 +52,6 @@ public class SysMenuServiceImpl implements SysMenuService {
     }
 
     @Override
-    public int nameUnique(Long modelId, String name) {
-        return sysMenuMapper.nameUnique(modelId, name);
-    }
-
-    @Override
     public List<SysMenuVO> getList() {
         return sysMenuMapper.getList();
     }

@@ -53,7 +53,7 @@ public class JWTUtil {
                 .claim("userId", loginUser.getUserId())
                 .claim("userCode", loginUser.getUserCode())
                 .claim("userName", loginUser.getUserName())
-                .claim("trueName", loginUser.getTrueName())
+                .claim("realName", loginUser.getRealName())
                 .claim("email", loginUser.getEmail())
                 .claim("telephone", loginUser.getTelephone())
                 .setIssuedAt(new Date())
