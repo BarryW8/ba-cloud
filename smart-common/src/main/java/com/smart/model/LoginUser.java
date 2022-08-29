@@ -45,8 +45,10 @@ public class LoginUser {
      * 是否是超管
      */
     private boolean manager;
+
     /**
      * 用户角色
      */
     private Long roleId;
+
 }

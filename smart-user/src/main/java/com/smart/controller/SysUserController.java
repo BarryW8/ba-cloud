@@ -7,6 +7,7 @@ import com.smart.base.PageView;
 import com.smart.base.SimpleModel;
 import com.smart.dto.SysUserPageDTO;
 import com.smart.dto.UserLoginDTO;
+import com.smart.enums.BizCodeEnum;
 import com.smart.model.LoginUser;
 import com.smart.model.user.SysUser;
 import com.smart.service.SysMenuService;
@@ -106,46 +107,35 @@ public class SysUserController extends BaseController implements BaseCommonContr
         return JsonData.buildError("删除失败!");
     }
 
-    @GetMapping("findList")
-    @Override
-    public JsonData findList(@RequestParam String condition) {
-        return JsonData.buildSuccess(sysUserService.findList(condition));
-    }
-
-    private String queryCondition(SysUserPageDTO dto) {
-        String keyword = dto.getKeyword();
-        StringBuilder sqlBf = new StringBuilder();
-        if (StringUtils.isNotEmpty(keyword)) {
-            sqlBf.append(" and (user_name like '%").append(keyword).append("%'")
-                .append(" or true_name like '%").append(keyword).append("%'").append(")");
-        }
-        return sqlBf.toString();
-    }
-
     @PostMapping("login")
     public JsonData login(@RequestBody @Valid UserLoginDTO dto) {
-        // 以下按之前的逻辑即可
-        List<SysUser> userList = sysUserService.findList(" and user_name = '" + dto.getUsername() + "'");
-        if (!CollectionUtils.isEmpty(userList)) {
-            if (userList.size() != 1) {
-                return JsonData.buildError("账号异常");
-            }
-            // 已注册
-            SysUser user = userList.get(0);
-            if (user.getUserStatus() != 0) {
-                return JsonData.buildError("账号已停用");
-            }
-            if (dto.getPassword().equals(user.getPassword())) {
-                LoginUser loginUser =  LoginUser.builder().build();
-                BeanUtils.copyProperties(user, loginUser);
-                loginUser.setUserId(user.getId());
-                String accessToken = JWTUtil.geneJsonWebToken(loginUser);
-                return JsonData.buildSuccess(accessToken);
-            }
-            return JsonData.buildError("账号密码错误");
+        //-----------a、查询用户信息
+        List<SysUser> userList = sysUserService.findListHasPwd(" and user_name = '" + dto.getUsername() + "'");
+        if (CollectionUtils.isEmpty(userList)) {
+            // 未注册
+            return JsonData.buildResult(BizCodeEnum.ACCOUNT_UNREGISTER);
         }
-        // 未注册
-        return JsonData.buildError("账号不存在");
+        if (userList.size() != 1) {
+            // 账号异常
+            return JsonData.buildResult(BizCodeEnum.ACCOUNT_EXCEPTION);
+        }
+        // 已注册
+        SysUser user = userList.get(0);
+        if (user.getUserStatus() != 0) {
+            // 账号已停用
+            return JsonData.buildResult(BizCodeEnum.ACCOUNT_STOP_USING);
+        }
+        //-----------b、校验密码
+        if (!dto.getPassword().equals(user.getPassword())) {
+            // 账号或者密码错误
+            return JsonData.buildResult(BizCodeEnum.ACCOUNT_PWD_ERROR);
+        }
+        //-----------c、生成token
+        LoginUser loginUser =  LoginUser.builder().build();
+        BeanUtils.copyProperties(user, loginUser);
+        loginUser.setUserId(user.getId());
+        String accessToken = JWTUtil.geneJsonWebToken(loginUser);
+        return JsonData.buildSuccess(accessToken);
     }
 
     @GetMapping("userInfo")
@@ -186,5 +176,15 @@ public class SysUserController extends BaseController implements BaseCommonContr
     public JsonData logout() {
         // todo 后续再完善
         return JsonData.buildSuccess("登出成功");
+    }
+
+    private String queryCondition(SysUserPageDTO dto) {
+        String keyword = dto.getKeyword();
+        StringBuilder sqlBf = new StringBuilder();
+        if (StringUtils.isNotEmpty(keyword)) {
+            sqlBf.append(" and (user_name like '%").append(keyword).append("%'")
+                    .append(" or real_name like '%").append(keyword).append("%'").append(")");
+        }
+        return sqlBf.toString();
     }
 }

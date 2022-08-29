@@ -67,4 +67,8 @@ public class SysUserServiceImpl implements SysUserService {
         return pageModel;
     }
 
+    @Override
+    public List<SysUser> findListHasPwd(String sql) {
+        return sysUserMapper.findListHasPwd(sql);
+    }
 }

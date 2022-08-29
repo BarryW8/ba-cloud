@@ -13,8 +13,6 @@ public interface BaseCommonController<T, V extends BasePageDTO> {
 
     public JsonData deleteById(Long modelId);
 
-    public JsonData findList(String condition);
-
     public JsonData findPage(V v);
 
 }

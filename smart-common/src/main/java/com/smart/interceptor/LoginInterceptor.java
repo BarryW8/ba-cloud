@@ -1,5 +1,6 @@
 package com.smart.interceptor;
 
+import com.smart.enums.BizCodeEnum;
 import com.smart.model.LoginUser;
 import com.smart.util.CommonUtils;
 import com.smart.util.JWTUtil;
@@ -25,38 +26,41 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
+        String url = request.getRequestURL().toString();
+        String ip = CommonUtils.getIpAddr(request);
+        // token
         String accessToken = request.getHeader("token");
         if(accessToken == null) {
             accessToken = request.getParameter("token");
         }
-
-        if(StringUtils.isNotBlank(accessToken)){
-            //不为空
-            Claims claims = JWTUtil.checkJWT(accessToken);
-            if(claims == null){
-                //未登录
-                CommonUtils.sendJsonMessage(response, JsonData.buildError("用户未登录"));
-                return false;
-            }
-            long userId = Long.parseLong(claims.get("userId").toString());
-            String userName = claims.get("userName").toString();
-            String realName = claims.get("realName").toString();
-            String email = claims.get("email").toString();
-            String telephone =claims.get("telephone").toString();
-            LoginUser loginUser = LoginUser.builder()
-                    .userId(userId)
-                    .userName(userName)
-                    .realName(realName)
-                    .email(email)
-                    .telephone(telephone)
-                    .build();
-            threadLocal.set(loginUser);
-            return true;
-
+        if (StringUtils.isEmpty(accessToken)) {
+            //未登录
+            log.error("token 参数不存在->IP={},url={}", ip, url);
+            CommonUtils.sendJsonMessage(response, JsonData.buildResult(BizCodeEnum.ACCOUNT_EXCEPTION));
+            return false;
         }
-        CommonUtils.sendJsonMessage(response,JsonData.buildError("账号未登录"));
-        return false;
+
+        Claims claims = JWTUtil.checkJWT(accessToken);
+        if(claims == null){
+            //未登录
+            CommonUtils.sendJsonMessage(response, JsonData.buildResult(BizCodeEnum.ACCOUNT_EXCEPTION));
+            return false;
+        }
+        long userId = Long.parseLong(claims.get("userId").toString());
+        String userName = claims.get("userName").toString();
+        String realName = claims.get("realName").toString();
+        String email = claims.get("email").toString();
+        String telephone =claims.get("telephone").toString();
+        LoginUser loginUser = LoginUser.builder()
+                .userId(userId)
+                .userName(userName)
+                .realName(realName)
+                .email(email)
+                .telephone(telephone)
+                .build();
+        threadLocal.set(loginUser);
+        return true;
+
     }
 
     @Override

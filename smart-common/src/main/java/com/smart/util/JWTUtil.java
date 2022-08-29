@@ -22,17 +22,17 @@ public class JWTUtil {
     /**
      * 加密的秘钥
      */
-    private static final String SECRET = "spom.bonded.2022";
+    private static final String SECRET = "smart.catering.2022";
 
     /**
      * 令牌前缀
      */
-    private static final String TOKEN_PREFIX = "spombonded2022";
+    private static final String TOKEN_PREFIX = "smartcatering2022";
 
     /**
      * subject
      */
-    private static final String SUBJECT = "spom";
+    private static final String SUBJECT = "smart";
 
 
     /**

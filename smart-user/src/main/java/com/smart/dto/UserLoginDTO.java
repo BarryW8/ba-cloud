@@ -15,10 +15,12 @@ public class UserLoginDTO implements Serializable {
     /**
      * 密码
      */
+    @NotBlank(message = "密码不能为空")
     private String password;
     /**
      * 验证码
      */
+//    @NotBlank(message = "验证码不能为空")
     private String captcha;
 
     /**

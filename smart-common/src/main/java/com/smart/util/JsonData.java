@@ -1,6 +1,7 @@
 package com.smart.util;
 
 import com.alibaba.fastjson.JSON;
+import com.smart.enums.BizCodeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -59,6 +60,12 @@ public class JsonData implements Serializable {
         return new JsonData(code, null, msg);
     }
 
+    /**
+     * 传入枚举，返回信息
+     */
+    public static JsonData buildResult(BizCodeEnum codeEnum) {
+        return JsonData.buildCodeAndMsg(codeEnum.getCode(), codeEnum.getMessage());
+    }
 
     /**
      * 获取远程调用数据[对象]
