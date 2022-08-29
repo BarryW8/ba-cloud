@@ -6,10 +6,12 @@ import com.smart.base.BaseController;
 import com.smart.base.PageView;
 import com.smart.base.SimpleModel;
 import com.smart.dto.SysUserPageDTO;
+import com.smart.dto.SysUserRoleDTO;
 import com.smart.dto.UserLoginDTO;
 import com.smart.enums.BizCodeEnum;
 import com.smart.model.LoginUser;
 import com.smart.model.user.SysUser;
+import com.smart.model.user.SysUserRole;
 import com.smart.service.SysMenuService;
 import com.smart.service.SysUserService;
 import com.smart.uid.impl.CachedUidGenerator;
@@ -35,6 +37,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/sysUser")
@@ -49,6 +52,26 @@ public class SysUserController extends BaseController implements BaseCommonContr
 
     @Resource
     private SysMenuService sysMenuService;
+
+    @PostMapping("saveUserRole")
+    public JsonData saveUserRole(@RequestBody SysUserRoleDTO dto) {
+        Long userId = dto.getUserId();
+        if (userId == null) {
+            return JsonData.buildError("用户不能为空");
+        }
+        dto.setCurrentUser(getCurrentUser());
+        dto.setCurrentDate(getCurrentDate());
+        // 1. 查询用户-角色关联信息，用于刷新缓存（前置用于删除缓存）
+        List<SysUserRole> oldUserRoles = sysUserService.findByUserId(userId);
+        // 2. 保存用户-角色关联信息（不用判断是否成功，支持保存空值）
+        sysUserService.saveUserRole(dto);
+        if (!CollectionUtils.isEmpty(oldUserRoles)) {
+            // 3. 刷新系统用户缓存
+            List<Long> userIds = oldUserRoles.stream().map(SysUserRole::getUserId).distinct().collect(Collectors.toList());
+            sysUserService.setUserCache(userIds, 1);
+        }
+        return JsonData.buildSuccess();
+    }
 
     @GetMapping("findById")
     @Override

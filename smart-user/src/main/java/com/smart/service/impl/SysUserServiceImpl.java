@@ -5,6 +5,7 @@ import com.smart.base.Page;
 import com.smart.base.PageView;
 import com.smart.base.SimpleModel;
 import com.smart.cache.CacheManage;
+import com.smart.dto.SysUserRoleDTO;
 import com.smart.enums.BizCodeEnum;
 import com.smart.mapper.SysUserMapper;
 import com.smart.mapper.SysUserRoleMapper;
@@ -12,6 +13,7 @@ import com.smart.model.LoginUser;
 import com.smart.model.user.SysUser;
 import com.smart.model.user.SysUserRole;
 import com.smart.service.SysUserService;
+import com.smart.uid.impl.CachedUidGenerator;
 import com.smart.vo.UserInfoVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,9 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Resource
     private CacheManage cacheManage;
+
+    @Resource
+    private CachedUidGenerator uidGenerator;
 
     @Transactional
     @Override
@@ -105,6 +110,35 @@ public class SysUserServiceImpl implements SysUserService {
             }
         }
         return bizCodeEnum;
+    }
+
+    @Override
+    public int saveUserRole(SysUserRoleDTO dto) {
+        LoginUser currentUser = dto.getCurrentUser();
+        String currentDate = dto.getCurrentDate();
+        Long roleId = dto.getRoleId();
+        Long userId = dto.getUserId();
+        // 1. 删除旧数据
+        sysUserRoleMapper.deleteByUserId(userId);
+        if (roleId == null) {
+            return 1;
+        }
+        // 2. 保存新数据
+        SysUserRole userRole = new SysUserRole();
+        userRole.setRoleId(roleId);
+        userRole.setUserId(userId);
+        userRole.setId(uidGenerator.getUID());
+        userRole.setCreateUserId(currentUser.getUserId());
+        userRole.setCreateUserName(currentUser.getRealName());
+        userRole.setCreateTime(currentDate);
+        return sysUserRoleMapper.save(userRole);
+    }
+
+    @Override
+    public List<SysUserRole> findByUserId(Long userId) {
+        StringBuilder sqlBd = new StringBuilder();
+        sqlBd.append(" and user_id = ").append(userId);
+        return sysUserRoleMapper.findList(sqlBd.toString());
     }
 
     /**
