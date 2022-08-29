@@ -7,11 +7,14 @@ import com.smart.base.PageView;
 import com.smart.base.SimpleModel;
 import com.smart.dto.SysRoleDTO;
 import com.smart.dto.SysRolePageDTO;
+import com.smart.dto.SysUserRoleDTO;
 import com.smart.model.LoginUser;
 import com.smart.model.user.SysRole;
 import com.smart.model.user.SysRoleMenu;
+import com.smart.model.user.SysUserRole;
 import com.smart.service.SysRoleMenuService;
 import com.smart.service.SysRoleService;
+import com.smart.service.SysUserService;
 import com.smart.uid.impl.CachedUidGenerator;
 import com.smart.util.JsonData;
 import lombok.extern.slf4j.Slf4j;
@@ -29,28 +32,48 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/sysRole")
 @Slf4j
 public class SysRoleController extends BaseController implements BaseCommonController<SysRole, SysRolePageDTO> {
 
-
     @Resource
     private SysRoleService sysRoleService;
 
     @Resource
-    private SysRoleMenuService sysRoleMenuService;
+    private SysUserService sysUserService;
 
     @Resource
-    private CachedUidGenerator uidGenerator;
+    private SysRoleMenuService sysRoleMenuService;
+
+    @PostMapping("saveRoleUser")
+    public JsonData saveRoleUser(@RequestBody SysUserRoleDTO dto) {
+        Long roleId = dto.getRoleId();
+        if (roleId == null) {
+            return JsonData.buildError("角色不能为空");
+        }
+        dto.setCurrentUser(getCurrentUser());
+        dto.setCurrentDate(getCurrentDate());
+        // 1. 查询用户-角色关联信息，用于刷新缓存（前置用于删除缓存）
+        List<SysUserRole> oldUserRoles = sysRoleService.findByRoleId(roleId);
+        // 2. 保存用户-角色关联信息（不用判断是否成功，支持保存空值）
+        sysRoleService.saveRoleUser(dto);
+        if (!CollectionUtils.isEmpty(oldUserRoles)) {
+            // 3. 刷新系统用户缓存
+            List<Long> userIds = oldUserRoles.stream().map(SysUserRole::getUserId).distinct().collect(Collectors.toList());
+            sysUserService.setUserCache(userIds, 1);
+        }
+        return JsonData.buildSuccess();
+    }
 
     @GetMapping("findById")
     @Override
     public JsonData findById(@RequestParam Long modelId) {
         // 1. 获取角色详情
         SysRole sysRole = sysRoleService.findById(modelId);
-        if(sysRole==null){
+        if (sysRole == null) {
             return JsonData.buildError("角色不存在!");
         }
         // 2. 获取角色菜单权限
@@ -73,7 +96,6 @@ public class SysRoleController extends BaseController implements BaseCommonContr
                 }
             }
         }
-
         // 3. 封装返回参数
         Map<String, Object> map = new HashMap<>();
         map.put("roleInfo", sysRole);
@@ -88,8 +110,9 @@ public class SysRoleController extends BaseController implements BaseCommonContr
 
     @PostMapping("save")
     public JsonData save(@RequestBody SysRoleDTO dto) {
-        LoginUser currentUser = getCurrentUser();
-        int result = sysRoleService.saveRole(dto,currentUser);
+        dto.setCurrentUser(getCurrentUser());
+        dto.setCurrentDate(getCurrentDate());
+        int result = sysRoleService.saveRole(dto);
         if (result > 0) {
             // TODO 刷新缓存
             return JsonData.buildSuccess();

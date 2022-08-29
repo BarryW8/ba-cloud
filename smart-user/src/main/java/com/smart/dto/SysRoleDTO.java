@@ -1,14 +1,15 @@
 package com.smart.dto;
 
+import com.smart.base.BaseDTO;
 import com.smart.base.BaseModel;
+import com.smart.model.LoginUser;
 import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class SysRoleDTO extends BaseModel {
-
+public class SysRoleDTO extends BaseDTO {
 
     /**
      * 角色名称
@@ -24,4 +25,5 @@ public class SysRoleDTO extends BaseModel {
      * 按钮权限集合
      */
     private List<String> permList = new ArrayList<>();
+
 }

@@ -7,6 +7,7 @@ import com.smart.base.SimpleModel;
 import com.smart.cache.CacheManage;
 import com.smart.enums.BizCodeEnum;
 import com.smart.mapper.SysUserMapper;
+import com.smart.mapper.SysUserRoleMapper;
 import com.smart.model.LoginUser;
 import com.smart.model.user.SysUser;
 import com.smart.model.user.SysUserRole;
@@ -26,6 +27,9 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Resource
     private SysUserMapper sysUserMapper;
+
+    @Resource
+    private SysUserRoleMapper sysUserRoleMapper;
 
     @Resource
     private CacheManage cacheManage;
@@ -112,7 +116,15 @@ public class SysUserServiceImpl implements SysUserService {
         SysUser sysUser = sysUserMapper.findById(userId);
         BeanUtil.copyProperties(sysUser, loginUser);
         loginUser.setUserId(userId);
-        //-------------b、保存到缓存
+        //-------------b、查询用户-角色关联信息
+        List<SysUserRole> userRoles = sysUserRoleMapper.findByLogin(userId);
+        if (CollectionUtils.isEmpty(userRoles)) {
+            // 用户未绑定角色，删除缓存
+            cacheManage.delSysUser(userId.toString());
+            return BizCodeEnum.ACCOUNT_ROLE_ERROR;
+        }
+        loginUser.setRoleId(userRoles.get(0).getRoleId());
+        //-------------c、保存到缓存
         cacheManage.setSysUser(loginUser);
         return null;
     }

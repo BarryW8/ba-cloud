@@ -5,14 +5,18 @@ import com.smart.base.Page;
 import com.smart.base.PageView;
 import com.smart.base.SimpleModel;
 import com.smart.dto.SysRoleDTO;
+import com.smart.dto.SysUserRoleDTO;
 import com.smart.mapper.SysRoleMapper;
 import com.smart.mapper.SysRoleMenuMapper;
+import com.smart.mapper.SysUserRoleMapper;
 import com.smart.model.LoginUser;
 import com.smart.model.user.SysRole;
 import com.smart.model.user.SysRoleMenu;
+import com.smart.model.user.SysUserRole;
 import com.smart.service.SysRoleService;
 import com.smart.uid.impl.CachedUidGenerator;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class SysRoleServiceImpl implements SysRoleService {
@@ -33,10 +38,40 @@ public class SysRoleServiceImpl implements SysRoleService {
     private SysRoleMapper sysRoleMapper;
 
     @Resource
-    private CachedUidGenerator uidGenerator;
+    private SysUserRoleMapper sysUserRoleMapper;
 
     @Resource
     private SysRoleMenuMapper sysRoleMenuMapper;
+
+    @Resource
+    private CachedUidGenerator uidGenerator;
+
+    @Override
+    public List<SysUserRole> findByRoleId(Long roleId) {
+        StringBuilder sqlBd = new StringBuilder();
+        sqlBd.append(" and role_id = ").append(roleId);
+        return sysUserRoleMapper.findList(sqlBd.toString());
+    }
+
+    @Override
+    public int saveRoleUser(SysUserRoleDTO dto) {
+        List<SysUserRole> list = dto.getUserRoles();
+        LoginUser currentUser = dto.getCurrentUser();
+        String currentDate = dto.getCurrentDate();
+        // 1. 删除旧数据
+        sysUserRoleMapper.deleteByRoleId(dto.getRoleId());
+        if (CollectionUtils.isEmpty(list)) {
+            return 1;
+        }
+        // 2. 保存新数据
+        for (SysUserRole userRole : list) {
+            userRole.setId(uidGenerator.getUID());
+            userRole.setCreateUserId(currentUser.getUserId());
+            userRole.setCreateUserName(currentUser.getRealName());
+            userRole.setCreateTime(currentDate);
+        }
+        return sysUserRoleMapper.saveList(list);
+    }
 
     @Transactional
     @Override
@@ -88,35 +123,37 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Transactional
     @Override
-    public int saveRole(SysRoleDTO dto, LoginUser currentUser) {
+    public int saveRole(SysRoleDTO dto) {
+        LoginUser currentUser = dto.getCurrentUser();
+        String currentDate = dto.getCurrentDate();
+        //-----------a、保存角色
         SysRole role = new SysRole();
         BeanUtils.copyProperties(dto,role);
-        String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DatePattern.NORM_DATETIME_PATTERN));
         int result;
-        if(role.getId() == null){
+        if (role.getId() == null) {
             role.setId(uidGenerator.getUID());
             role.setCreateUserId(currentUser.getUserId());
             role.setCreateUserName(currentUser.getRealName());
             role.setCreateTime(currentDate);
             result = sysRoleMapper.save(role);
-        }else{
+        } else {
             //编辑
             role.setUpdateUserId(currentUser.getUserId());
             role.setUpdateUserName(currentUser.getRealName());
             role.setUpdateTime(currentDate);
             result = sysRoleMapper.update(role);
             if (result > 0) {
-                // 2. 修改成功，删除角色的所有菜单权限
+                // 修改成功，删除角色的所有菜单权限
                 sysRoleMenuMapper.delByRoleId(role.getId());
             }
         }
         if (result > 0) {
-            // =================保存角色菜单权限================
+            //-----------b、保存角色菜单权限
             // 角色id
             Long roleId = role.getId();
             // 菜单权限列表
             List<String> permList = dto.getPermList();
-            // 3. 对前端返回集合进行处理
+            // 1. 对前端返回集合进行处理
             if (!CollectionUtils.isEmpty(permList)) {
                 List<SysRoleMenu> list = new ArrayList<>();
                 Map<String, String> map = new HashMap<>();
@@ -148,7 +185,7 @@ public class SysRoleServiceImpl implements SysRoleService {
                         map.put(perm, "");
                     }
                 }
-                // 4. 封装数据
+                // 2. 封装数据
                 for (Map.Entry<String, String> entry : map.entrySet()) {
                     SysRoleMenu roleMenu = new SysRoleMenu();
                     roleMenu.setRoleId(roleId);
@@ -160,10 +197,8 @@ public class SysRoleServiceImpl implements SysRoleService {
                     roleMenu.setCreateTime(currentDate);
                     list.add(roleMenu);
                 }
-
-                result = sysRoleMenuMapper.saveList(list);
+                sysRoleMenuMapper.saveList(list);
             }
-            return result;
         }
         return result;
     }

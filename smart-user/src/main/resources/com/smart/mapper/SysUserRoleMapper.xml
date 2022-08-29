@@ -4,30 +4,78 @@
 <mapper namespace="com.smart.mapper.SysUserRoleMapper">
 
     <resultMap id="BaseResultMap" type="com.smart.model.user.SysUserRole">
-        <result property="id" column="sys_id"/>
-        <result property="userId" column="user_id"/>
-        <result property="roleId" column="role_id"/>
-        <result property="note" column="note"/>
-        <result property="orderBy" column="order_by"/>
-        <result property="createTime" column="create_time"/>
-        <result property="createUserId" column="create_user_id"/>
-        <result property="createUserName" column="create_user_name"/>
-        <result property="updateTime" column="update_time"/>
-        <result property="updateUserId" column="update_user_id"/>
-        <result property="updateUserName" column="update_user_name"/>
+        <result column="sys_id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="role_id" property="roleId"/>
+        <result column="note" property="note"/>
+        <result column="order_by" property="orderBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="create_user_name" property="createUserName"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user_id" property="updateUserId"/>
+        <result column="update_user_name" property="updateUserName"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        sys_id
-        ,    user_id,    role_id,    note,       order_by,    create_time,    create_user_id,    create_user_name,    update_time,    update_user_id,     update_user_name
+        sys_id,
+        user_id,
+        role_id,
+        order_by,
+        note,
+        create_time,
+        create_user_id,
+        update_time,
+        update_user_id,
+        update_user_name
     </sql>
 
     <insert id="save" parameterType="com.smart.model.user.SysUserRole">
-        insert into sys_user_role (sys_id, user_id, role_id, note, order_by, create_time, create_user_id,
-                                   create_user_name, update_time, update_user_id, update_user_name)
-        values (#{id}, #{userId}, #{roleId}, #{note}, #{orderBy}, #{createTime}, #{createUserId}, #{createUserName},
-                #{updateTime}, #{updateUserId}, #{updateUserName})
+        insert into sys_user_role (
+            sys_id,
+            user_id,
+            role_id,
+            note,
+            order_by,
+            create_time,
+            create_user_id,
+            create_user_name
+        ) values (
+             #{id},
+             #{userId},
+             #{roleId},
+             #{note},
+             #{orderBy},
+             #{createTime},
+             #{createUserId},
+             #{createUserName}
+        )
+    </insert>
 
+    <!-- 批量新增 -->
+    <insert id="saveList">
+        insert into sys_user_role (
+            sys_id,
+            user_id,
+            role_id,
+            note,
+            order_by,
+            create_time,
+            create_user_id,
+            create_user_name
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+        (
+            #{item.id},
+            #{item.userId},
+            #{item.roleId},
+            #{item.note},
+            #{item.orderBy},
+            #{item.createTime},
+            #{item.createUserId},
+            #{item.createUserName}
+        )
+        </foreach>
     </insert>
 
     <!-- 逻辑删除 -->
@@ -41,17 +89,15 @@
     </update>
 
     <update id="update" parameterType="com.smart.model.user.SysUserRole">
-
         update sys_user_role
-        SET user_id          = #{userId},
-            role_id          = #{roleId},
-            note             = #{note},
-            order_by         = #{orderBy},
-            create_user_name = #{createUserName},
-            update_time        = #{updateTime},
-            update_user_id     = #{updateUserId},
-            update_user_name   = #{updateUserName}
-        where sys_id = #{id}
+        SET user_id = #{userId},
+            role_id = #{roleId},
+            note = #{note},
+            order_by = #{orderBy},
+            update_time = #{updateTime},
+            update_user_id = #{updateUserId},
+            update_user_name = #{updateUserName}
+        where id = #{id}
     </update>
 
     <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -69,7 +115,7 @@
         <if test="sql != '' and sql != null">
             ${sql}
         </if>
-        order by create_time desc,order_by desc
+        order by create_time desc, order_by desc
         limit #{page},#{pageSize}
     </select>
 
@@ -89,7 +135,40 @@
         <if test="sql != '' and sql != null">
             ${sql}
         </if>
-        order by create_time desc,order_by desc
+        order by create_time desc, order_by desc
+    </select>
+
+    <!-- 根据用户id 物理删除 -->
+    <delete id="deleteByRoleId">
+        delete from sys_user_role
+        where role_id = #{roleId}
+    </delete>
+
+    <!-- 根据用户id 物理删除 -->
+    <delete id="deleteByUserId">
+        delete from sys_user_role
+        where user_id = #{userId}
+    </delete>
+
+    <!-- 登录时获取用户绑定角色信息 -->
+    <select id="findByLogin" resultType="com.smart.model.user.SysUserRole">
+        select
+            ur.sys_id as id,
+            ur.user_id as userId,
+            ur.role_id as roleId,
+            ur.order_by as orderBy,
+            ur.note as note,
+            ur.create_time as createTime,
+            ur.create_user_id as createUserId,
+            ur.create_user_name as createUserName,
+            ur.update_time as updateTime,
+            ur.update_user_id as updateUserId,
+            ur.update_user_name as updateUserName
+        from sys_user_role ur
+        left join sys_role r on ur.role_id = r.sys_id
+        where ur.is_delete=0
+          and r.is_delete=0
+          and ur.user_id = #{id}
     </select>
 
 </mapper>

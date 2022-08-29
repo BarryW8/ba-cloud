@@ -1,24 +1,34 @@
 package com.smart.dto;
 
+import com.smart.base.BaseDTO;
+import com.smart.model.LoginUser;
+import com.smart.model.user.SysUserRole;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
-public class SysUserRoleDTO {
+public class SysUserRoleDTO extends BaseDTO {
 
     /**
      * 系统id
      */
     private Long id;
+
     /**
      * 用户id
      */
-    @NotNull(message = "用户不能为空")
     private Long userId;
+
     /**
      * 角色id
      */
-    @NotNull(message = "角色不能为空")
     private Long roleId;
+
+    /**
+     * 保存的数据
+     */
+    private List<SysUserRole> userRoles;
+
 }
