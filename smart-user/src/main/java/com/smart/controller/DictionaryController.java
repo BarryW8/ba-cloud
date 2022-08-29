@@ -112,11 +112,6 @@ public class DictionaryController extends BaseController implements BaseCommonCo
         return JsonData.buildError("删除失败!");
     }
 
-    @Override
-    public JsonData findList(String condition) {
-        return null;
-    }
-
     @GetMapping("getList")
     public JsonData getList() {
         List<DictionaryVO> list = dictionaryService.getList();

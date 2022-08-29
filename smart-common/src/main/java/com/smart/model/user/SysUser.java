@@ -37,13 +37,23 @@ public class SysUser extends BaseModel {
     private String email;
 
     /**
-     * 性别 0男 1女
+     * 性别0男1女
      */
     private int sex;
 
     /**
-     * 用户状态:0启用 1停用
+     * 用户状态0启用1停用
      */
     private int userStatus;
+
+    /**
+     * 登录次数
+     */
+    private int loginNum;
+
+    /**
+     * 最新登录时间
+     */
+    private String loginTime;
 
 }

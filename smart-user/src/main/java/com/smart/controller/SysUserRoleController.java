@@ -117,12 +117,6 @@ public class SysUserRoleController extends BaseController implements BaseCommonC
         return JsonData.buildError("删除失败!");
     }
 
-    @GetMapping("findList")
-    @Override
-    public JsonData findList(String condition) {
-        return JsonData.buildSuccess(sysUserRoleService.findList(condition));
-    }
-
     @PostMapping("authRole")
     public JsonData authRole(@RequestBody @Valid SysUserRoleDTO dto) {
         LoginUser currentUser = getCurrentUser();

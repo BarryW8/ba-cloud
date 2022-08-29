@@ -107,11 +107,6 @@ public class SysMenuController extends BaseController implements BaseCommonContr
         return JsonData.buildError("删除失败!");
     }
 
-    @Override
-    public JsonData findList(String condition) {
-        return null;
-    }
-
     @GetMapping("findAllList")
     public JsonData findAllList() {
         List<SysMenuVO> menus = sysMenuService.findAllList();

@@ -122,12 +122,6 @@ public class SysRoleController extends BaseController implements BaseCommonContr
         return JsonData.buildError("删除失败!");
     }
 
-    @GetMapping("findList")
-    @Override
-    public JsonData findList(@RequestParam String condition) {
-        return JsonData.buildSuccess(sysRoleService.findList(condition));
-    }
-
     private String queryCondition(SysRolePageDTO dto) {
         String keyword = dto.getKeyword();
         StringBuilder sqlBf = new StringBuilder();

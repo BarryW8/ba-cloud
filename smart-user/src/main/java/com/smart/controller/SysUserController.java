@@ -135,6 +135,19 @@ public class SysUserController extends BaseController implements BaseCommonContr
         BeanUtils.copyProperties(user, loginUser);
         loginUser.setUserId(user.getId());
         String accessToken = JWTUtil.geneJsonWebToken(loginUser);
+        //-----------d、系统用户缓存刷新
+        List<Long> userIds = new ArrayList<>();
+        userIds.add(user.getId());
+        BizCodeEnum bizCodeEnum = sysUserService.setUserCache(userIds, 0);
+        if (bizCodeEnum != null) {
+            // 用户基础信息校验不通过
+            return JsonData.buildResult(bizCodeEnum);
+        }
+        //-----------e、修改登录次数
+        int loginNum = user.getLoginNum() + 1;
+        user.setLoginNum(loginNum);
+        user.setLoginTime(getCurrentDate());
+        sysUserService.update(user);
         return JsonData.buildSuccess(accessToken);
     }
 

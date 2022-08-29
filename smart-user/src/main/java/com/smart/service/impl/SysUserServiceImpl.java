@@ -1,13 +1,21 @@
 package com.smart.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.smart.base.Page;
 import com.smart.base.PageView;
 import com.smart.base.SimpleModel;
+import com.smart.cache.CacheManage;
+import com.smart.enums.BizCodeEnum;
 import com.smart.mapper.SysUserMapper;
+import com.smart.model.LoginUser;
 import com.smart.model.user.SysUser;
+import com.smart.model.user.SysUserRole;
 import com.smart.service.SysUserService;
+import com.smart.vo.UserInfoVO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -18,6 +26,9 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Resource
     private SysUserMapper sysUserMapper;
+
+    @Resource
+    private CacheManage cacheManage;
 
     @Transactional
     @Override
@@ -70,5 +81,39 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public List<SysUser> findListHasPwd(String sql) {
         return sysUserMapper.findListHasPwd(sql);
+    }
+
+    @Override
+    public BizCodeEnum setUserCache(List<Long> userIds, int type) {
+        BizCodeEnum bizCodeEnum = null;
+        if (type == 0) {
+            // 直接set
+            for (Long userId : userIds) {
+                bizCodeEnum = this.userCache(userId);
+            }
+        } else {
+            // 当角色信息修改时，刷新用户信息缓存，只刷新已有缓存中绑定该角色的用户信息
+            for (Long userId : userIds) {
+                LoginUser info = cacheManage.getSysUser4Id(userId.toString());
+                if (info != null) {
+                    bizCodeEnum = this.userCache(userId);
+                }
+            }
+        }
+        return bizCodeEnum;
+    }
+
+    /**
+     * 用户缓存存入用户、角色、菜单信息，之后每次刷新页面只需查缓存即可
+     */
+    private BizCodeEnum userCache(Long userId) {
+        LoginUser loginUser = new LoginUser();
+        //-------------a、查询用户基本信息
+        SysUser sysUser = sysUserMapper.findById(userId);
+        BeanUtil.copyProperties(sysUser, loginUser);
+        loginUser.setUserId(userId);
+        //-------------b、保存到缓存
+        cacheManage.setSysUser(loginUser);
+        return null;
     }
 }
