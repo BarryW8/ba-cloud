@@ -216,10 +216,15 @@ public class SysUserController extends BaseController implements BaseCommonContr
 
     private String queryCondition(SysUserPageDTO dto) {
         String keyword = dto.getKeyword();
+        Integer userStatus = dto.getUserStatus();
+
         StringBuilder sqlBf = new StringBuilder();
+        if (userStatus != null) {
+            sqlBf.append(" and user_status = ").append(userStatus);
+        }
         if (StringUtils.isNotEmpty(keyword)) {
             sqlBf.append(" and (user_name like '%").append(keyword).append("%'")
-                    .append(" or real_name like '%").append(keyword).append("%'").append(")");
+                .append(" or real_name like '%").append(keyword).append("%'").append(")");
         }
         return sqlBf.toString();
     }

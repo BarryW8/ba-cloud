@@ -6,4 +6,6 @@ import lombok.Data;
 @Data
 public class SysUserPageDTO extends BasePageDTO {
 
+    private Integer userStatus;
+
 }
