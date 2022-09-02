@@ -62,13 +62,26 @@ public class SysUserController extends BaseController implements BaseCommonContr
         dto.setCurrentUser(getCurrentUser());
         dto.setCurrentDate(getCurrentDate());
         // 1. 查询用户-角色关联信息，用于刷新缓存（前置用于删除缓存）
-        List<SysUserRole> oldUserRoles = sysUserService.findByUserId(userId);
+        List<SysUserRole> oldUserRoles = sysUserService.findUserRole(userId);
         // 2. 保存用户-角色关联信息（不用判断是否成功，支持保存空值）
         sysUserService.saveUserRole(dto);
         if (!CollectionUtils.isEmpty(oldUserRoles)) {
             // 3. 刷新系统用户缓存
             List<Long> userIds = oldUserRoles.stream().map(SysUserRole::getUserId).distinct().collect(Collectors.toList());
             sysUserService.setUserCache(userIds, 1);
+        }
+        return JsonData.buildSuccess();
+    }
+
+    /**
+     * 查询用户授权角色信息
+     */
+    @GetMapping("findUserRole")
+    public JsonData findUserRole(@RequestParam Long modelId) {
+        List<SysUserRole> list = sysUserService.findUserRole(modelId);
+        if (!CollectionUtils.isEmpty(list)) {
+            List<Long> roleIds = list.stream().map(SysUserRole::getRoleId).distinct().collect(Collectors.toList());
+            return JsonData.buildSuccess(roleIds);
         }
         return JsonData.buildSuccess();
     }

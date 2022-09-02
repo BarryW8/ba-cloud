@@ -135,7 +135,7 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public List<SysUserRole> findByUserId(Long userId) {
+    public List<SysUserRole> findUserRole(Long userId) {
         StringBuilder sqlBd = new StringBuilder();
         sqlBd.append(" and user_id = ").append(userId);
         return sysUserRoleMapper.findList(sqlBd.toString());
