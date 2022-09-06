@@ -1,16 +1,21 @@
 package com.smart.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DatePattern;
 import com.smart.base.BaseCommonController;
 import com.smart.base.BaseController;
 import com.smart.base.BasePageDTO;
 import com.smart.base.SimpleModel;
+import com.smart.dto.DictionaryPageDTO;
+import com.smart.dto.SysUserPageDTO;
+import com.smart.model.LoginUser;
 import com.smart.model.user.Dictionary;
 import com.smart.service.DictionaryService;
 import com.smart.uid.impl.CachedUidGenerator;
 import com.smart.util.JsonData;
 import com.smart.vo.DictionaryVO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,36 +61,37 @@ public class DictionaryController extends BaseController implements BaseCommonCo
     @PostMapping("save")
     @Override
     public JsonData save(@RequestBody Dictionary dictionary) {
-        int count;
+        LoginUser loginUser = getCurrentUser();
+        int result;
+        List<Dictionary> codeList = dictionaryService.checkCodeSame(dictionary);
+        if (!CollectionUtils.isEmpty(codeList)) {
+            //字典同级code不可相同
+            return JsonData.buildError("同级字典编号不能相同！");
+        }
         List<Dictionary> nameList = dictionaryService.checkNameSame(dictionary);
         if (!CollectionUtils.isEmpty(nameList)) {
             //字典同级name不可相同
             return JsonData.buildError("同级字典名称不能相同！");
         }
-        List<Dictionary> codeList = dictionaryService.checkCodeSame(dictionary);
-        if (!CollectionUtils.isEmpty(codeList)) {
-            //字典同级code不可相同
-            return JsonData.buildError("同级字典code不能相同！");
-        }
         // 封装数据
         if (dictionary.getParentId() == null) {
-            dictionary.setParentId(0L);
+            dictionary.setParentId(-1L);
         }
         if (dictionary.getId() == null) {
             // 新增
             dictionary.setId(uidGenerator.getUID());
-            dictionary.setCreateUserId(1000L);
-            dictionary.setCreateUserName("ceshi");
-            dictionary.setCreateTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
-            count = dictionaryService.save(dictionary);
+            dictionary.setCreateUserId(loginUser.getUserId());
+            dictionary.setCreateUserName(loginUser.getRealName());
+            dictionary.setCreateTime(getCurrentDate());
+            result = dictionaryService.save(dictionary);
         } else {
             //编辑
-            dictionary.setUpdateUserId(1000L);
-            dictionary.setUpdateUserName("ceshi");
-            dictionary.setUpdateTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
-            count = dictionaryService.update(dictionary);
+            dictionary.setUpdateUserId(loginUser.getUserId());
+            dictionary.setUpdateUserName(loginUser.getRealName());
+            dictionary.setUpdateTime(getCurrentDate());
+            result = dictionaryService.update(dictionary);
         }
-        if (count > 0) {
+        if (result > 0) {
             return JsonData.buildSuccess();
         }
         return JsonData.buildError("保存失败!");
@@ -112,17 +118,39 @@ public class DictionaryController extends BaseController implements BaseCommonCo
         return JsonData.buildError("删除失败!");
     }
 
-    @GetMapping("getList")
-    public JsonData getList() {
-        List<DictionaryVO> list = dictionaryService.getList();
-        return JsonData.buildSuccess(builder(list));
+    @PostMapping("getList")
+    public JsonData getList(@RequestBody DictionaryPageDTO dto) {
+        String condition = this.queryCondition(dto);
+        List<Dictionary> list = dictionaryService.findList(condition);
+        List<DictionaryVO> voList = new ArrayList<>();
+        for (Dictionary dictionary : list) {
+            DictionaryVO vo = new DictionaryVO();
+            BeanUtil.copyProperties(dictionary, vo);
+            voList.add(vo);
+        }
+        return JsonData.buildSuccess(builder(voList));
+    }
+
+    private String queryCondition(DictionaryPageDTO dto) {
+        String keyword = dto.getKeyword();
+        Integer status = dto.getStatus();
+
+        StringBuilder sqlBf = new StringBuilder();
+        if (status != null) {
+            sqlBf.append(" and status = ").append(status);
+        }
+        if (StringUtils.isNotEmpty(keyword)) {
+            sqlBf.append(" and (code like '%").append(keyword).append("%'")
+                    .append(" or name like '%").append(keyword).append("%'").append(")");
+        }
+        return sqlBf.toString();
     }
 
     private List<DictionaryVO> builder(List<DictionaryVO> nodes) {
         List<DictionaryVO> treeNodes = new ArrayList<>();
         for (DictionaryVO n1 : nodes) {
-            // 0 代表根节点(顶级父节点)
-            if (n1.getParentId() == 0) {
+            // -1 代表根节点(顶级父节点)
+            if (n1.getParentId() == -1L) {
                 treeNodes.add(n1);
             }
             for (DictionaryVO n2 : nodes) {
