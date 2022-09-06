@@ -14,6 +14,7 @@ import com.smart.model.user.SysUser;
 import com.smart.model.user.SysUserRole;
 import com.smart.service.SysUserService;
 import com.smart.uid.impl.CachedUidGenerator;
+import com.smart.vo.SysUserRoleVO;
 import com.smart.vo.UserInfoVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -124,7 +125,7 @@ public class SysUserServiceImpl implements SysUserService {
             return 1;
         }
         // 2. 保存新数据
-        SysUserRole userRole = new SysUserRole();
+        SysUserRoleVO userRole = new SysUserRoleVO();
         userRole.setRoleId(roleId);
         userRole.setUserId(userId);
         userRole.setId(uidGenerator.getUID());
@@ -135,10 +136,8 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public List<SysUserRole> findUserRole(Long userId) {
-        StringBuilder sqlBd = new StringBuilder();
-        sqlBd.append(" and user_id = ").append(userId);
-        return sysUserRoleMapper.findList(sqlBd.toString());
+    public List<SysUserRoleVO> findUserRole(Long userId) {
+        return sysUserRoleMapper.findList(" and user_id = " + userId);
     }
 
     /**
@@ -151,7 +150,7 @@ public class SysUserServiceImpl implements SysUserService {
         BeanUtil.copyProperties(sysUser, loginUser);
         loginUser.setUserId(userId);
         //-------------b、查询用户-角色关联信息
-        List<SysUserRole> userRoles = sysUserRoleMapper.findByLogin(userId);
+        List<SysUserRoleVO> userRoles = sysUserRoleMapper.findList(" and user_id = " + userId);
         if (CollectionUtils.isEmpty(userRoles)) {
             // 用户未绑定角色，删除缓存
             cacheManage.delSysUser(userId.toString());

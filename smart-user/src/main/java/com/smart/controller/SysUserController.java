@@ -10,6 +10,7 @@ import com.smart.dto.SysUserRoleDTO;
 import com.smart.dto.UserLoginDTO;
 import com.smart.enums.BizCodeEnum;
 import com.smart.model.LoginUser;
+import com.smart.model.user.SysRole;
 import com.smart.model.user.SysUser;
 import com.smart.model.user.SysUserRole;
 import com.smart.service.SysMenuService;
@@ -21,6 +22,7 @@ import com.smart.util.JsonData;
 import com.smart.vo.MenuVO;
 import com.smart.vo.MetaVO;
 import com.smart.vo.SysMenuVO;
+import com.smart.vo.SysUserRoleVO;
 import com.smart.vo.UserInfoVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -62,12 +64,12 @@ public class SysUserController extends BaseController implements BaseCommonContr
         dto.setCurrentUser(getCurrentUser());
         dto.setCurrentDate(getCurrentDate());
         // 1. 查询用户-角色关联信息，用于刷新缓存（前置用于删除缓存）
-        List<SysUserRole> oldUserRoles = sysUserService.findUserRole(userId);
+        List<SysUserRoleVO> oldUserRoles = sysUserService.findUserRole(userId);
         // 2. 保存用户-角色关联信息（不用判断是否成功，支持保存空值）
         sysUserService.saveUserRole(dto);
         if (!CollectionUtils.isEmpty(oldUserRoles)) {
             // 3. 刷新系统用户缓存
-            List<Long> userIds = oldUserRoles.stream().map(SysUserRole::getUserId).distinct().collect(Collectors.toList());
+            List<Long> userIds = oldUserRoles.stream().map(SysUserRoleVO::getUserId).distinct().collect(Collectors.toList());
             sysUserService.setUserCache(userIds, 1);
         }
         return JsonData.buildSuccess();
@@ -78,12 +80,8 @@ public class SysUserController extends BaseController implements BaseCommonContr
      */
     @GetMapping("findUserRole")
     public JsonData findUserRole(@RequestParam Long modelId) {
-        List<SysUserRole> list = sysUserService.findUserRole(modelId);
-        if (!CollectionUtils.isEmpty(list)) {
-            List<Long> roleIds = list.stream().map(SysUserRole::getRoleId).distinct().collect(Collectors.toList());
-            return JsonData.buildSuccess(roleIds);
-        }
-        return JsonData.buildSuccess();
+        List<SysUserRoleVO> list = sysUserService.findUserRole(modelId);
+        return JsonData.buildSuccess(list);
     }
 
     @GetMapping("findById")

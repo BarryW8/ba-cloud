@@ -12,6 +12,11 @@ import java.util.List;
 public class SysRoleDTO extends BaseDTO {
 
     /**
+     * 主键ID
+     */
+    private Long id;
+
+    /**
      * 角色名称
      */
     private String roleName;

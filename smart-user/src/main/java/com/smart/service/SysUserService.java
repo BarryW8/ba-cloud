@@ -5,6 +5,7 @@ import com.smart.dto.SysUserRoleDTO;
 import com.smart.enums.BizCodeEnum;
 import com.smart.model.user.SysUser;
 import com.smart.model.user.SysUserRole;
+import com.smart.vo.SysUserRoleVO;
 
 import java.util.List;
 
@@ -21,5 +22,5 @@ public interface SysUserService extends BaseService<SysUser> {
 
     int saveUserRole(SysUserRoleDTO dto);
 
-    List<SysUserRole> findUserRole(Long modelId);
+    List<SysUserRoleVO> findUserRole(Long userId);
 }

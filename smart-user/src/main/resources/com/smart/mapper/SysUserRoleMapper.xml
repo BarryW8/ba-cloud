@@ -3,10 +3,12 @@
 
 <mapper namespace="com.smart.mapper.SysUserRoleMapper">
 
-    <resultMap id="BaseResultMap" type="com.smart.model.user.SysUserRole">
+    <resultMap id="BaseResultMap" type="com.smart.vo.SysUserRoleVO">
         <result column="sys_id" property="id"/>
         <result column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
         <result column="role_id" property="roleId"/>
+        <result column="role_name" property="roleName"/>
         <result column="note" property="note"/>
         <result column="order_by" property="orderBy"/>
         <result column="create_time" property="createTime"/>
@@ -18,19 +20,21 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        sys_id,
-        user_id,
-        role_id,
-        order_by,
-        note,
-        create_time,
-        create_user_id,
-        update_time,
-        update_user_id,
-        update_user_name
+        ur.sys_id,
+        ur.user_id,
+        ur.role_id,
+        ur.order_by,
+        ur.note,
+        ur.create_time,
+        ur.create_user_id,
+        ur.update_time,
+        ur.update_user_id,
+        ur.update_user_name,
+        u.user_name,
+        r.role_name
     </sql>
 
-    <insert id="save" parameterType="com.smart.model.user.SysUserRole">
+    <insert id="save" parameterType="com.smart.vo.SysUserRoleVO">
         insert into sys_user_role (
             sys_id,
             user_id,
@@ -88,7 +92,7 @@
         where sys_id = #{modelId}
     </update>
 
-    <update id="update" parameterType="com.smart.model.user.SysUserRole">
+    <update id="update" parameterType="com.smart.vo.SysUserRoleVO">
         update sys_user_role
         SET user_id = #{userId},
             role_id = #{roleId},
@@ -103,26 +107,39 @@
     <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from sys_user_role
-        where is_delete=0 and sys_id = #{id}
+        from sys_user_role ur
+        left join sys_user u on ur.user_id = u.sys_id
+        left join sys_role r on ur.role_id = r.sys_id
+        where ur.is_delete=0
+        and u.is_delete=0
+        and r.is_delete=0
+        and sys_id = #{id}
     </select>
 
     <select id="findPage" resultMap="BaseResultMap" parameterType="com.smart.base.Page">
         select
         <include refid="Base_Column_List"/>
-        from sys_user_role
-        where is_delete = 0
+        from sys_user_role ur
+        left join sys_user u on ur.user_id = u.sys_id
+        left join sys_role r on ur.role_id = r.sys_id
+        where ur.is_delete=0
+        and u.is_delete=0
+        and r.is_delete=0
         <if test="sql != '' and sql != null">
             ${sql}
         </if>
-        order by create_time desc, order_by desc
+        order by ur.create_time desc, ur.order_by desc
         limit #{page},#{pageSize}
     </select>
 
     <select id="count" resultType="java.lang.Integer">
         select count(*)
-        from sys_user_role
-        where is_delete = 0
+        from sys_user_role ur
+        left join sys_user u on ur.user_id = u.sys_id
+        left join sys_role r on ur.role_id = r.sys_id
+        where ur.is_delete=0
+        and u.is_delete=0
+        and r.is_delete=0
         <if test="tmpSql != '' and tmpSql != null">
             ${tmpSql}
         </if>
@@ -131,11 +148,16 @@
     <select id="findList" parameterType="String" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        FROM sys_user_role WHERE is_delete=0
+        FROM sys_user_role ur
+        left join sys_user u on ur.user_id = u.sys_id
+        left join sys_role r on ur.role_id = r.sys_id
+        where ur.is_delete=0
+        and u.is_delete=0
+        and r.is_delete=0
         <if test="sql != '' and sql != null">
             ${sql}
         </if>
-        order by create_time desc, order_by desc
+        order by ur.create_time desc, ur.order_by desc
     </select>
 
     <!-- 根据用户id 物理删除 -->
@@ -149,26 +171,5 @@
         delete from sys_user_role
         where user_id = #{userId}
     </delete>
-
-    <!-- 登录时获取用户绑定角色信息 -->
-    <select id="findByLogin" resultType="com.smart.model.user.SysUserRole">
-        select
-            ur.sys_id as id,
-            ur.user_id as userId,
-            ur.role_id as roleId,
-            ur.order_by as orderBy,
-            ur.note as note,
-            ur.create_time as createTime,
-            ur.create_user_id as createUserId,
-            ur.create_user_name as createUserName,
-            ur.update_time as updateTime,
-            ur.update_user_id as updateUserId,
-            ur.update_user_name as updateUserName
-        from sys_user_role ur
-        left join sys_role r on ur.role_id = r.sys_id
-        where ur.is_delete=0
-          and r.is_delete=0
-          and ur.user_id = #{id}
-    </select>
 
 </mapper>

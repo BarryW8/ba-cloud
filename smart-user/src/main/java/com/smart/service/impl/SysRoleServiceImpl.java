@@ -15,6 +15,7 @@ import com.smart.model.user.SysRoleMenu;
 import com.smart.model.user.SysUserRole;
 import com.smart.service.SysRoleService;
 import com.smart.uid.impl.CachedUidGenerator;
+import com.smart.vo.SysUserRoleVO;
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.BeanUtils;
@@ -47,9 +48,9 @@ public class SysRoleServiceImpl implements SysRoleService {
     private CachedUidGenerator uidGenerator;
 
     @Override
-    public List<SysUserRole> findByRoleId(Long roleId) {
+    public List<SysUserRoleVO> findRoleUser(Long roleId) {
         StringBuilder sqlBd = new StringBuilder();
-        sqlBd.append(" and role_id = ").append(roleId);
+        sqlBd.append(" and ur.role_id = ").append(roleId);
         return sysUserRoleMapper.findList(sqlBd.toString());
     }
 

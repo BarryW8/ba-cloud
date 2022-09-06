@@ -17,6 +17,7 @@ import com.smart.service.SysRoleService;
 import com.smart.service.SysUserService;
 import com.smart.uid.impl.CachedUidGenerator;
 import com.smart.util.JsonData;
+import com.smart.vo.SysUserRoleVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -57,15 +58,24 @@ public class SysRoleController extends BaseController implements BaseCommonContr
         dto.setCurrentUser(getCurrentUser());
         dto.setCurrentDate(getCurrentDate());
         // 1. 查询用户-角色关联信息，用于刷新缓存（前置用于删除缓存）
-        List<SysUserRole> oldUserRoles = sysRoleService.findByRoleId(roleId);
+        List<SysUserRoleVO> oldUserRoles = sysRoleService.findRoleUser(roleId);
         // 2. 保存用户-角色关联信息（不用判断是否成功，支持保存空值）
         sysRoleService.saveRoleUser(dto);
         if (!CollectionUtils.isEmpty(oldUserRoles)) {
             // 3. 刷新系统用户缓存
-            List<Long> userIds = oldUserRoles.stream().map(SysUserRole::getUserId).distinct().collect(Collectors.toList());
+            List<Long> userIds = oldUserRoles.stream().map(SysUserRoleVO::getUserId).distinct().collect(Collectors.toList());
             sysUserService.setUserCache(userIds, 1);
         }
         return JsonData.buildSuccess();
+    }
+
+    /**
+     * 查询用户授权角色信息
+     */
+    @GetMapping("findRoleUser")
+    public JsonData findRoleUser(@RequestParam Long modelId) {
+        List<SysUserRoleVO> list = sysRoleService.findRoleUser(modelId);
+        return JsonData.buildSuccess(list);
     }
 
     @GetMapping("findById")
