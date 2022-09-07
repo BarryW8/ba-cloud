@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: smart-gateway
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        server-addr: 192.168.182.3:8848 #Nacos配置中心地址
+        file-extension: yaml #文件拓展格式
+        name: ${spring.application.name}
+        namespace: smart-catering
+      discovery:
+        server-addr: ${spring.cloud.nacos.config.server-addr}
+        namespace: ${spring.cloud.nacos.config.namespace}
