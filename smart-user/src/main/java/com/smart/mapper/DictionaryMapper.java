@@ -11,7 +11,6 @@ import java.util.List;
 
 @Repository
 public interface DictionaryMapper extends BaseMapper<Dictionary> {
-    List<DictionaryVO> getList();
 
     List<OptionVO> optionListByParentCode(@Param("parentCode")String parentCode);
 

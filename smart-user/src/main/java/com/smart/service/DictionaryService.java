@@ -8,7 +8,6 @@ import com.smart.vo.OptionVO;
 import java.util.List;
 
 public interface DictionaryService extends BaseService<Dictionary> {
-    List<DictionaryVO> getList();
 
     List<OptionVO> optionListByParentCode(String parentCode);
 

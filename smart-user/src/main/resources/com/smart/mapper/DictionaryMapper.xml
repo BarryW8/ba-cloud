@@ -20,16 +20,6 @@
         <result column="update_user_name" property="updateUserName"/>
     </resultMap>
 
-    <resultMap id="listMap" type="com.smart.vo.DictionaryVO">
-        <id column="sys_id" property="id"/>
-        <result column="parent_id" property="parentId"/>
-        <result column="code" property="code"/>
-        <result column="name" property="name"/>
-        <result column="status" property="status"/>
-        <result column="order_by" property="orderBy"/>
-        <result column="note" property="note"/>
-    </resultMap>
-
     <sql id="Base_Column_List">
         sys_id,
         parent_id,
@@ -142,13 +132,6 @@
         <if test="sql != '' and sql != null">
             ${sql}
         </if>
-    </select>
-
-    <select id="getList" resultMap="listMap">
-        select
-        <include refid="Base_Column_List"/>
-        from dictionary
-        where is_delete = 0
         order by order_by
     </select>
 
