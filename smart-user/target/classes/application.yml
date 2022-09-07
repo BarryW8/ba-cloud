@@ -1,5 +1,5 @@
 server:
-  port: 8000
+  port: 8100
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
@@ -7,9 +7,9 @@ spring:
     druid:
       driver-class-name: com.mysql.jdbc.Driver
       #基本属性
-      url: jdbc:mysql://172.22.134.6:3306/bonded_user?useUnicode=true&characterEncoding=utf-8&useSSL=false
+      url: jdbc:mysql://192.168.182.3:3306/smart_user?useUnicode=true&characterEncoding=utf-8&useSSL=false
       username: root
-      password: xintong2020
+      password: 123456
       #配置初始化大小/最小/最大
       initial-size: 1
       min-idle: 1
@@ -28,11 +28,11 @@ spring:
       pool-prepared-statements: false
       max-pool-prepared-statement-per-connection-size: 20
   redis:
-    host: 172.22.134.7
-    port: 6999
+    host: 192.168.182.3
+    port: 6379
     database: 10
     timeout: 60000
-    password:
+    password: 123456
     lettuce:
       pool:
         # 连接池最大连接数（使用负值表示没有限制）
