@@ -196,7 +196,7 @@ public class SysUserController extends BaseController implements BaseCommonContr
             return JsonData.buildError("账号不存在");
         }
         BeanUtils.copyProperties(user, userInfo);
-        List<SysMenuVO> menuList = sysMenuService.getList();
+        List<SysMenuVO> menuList = sysMenuService.findAllList();
         List<MenuVO> menuVOS = new ArrayList<>();
         for (SysMenuVO sysMenuVO:menuList) {
             MenuVO menuVO = new MenuVO();

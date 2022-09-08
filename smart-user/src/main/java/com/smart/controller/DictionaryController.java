@@ -106,11 +106,12 @@ public class DictionaryController extends BaseController implements BaseCommonCo
     @GetMapping("deleteById")
     @Override
     public JsonData deleteById(@RequestParam Long modelId) {
+        LoginUser loginUser = getCurrentUser();
         SimpleModel simpleModel = new SimpleModel();
         simpleModel.setModelId(modelId);
-        simpleModel.setDelUser(1000L);
-        simpleModel.setDelUserName("ceshi");
-        simpleModel.setDelDate(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
+        simpleModel.setDelUser(loginUser.getUserId());
+        simpleModel.setDelUserName(loginUser.getRealName());
+        simpleModel.setDelDate(getCurrentDate());
         int result = dictionaryService.deleteBySm(simpleModel);
         if (result > 0) {
             return JsonData.buildSuccess();
@@ -141,7 +142,7 @@ public class DictionaryController extends BaseController implements BaseCommonCo
         }
         if (StringUtils.isNotEmpty(keyword)) {
             sqlBf.append(" and (code like '%").append(keyword).append("%'")
-                    .append(" or name like '%").append(keyword).append("%'").append(")");
+                .append(" or name like '%").append(keyword).append("%'").append(")");
         }
         return sqlBf.toString();
     }

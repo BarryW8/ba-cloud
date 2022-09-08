@@ -1,17 +1,22 @@
 package com.smart.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DatePattern;
 import com.smart.base.BaseCommonController;
 import com.smart.base.BaseController;
 import com.smart.base.BasePageDTO;
 import com.smart.base.SimpleModel;
+import com.smart.dto.DictionaryPageDTO;
+import com.smart.dto.SysMenuPageDTO;
 import com.smart.model.LoginUser;
+import com.smart.model.user.Dictionary;
 import com.smart.model.user.SysMenu;
 import com.smart.service.DictionaryService;
 import com.smart.service.SysMenuService;
 import com.smart.service.SysRoleMenuService;
 import com.smart.uid.impl.CachedUidGenerator;
 import com.smart.util.JsonData;
+import com.smart.vo.DictionaryVO;
 import com.smart.vo.OptionVO;
 import com.smart.vo.SysMenuVO;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +39,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/sysMenu")
 @Slf4j
-public class SysMenuController extends BaseController implements BaseCommonController<SysMenu, BasePageDTO> {
+public class SysMenuController extends BaseController implements BaseCommonController<SysMenu, SysMenuPageDTO> {
 
     @Resource
     private SysMenuService sysMenuService;
@@ -58,26 +63,26 @@ public class SysMenuController extends BaseController implements BaseCommonContr
         return JsonData.buildSuccess(sysMenu);
     }
 
-
     @PostMapping("save")
     @Override
     public JsonData save(@RequestBody SysMenu sysMenu) {
+        LoginUser loginUser = getCurrentUser();
         // 封装数据
         if (sysMenu.getParentId() == null) {
-            sysMenu.setParentId(0L);
+            sysMenu.setParentId(-1L);
         }
         int result;
         if (sysMenu.getId() == null) {
             sysMenu.setId(uidGenerator.getUID());
-            sysMenu.setCreateUserId(1000L);
-            sysMenu.setCreateUserName("ceshi");
-            sysMenu.setCreateTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
+            sysMenu.setCreateUserId(loginUser.getUserId());
+            sysMenu.setCreateUserName(loginUser.getRealName());
+            sysMenu.setCreateTime(getCurrentDate());
             result = sysMenuService.save(sysMenu);
         } else {
             //编辑
-            sysMenu.setUpdateUserId(1000L);
-            sysMenu.setUpdateUserName("ceshi");
-            sysMenu.setUpdateTime(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
+            sysMenu.setUpdateUserId(loginUser.getUserId());
+            sysMenu.setUpdateUserName(loginUser.getRealName());
+            sysMenu.setUpdateTime(getCurrentDate());
             result = sysMenuService.update(sysMenu);
         }
         if (result > 0) {
@@ -88,18 +93,19 @@ public class SysMenuController extends BaseController implements BaseCommonContr
 
     @PostMapping("findPage")
     @Override
-    public JsonData findPage(@RequestBody BasePageDTO dto) {
+    public JsonData findPage(@RequestBody SysMenuPageDTO dto) {
         return null;
     }
 
     @GetMapping("deleteById")
     @Override
     public JsonData deleteById(@RequestParam Long modelId) {
+        LoginUser loginUser = getCurrentUser();
         SimpleModel simpleModel = new SimpleModel();
         simpleModel.setModelId(modelId);
-        simpleModel.setDelUser(1000L);
-        simpleModel.setDelUserName("ceshi");
-        simpleModel.setDelDate(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
+        simpleModel.setDelUser(loginUser.getUserId());
+        simpleModel.setDelUserName(loginUser.getRealName());
+        simpleModel.setDelDate(getCurrentDate());
         int result = sysMenuService.deleteBySm(simpleModel);
         if (result > 0) {
             return JsonData.buildSuccess();
@@ -113,18 +119,44 @@ public class SysMenuController extends BaseController implements BaseCommonContr
         return JsonData.buildSuccess(builder(menus));
     }
 
-    @GetMapping("getList")
-    public JsonData getList() {
-        List<SysMenuVO> menus = sysMenuService.getList();
-        return JsonData.buildSuccess(builder(menus));
+    @PostMapping("getList")
+    public JsonData getList(@RequestBody SysMenuPageDTO dto) {
+        String condition = this.queryCondition(dto);
+        List<SysMenu> list = sysMenuService.findList(condition);
+        List<SysMenuVO> voList = new ArrayList<>();
+        for (SysMenu menu : list) {
+            SysMenuVO vo = new SysMenuVO();
+            BeanUtil.copyProperties(menu, vo);
+            voList.add(vo);
+        }
+        return JsonData.buildSuccess(builder(voList));
+    }
+
+    private String queryCondition(SysMenuPageDTO dto) {
+        String keyword = dto.getKeyword();
+        Integer isHide = dto.getIsHide();
+        Integer linkType = dto.getLinkType();
+
+        StringBuilder sqlBf = new StringBuilder();
+        if (isHide != null) {
+            sqlBf.append(" and is_hide = ").append(isHide);
+        }
+        if (linkType != null) {
+            sqlBf.append(" and link_type = ").append(linkType);
+        }
+        if (StringUtils.isNotEmpty(keyword)) {
+            sqlBf.append(" and (code like '%").append(keyword).append("%'")
+                .append(" or name like '%").append(keyword).append("%'").append(")");
+        }
+        return sqlBf.toString();
     }
 
     private List<SysMenuVO> builder(List<SysMenuVO> nodes) {
         List<SysMenuVO> treeNodes = new ArrayList<>();
         for (SysMenuVO n1 : nodes) {
             n1.setKey(n1.getId());
-            // 0 代表根节点(顶级父节点)
-            if ("0".equals(n1.getParentId())) {
+            // -1 代表根节点(顶级父节点)
+            if ("-1".equals(n1.getParentId())) {
                 treeNodes.add(n1);
             }
             for (SysMenuVO n2 : nodes) {
@@ -143,7 +175,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     public JsonData findTreeMenuList() {
         List<SysMenuVO> menus = new ArrayList<>();
 //        List<SysMenuVO> allMenus = cacheManage.getSysMenu();
-        List<SysMenuVO> allMenus = sysMenuService.getList();
+        List<SysMenuVO> allMenus = sysMenuService.findAllList();
         if (CollectionUtils.isEmpty(allMenus)) {
             return JsonData.buildSuccess(menus);
         }
@@ -187,8 +219,8 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     private List<SysMenuVO> builderMenu(List<SysMenuVO> nodes, List<OptionVO> auths) {
         List<SysMenuVO> treeNodes = new ArrayList<>();
         for (SysMenuVO n1 : nodes) {
-            // 0 代表根节点(顶级父节点)
-            if ("0".equals(n1.getParentId())) {
+            // -1 代表根节点(顶级父节点)
+            if ("-1".equals(n1.getParentId())) {
                 treeNodes.add(n1);
             }
             for (SysMenuVO n2 : nodes) {
@@ -234,7 +266,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
             dto.setPerms(dealPerms(realPerms, ownPerms));
             list.add(dto);
         }
-        if (!"0".equals(dto.getParentId())) {
+        if (!"-1".equals(dto.getParentId())) {
             resultMenus(Long.valueOf(dto.getParentId()), menuMap, menuPerms, list);
         }
     }

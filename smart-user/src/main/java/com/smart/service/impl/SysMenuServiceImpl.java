@@ -52,11 +52,6 @@ public class SysMenuServiceImpl implements SysMenuService {
     }
 
     @Override
-    public List<SysMenuVO> getList() {
-        return sysMenuMapper.getList();
-    }
-
-    @Override
     public List<SysMenuVO> findAllList() {
         return sysMenuMapper.findAllList();
     }

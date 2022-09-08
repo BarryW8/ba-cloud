@@ -7,7 +7,7 @@ import com.smart.vo.SysMenuVO;
 import java.util.List;
 
 public interface SysMenuService extends BaseService<SysMenu> {
-    List<SysMenuVO> getList();
 
     List<SysMenuVO> findAllList();
+
 }

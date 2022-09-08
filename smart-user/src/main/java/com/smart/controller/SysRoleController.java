@@ -147,7 +147,7 @@ public class SysRoleController extends BaseController implements BaseCommonContr
         simpleModel.setModelId(modelId);
         simpleModel.setDelUser(currentUser.getUserId());
         simpleModel.setDelUserName(currentUser.getRealName());
-        simpleModel.setDelDate(getCurrentDate(DatePattern.NORM_DATETIME_PATTERN));
+        simpleModel.setDelDate(getCurrentDate());
         int result = sysRoleService.deleteBySm(simpleModel);
         if (result > 0) {
             return JsonData.buildSuccess();

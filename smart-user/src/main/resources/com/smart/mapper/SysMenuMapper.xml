@@ -99,6 +99,7 @@
     <update id="update">
         update sys_menu
         set label = #{label},
+            parent_id = #{parentId},
             page_path = #{pagePath},
             route_path = #{routePath},
             icon_path = #{iconPath},
@@ -170,20 +171,4 @@
         order by order_by
     </select>
 
-    <!-- 查询所有菜单 -->
-    <select id="getList" resultMap="listMap">
-        SELECT
-            sys_id,
-            label,
-            parent_id,
-            page_path,
-            route_path,
-            icon_path,
-            link_type,
-            is_hide,
-            perms
-        FROM sys_menu
-        where is_delete = 0
-        order by order_by
-    </select>
 </mapper>
