@@ -42,9 +42,9 @@ public class DictionaryController extends BaseController implements BaseCommonCo
     /**
      * 根据父编号获取字典列表
      */
-    @GetMapping("optionListByParentCode")
-    public JsonData optionListByParentCode(@RequestParam String parentCode) {
-        return JsonData.buildSuccess(dictionaryService.optionListByParentCode(parentCode));
+    @GetMapping("optionList")
+    public JsonData optionList(@RequestParam String parentCode) {
+        return JsonData.buildSuccess(dictionaryService.optionList(parentCode));
     }
 
     @GetMapping("findById")

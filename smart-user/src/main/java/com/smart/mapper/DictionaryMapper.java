@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface DictionaryMapper extends BaseMapper<Dictionary> {
 
-    List<OptionVO> optionListByParentCode(@Param("parentCode")String parentCode);
+    List<OptionVO> optionList(@Param("parentCode")String parentCode);
 
     /**
      * 批量删除

@@ -73,8 +73,8 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public List<OptionVO> optionListByParentCode(String parentCode) {
-        return dictionaryMapper.optionListByParentCode(parentCode);
+    public List<OptionVO> optionList(String parentCode) {
+        return dictionaryMapper.optionList(parentCode);
     }
 
     @Override

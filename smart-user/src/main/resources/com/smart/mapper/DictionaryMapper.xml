@@ -136,7 +136,7 @@
     </select>
 
     <!-- 根据父编号查询列表 -->
-    <select id="optionListByParentCode" resultType="com.smart.vo.OptionVO">
+    <select id="optionList" resultType="com.smart.vo.OptionVO">
         select sys_id as id,code as code,name as name
         from dictionary
         where is_delete=0 and parent_code = #{parentCode}

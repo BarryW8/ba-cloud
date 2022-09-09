@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface DictionaryService extends BaseService<Dictionary> {
 
-    List<OptionVO> optionListByParentCode(String parentCode);
+    List<OptionVO> optionList(String parentCode);
 
     List<Dictionary> checkNameSame(Dictionary dictionary);
 

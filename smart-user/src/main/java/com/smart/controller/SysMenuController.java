@@ -212,7 +212,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
 //                menus.add(vo);
 //            }
 //        }
-        List<OptionVO> authList = dictionaryService.optionListByParentCode("btnPermissions");
+        List<OptionVO> authList = dictionaryService.optionList("btnPermissions");
         return JsonData.buildSuccess(builderMenu(allMenus, authList));
     }
 
