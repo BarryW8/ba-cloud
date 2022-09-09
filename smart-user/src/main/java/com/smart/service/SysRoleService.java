@@ -5,6 +5,7 @@ import com.smart.dto.SysRoleDTO;
 import com.smart.dto.SysUserRoleDTO;
 import com.smart.model.LoginUser;
 import com.smart.model.user.SysRole;
+import com.smart.model.user.SysRoleMenu;
 import com.smart.model.user.SysUserRole;
 import com.smart.vo.SysUserRoleVO;
 
@@ -18,4 +19,5 @@ public interface SysRoleService extends BaseService<SysRole> {
 
     List<SysUserRoleVO> findRoleUser(Long roleId);
 
+    List<SysRoleMenu> findRoleMenu(Long roleId);
 }

@@ -28,5 +28,5 @@ public class UserInfoVO {
      */
     private String email;
 
-    List<MenuVO> menuList;
+    List<SysMenuVO> menuList;
 }

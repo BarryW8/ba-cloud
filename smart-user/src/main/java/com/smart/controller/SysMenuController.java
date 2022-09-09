@@ -11,14 +11,17 @@ import com.smart.dto.SysMenuPageDTO;
 import com.smart.model.LoginUser;
 import com.smart.model.user.Dictionary;
 import com.smart.model.user.SysMenu;
+import com.smart.model.user.SysRoleMenu;
 import com.smart.service.DictionaryService;
 import com.smart.service.SysMenuService;
 import com.smart.service.SysRoleMenuService;
+import com.smart.service.SysRoleService;
 import com.smart.uid.impl.CachedUidGenerator;
 import com.smart.util.JsonData;
 import com.smart.vo.DictionaryVO;
 import com.smart.vo.OptionVO;
 import com.smart.vo.SysMenuVO;
+import com.smart.vo.UserInfoVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -32,6 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -48,7 +53,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     private CachedUidGenerator uidGenerator;
 
     @Resource
-    private SysRoleMenuService sysRoleMenuService;
+    private SysRoleService sysRoleService;
 
     @Resource
     private DictionaryService dictionaryService;
@@ -169,6 +174,50 @@ public class SysMenuController extends BaseController implements BaseCommonContr
             }
         }
         return treeNodes;
+    }
+
+    @GetMapping("findMenuList")
+    public JsonData findMenuList() {
+        List<SysMenuVO> menus = new ArrayList<>();
+//        List<SysMenuVO> allMenus = cacheManage.getSysMenu();
+        List<SysMenuVO> allMenus = sysMenuService.findAllList();
+        if (CollectionUtils.isEmpty(allMenus)) {
+            return JsonData.buildSuccess(menus);
+        }
+        LoginUser currentUser = getCurrentUser();
+        // 如果不是超管
+        if (StringUtils.isNotEmpty(currentUser.getUserCode())) {
+            // 查询角色绑定菜单信息
+            List<SysRoleMenu> roleMenus = sysRoleService.findRoleMenu(currentUser.getRoleId());
+            if (!CollectionUtils.isEmpty(roleMenus)) {
+                //处理菜单树结构，得到最终结果
+                List<Long> menuIds = roleMenus.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
+                Map<Long, String> menuPerms = roleMenus.stream().collect(Collectors.toMap(SysRoleMenu::getMenuId, SysRoleMenu::getMenuAction));
+                Map<Long, SysMenuVO> menuAllMap = new HashMap<>(16);
+                List<Long> menuIdList = new ArrayList<>();
+                List<SysMenuVO> resultList = new ArrayList<>();
+                // 将菜单放入map中方便取值
+                for (SysMenuVO menu : allMenus) {
+                    menuAllMap.put(Long.valueOf(menu.getId()), menu);
+                    menuIdList.add(Long.valueOf(menu.getId()));
+                }
+                //取交集，防止all菜单被删，角色菜单表中未及时更新，产生脏数据
+                menuIds.retainAll(menuIdList);
+                for (Long menuId : menuIds) {
+                    resultMenus(menuId, menuAllMap, menuPerms, resultList);
+                }
+                //菜单排序
+                allMenus = resultList.stream().sorted(Comparator.comparing(SysMenuVO::getOrderBy)).collect(Collectors.toList());
+            }
+        }
+        // 过滤隐藏状态的菜单
+//        for (SysMenuVO vo : allMenus) {
+//            if (vo.getIsHide() == 0) {
+//                menus.add(vo);
+//            }
+//        }
+        List<OptionVO> authList = dictionaryService.optionList("001");
+        return JsonData.buildSuccess(builderMenu(allMenus, authList));
     }
 
     @GetMapping("findTreeMenuList")

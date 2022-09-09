@@ -55,6 +55,13 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
+    public List<SysRoleMenu> findRoleMenu(Long roleId) {
+        StringBuilder sqlBd = new StringBuilder();
+        sqlBd.append(" and role_id = ").append(roleId);
+        return sysRoleMenuMapper.findList(sqlBd.toString());
+    }
+
+    @Override
     public int saveRoleUser(SysUserRoleDTO dto) {
         List<SysUserRole> list = dto.getUserRoles();
         LoginUser currentUser = dto.getCurrentUser();
