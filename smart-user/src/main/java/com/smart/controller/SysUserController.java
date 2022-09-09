@@ -213,7 +213,7 @@ public class SysUserController extends BaseController implements BaseCommonContr
 //            cacheManage.setSysMenu(menus);
 //        }
         List<SysMenuVO> menus = sysMenuService.findAllList();
-        if (StringUtils.isEmpty(currentUser.getUserCode())) {
+        if (StringUtils.isEmpty(currentUser.getTelephone())) {
             userInfo.setMenuList(builder(menus));
         } else {
             //5. 查询角色绑定菜单信息
@@ -312,7 +312,7 @@ public class SysUserController extends BaseController implements BaseCommonContr
             dto.setPerms(dealPerms(realPerms, ownPerms));
             list.add(dto);
         }
-        if (!"0".equals(dto.getParentId())) {
+        if (!"-1".equals(dto.getParentId())) {
             resultMenus(Long.valueOf(dto.getParentId()), menuMap, menuPerms, list);
         }
     }
@@ -331,8 +331,8 @@ public class SysUserController extends BaseController implements BaseCommonContr
     private List<SysMenuVO> builder(List<SysMenuVO> nodes) {
         List<SysMenuVO> treeNodes = new ArrayList<>();
         for (SysMenuVO n1 : nodes) {
-            // 0 代表根节点(顶级父节点)
-            if ("0".equals(n1.getParentId())) {
+            // -1 代表根节点(顶级父节点)
+            if ("-1".equals(n1.getParentId())) {
                 treeNodes.add(n1);
             }
             for (SysMenuVO n2 : nodes) {
