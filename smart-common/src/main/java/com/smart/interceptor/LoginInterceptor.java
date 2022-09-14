@@ -47,20 +47,23 @@ public class LoginInterceptor implements HandlerInterceptor {
             return false;
         }
         long userId = Long.parseLong(claims.get("userId").toString());
-        String userName = claims.get("userName").toString();
-        String realName = claims.get("realName").toString();
-        String email = claims.get("email").toString();
-        String telephone =claims.get("telephone").toString();
+        String userCode = claims.get("userCode") != null ? claims.get("userCode").toString() : "";
+        String userName = claims.get("userName") != null ? claims.get("userName").toString() : "";
+        String realName = claims.get("realName") != null ? claims.get("realName").toString() : "";
+        String email = claims.get("email") != null ? claims.get("email").toString() : "";
+        String telephone = claims.get("telephone") != null ? claims.get("telephone").toString() : "";
+        long roleId = Long.parseLong(claims.get("roleId").toString());
         LoginUser loginUser = LoginUser.builder()
                 .userId(userId)
+                .userCode(userCode)
                 .userName(userName)
                 .realName(realName)
                 .email(email)
                 .telephone(telephone)
+                .roleId(roleId)
                 .build();
         threadLocal.set(loginUser);
         return true;
-
     }
 
     @Override

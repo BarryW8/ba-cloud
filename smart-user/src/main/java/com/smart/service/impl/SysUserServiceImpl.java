@@ -7,6 +7,7 @@ import com.smart.base.SimpleModel;
 import com.smart.cache.CacheManage;
 import com.smart.dto.SysUserRoleDTO;
 import com.smart.enums.BizCodeEnum;
+import com.smart.exception.BizException;
 import com.smart.mapper.SysUserMapper;
 import com.smart.mapper.SysUserRoleMapper;
 import com.smart.model.LoginUser;
@@ -94,23 +95,23 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public BizCodeEnum setUserCache(List<Long> userIds, int type) {
-        BizCodeEnum bizCodeEnum = null;
+    public LoginUser setUserCache(List<Long> userIds, int type) {
+        LoginUser loginUser = null;
         if (type == 0) {
             // 直接set
             for (Long userId : userIds) {
-                bizCodeEnum = this.userCache(userId);
+                loginUser = this.userCache(userId);
             }
         } else {
             // 当角色信息修改时，刷新用户信息缓存，只刷新已有缓存中绑定该角色的用户信息
             for (Long userId : userIds) {
                 LoginUser info = cacheManage.getSysUser4Id(userId.toString());
                 if (info != null) {
-                    bizCodeEnum = this.userCache(userId);
+                    loginUser = this.userCache(userId);
                 }
             }
         }
-        return bizCodeEnum;
+        return loginUser;
     }
 
     @Override
@@ -143,22 +144,27 @@ public class SysUserServiceImpl implements SysUserService {
     /**
      * 用户缓存存入用户、角色、菜单信息，之后每次刷新页面只需查缓存即可
      */
-    private BizCodeEnum userCache(Long userId) {
+    private LoginUser userCache(Long userId) {
         LoginUser loginUser = new LoginUser();
         //-------------a、查询用户基本信息
         SysUser sysUser = sysUserMapper.findById(userId);
         BeanUtil.copyProperties(sysUser, loginUser);
         loginUser.setUserId(userId);
         //-------------b、查询用户-角色关联信息
-        List<SysUserRoleVO> userRoles = sysUserRoleMapper.findList(" and user_id = " + userId);
+        List<SysUserRoleVO> userRoles = sysUserRoleMapper.findList(" and ur.user_id = " + userId);
         if (CollectionUtils.isEmpty(userRoles)) {
             // 用户未绑定角色，删除缓存
             cacheManage.delSysUser(userId.toString());
-            return BizCodeEnum.ACCOUNT_ROLE_ERROR;
+            throw new BizException(BizCodeEnum.ACCOUNT_ROLE_ERROR);
+        }
+        if (userRoles.size() > 1) {
+            // 角色信息异常，删除缓存
+            cacheManage.delSysUser(userId.toString());
+            throw new BizException(BizCodeEnum.ACCOUNT_EXCEPTION);
         }
         loginUser.setRoleId(userRoles.get(0).getRoleId());
         //-------------c、保存到缓存
         cacheManage.setSysUser(loginUser);
-        return null;
+        return loginUser;
     }
 }

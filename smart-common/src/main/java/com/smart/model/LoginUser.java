@@ -32,14 +32,14 @@ public class LoginUser {
     private String realName;
 
     /**
-     * 手机号码
-     */
-    private String telephone;
-
-    /**
      * 电子邮箱
      */
     private String email;
+
+    /**
+     * 手机号码
+     */
+    private String telephone;
 
     /**
      * 是否是超管

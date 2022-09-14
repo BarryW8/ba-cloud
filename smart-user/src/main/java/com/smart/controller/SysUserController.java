@@ -173,19 +173,12 @@ public class SysUserController extends BaseController implements BaseCommonContr
             // 账号或者密码错误
             return JsonData.buildResult(BizCodeEnum.ACCOUNT_PWD_ERROR);
         }
-        //-----------c、生成token
-        LoginUser loginUser =  LoginUser.builder().build();
-        BeanUtils.copyProperties(user, loginUser);
-        loginUser.setUserId(user.getId());
-        String accessToken = JWTUtil.geneJsonWebToken(loginUser);
-        //-----------d、系统用户缓存刷新
+        //-----------c、系统用户缓存刷新
         List<Long> userIds = new ArrayList<>();
         userIds.add(user.getId());
-        BizCodeEnum bizCodeEnum = sysUserService.setUserCache(userIds, 0);
-        if (bizCodeEnum != null) {
-            // 用户基础信息校验不通过
-            return JsonData.buildResult(bizCodeEnum);
-        }
+        LoginUser loginUser = sysUserService.setUserCache(userIds, 0);
+        //-----------d、生成token
+        String accessToken = JWTUtil.geneJsonWebToken(loginUser);
         //-----------e、修改登录次数
         int loginNum = user.getLoginNum() + 1;
         user.setLoginNum(loginNum);
