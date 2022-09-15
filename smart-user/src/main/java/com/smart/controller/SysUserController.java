@@ -5,6 +5,7 @@ import com.smart.base.BaseCommonController;
 import com.smart.base.BaseController;
 import com.smart.base.PageView;
 import com.smart.base.SimpleModel;
+import com.smart.cache.CacheManage;
 import com.smart.dto.SysUserPageDTO;
 import com.smart.dto.SysUserRoleDTO;
 import com.smart.dto.UserLoginDTO;
@@ -54,6 +55,9 @@ public class SysUserController extends BaseController implements BaseCommonContr
 
     @Resource
     private SysUserService sysUserService;
+
+    @Resource
+    private CacheManage cacheManage;
 
     @Resource
     private CachedUidGenerator uidGenerator;
@@ -199,13 +203,12 @@ public class SysUserController extends BaseController implements BaseCommonContr
         BeanUtils.copyProperties(currentUser, userInfo);
         //2. 查询客户登录logo和登录标题 TODO
         //3. 获取全部菜单（查缓存）
-//        List<SysMenuVO> menus = cacheManage.getSysMenu();
-//        if (CollectionUtils.isEmpty(menus)) {
-//            // 如果缓存中没有，则查库，刷新缓存
-//            menus = sysMenuService.findAllList();
-//            cacheManage.setSysMenu(menus);
-//        }
-        List<SysMenuVO> menus = sysMenuService.findAllList();
+        List<SysMenuVO> menus = cacheManage.getSysMenu();
+        if (CollectionUtils.isEmpty(menus)) {
+            // 如果缓存中没有，则查库，刷新缓存
+            menus = sysMenuService.findAllList(null);
+            cacheManage.setSysMenu(menus);
+        }
         if (StringUtils.isEmpty(currentUser.getTelephone())) {
             userInfo.setMenuList(builder(menus));
         } else {
@@ -234,35 +237,6 @@ public class SysUserController extends BaseController implements BaseCommonContr
                 userInfo.setMenuList(builder(finalMenus));
             }
         }
-
-
-//        Long userId = loginUser.getUserId();
-//        SysUser user = sysUserService.findById(userId);
-//        if (user == null) {
-//            log.error("获取 userInfo 异常");
-//            return JsonData.buildError("账号不存在");
-//        }
-//        BeanUtils.copyProperties(user, userInfo);
-//        List<SysMenuVO> menuList = sysMenuService.findAllList();
-//        List<MenuVO> menuVOS = new ArrayList<>();
-//        for (SysMenuVO sysMenuVO:menuList) {
-//            MenuVO menuVO = new MenuVO();
-//            menuVO.setId(sysMenuVO.getId());
-//            menuVO.setParentId(sysMenuVO.getParentId());
-//            menuVO.setName(sysMenuVO.getLabel());
-//            menuVO.setPath(sysMenuVO.getRoutePath());
-//            menuVO.setComponent(sysMenuVO.getPagePath());
-//            MetaVO metaVO = new MetaVO();
-//            metaVO.setIcon(sysMenuVO.getIconPath());
-//            metaVO.setPermission(sysMenuVO.getPerms());
-//            String target = sysMenuVO.getLinkType() == 1 ? "_blank":"";
-//            metaVO.setTarget(target);
-//            metaVO.setTitle(sysMenuVO.getLabel());
-//            metaVO.setHideChildren(sysMenuVO.getIsHide() == 1);
-//            menuVO.setMeta(metaVO);
-//            menuVOS.add(menuVO);
-//        }
-//        userInfo.setMenuList(menuVOS);
         return JsonData.buildSuccess(userInfo);
     }
 

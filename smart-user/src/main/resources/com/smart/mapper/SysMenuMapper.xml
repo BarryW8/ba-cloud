@@ -152,22 +152,14 @@
     </select>
 
     <!-- 查询所有菜单 -->
-    <select id="findAllList" resultMap="listMap">
+    <select id="findAllList" resultMap="BaseResultMap">
         SELECT
-            sys_id,
-            label,
-            parent_id,
-            page_path,
-            route_path,
-            icon_path,
-            link_type,
-            is_hide,
-            perms,
-            order_by,
-            create_time
-        FROM
-        sys_menu
+        <include refid="Base_Column_List" />
+        FROM sys_menu
         where is_delete = 0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
         order by order_by
     </select>
 

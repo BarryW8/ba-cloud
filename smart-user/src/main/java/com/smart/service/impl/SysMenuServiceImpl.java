@@ -52,7 +52,7 @@ public class SysMenuServiceImpl implements SysMenuService {
     }
 
     @Override
-    public List<SysMenuVO> findAllList() {
-        return sysMenuMapper.findAllList();
+    public List<SysMenuVO> findAllList(String sql) {
+        return sysMenuMapper.findAllList(sql);
     }
 }

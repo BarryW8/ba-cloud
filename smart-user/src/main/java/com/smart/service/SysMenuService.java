@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface SysMenuService extends BaseService<SysMenu> {
 
-    List<SysMenuVO> findAllList();
+    List<SysMenuVO> findAllList(String sql);
 
 }
