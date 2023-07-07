@@ -9,9 +9,9 @@ spring:
           #从nacos进行转发
           uri: lb://ba-system
           order: 1 #优先级，数字越小优先级越高
-          #http://127.0.0.1:8888/user-server/sysUser/findById?modelId=5749761161124921344
+          #http://127.0.0.1:8888/system-server/sysUser/findById?modelId=5749761161124921344
           predicates: #断言 配置哪个路径才转发
-            - Path=/user-server/**
+            - Path=/system-server/**
           filters: #过滤器，请求在传递过程中通过过滤器修改
             - StripPrefix=1  #去掉第一层前缀
       #开启网关拉取nacos的服务
