@@ -44,35 +44,33 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Resource
     private CachedUidGenerator uidGenerator;
 
-    @Override
-    public List<SysUserRole> findRoleUser(Long roleId) {
-        return sysUserRoleMapper.findList(" and role_id = " + roleId);
-    }
+//    @Override
+//    public List<SysUserRole> findRoleUser(Long roleId) {
+//        return sysUserRoleMapper.findList(" and role_id = " + roleId);
+//    }
+//
+//    @Override
+//    public int saveRoleUser(SysUserRoleDTO dto) {
+//        List<SysUserRole> list = dto.getUserRoles();
+//        UserInfo currentUser = dto.getCurrentUser();
+//        String currentDate = dto.getCurrentDate();
+//        // 1. 删除旧数据
+//        sysUserRoleMapper.deleteByRoleId(dto.getRoleId());
+//        if (CollectionUtils.isEmpty(list)) {
+//            return 1;
+//        }
+//        // 2. 保存新数据
+//        for (SysUserRole userRole : list) {
+//            userRole.setId(uidGenerator.getUID());
+//            userRole.setCreateBy(currentUser.getId());
+//            userRole.setCreateTime(currentDate);
+//        }
+//        return sysUserRoleMapper.saveList(list);
+//    }
 
     @Override
     public List<SysRoleMenu> findRoleMenu(Long roleId) {
-        StringBuilder sqlBd = new StringBuilder();
-        sqlBd.append(" and role_id = ").append(roleId);
-        return sysRoleMenuMapper.findList(sqlBd.toString());
-    }
-
-    @Override
-    public int saveRoleUser(SysUserRoleDTO dto) {
-        List<SysUserRole> list = dto.getUserRoles();
-        UserInfo currentUser = dto.getCurrentUser();
-        String currentDate = dto.getCurrentDate();
-        // 1. 删除旧数据
-        sysUserRoleMapper.deleteByRoleId(dto.getRoleId());
-        if (CollectionUtils.isEmpty(list)) {
-            return 1;
-        }
-        // 2. 保存新数据
-        for (SysUserRole userRole : list) {
-            userRole.setId(uidGenerator.getUID());
-            userRole.setCreateBy(currentUser.getId());
-            userRole.setCreateTime(currentDate);
-        }
-        return sysUserRoleMapper.saveList(list);
+        return sysRoleMenuMapper.findList(" and role_id = " + roleId);
     }
 
     @Transactional

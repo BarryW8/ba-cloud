@@ -4,17 +4,13 @@ import com.ba.base.BaseCommonController;
 import com.ba.base.BaseController;
 import com.ba.base.PageView;
 import com.ba.base.SimpleModel;
-import com.ba.dto.SysMenuPage;
 import com.ba.dto.SysRoleDTO;
 import com.ba.dto.SysRolePage;
-import com.ba.dto.SysUserRoleDTO;
 import com.ba.model.system.SysRole;
 import com.ba.model.system.SysRoleMenu;
-import com.ba.service.SysRoleMenuService;
 import com.ba.service.SysRoleService;
 import com.ba.service.SysUserService;
 import com.ba.response.ResData;
-import com.ba.vo.SysUserRoleVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -31,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/sysRole")
@@ -43,9 +38,6 @@ public class SysRoleController extends BaseController implements BaseCommonContr
 
     @Resource
     private SysUserService sysUserService;
-
-    @Resource
-    private SysRoleMenuService sysRoleMenuService;
 
 //    @PostMapping("saveRoleUser")
 //    public ResData saveRoleUser(@RequestBody SysUserRoleDTO dto) {
@@ -86,7 +78,7 @@ public class SysRoleController extends BaseController implements BaseCommonContr
         }
         // 2. 获取角色菜单权限
         List<String> permList = new ArrayList<>();
-        List<SysRoleMenu> list = sysRoleMenuService.findRoleMenu(modelId);
+        List<SysRoleMenu> list = sysRoleService.findRoleMenu(modelId);
         if (!CollectionUtils.isEmpty(list)) {
             for (SysRoleMenu roleMenu : list) {
                 String perm = roleMenu.getPermission();

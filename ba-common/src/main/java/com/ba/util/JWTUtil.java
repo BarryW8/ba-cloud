@@ -1,6 +1,6 @@
 package com.ba.util;
 
-import com.ba.model.UserInfo;
+import com.ba.base.UserInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -49,7 +49,7 @@ public class JWTUtil {
 
         String token = Jwts.builder().setSubject(SUBJECT)
                 //payload
-                .claim("userId", loginUser.getUserId())
+                .claim("userId", loginUser.getId())
                 .claim("userCode", loginUser.getUserCode())
                 .claim("userName", loginUser.getUserName())
                 .claim("realName", loginUser.getRealName())

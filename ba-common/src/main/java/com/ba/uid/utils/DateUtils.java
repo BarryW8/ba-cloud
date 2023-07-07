@@ -15,7 +15,7 @@
  */
 package com.ba.uid.utils;
 
-import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -26,7 +26,7 @@ import java.util.Date;
  *
  * @author yutianbao
  */
-public abstract class DateUtils extends org.apache.commons.lang.time.DateUtils {
+public abstract class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     /**
      * Patterns
      */

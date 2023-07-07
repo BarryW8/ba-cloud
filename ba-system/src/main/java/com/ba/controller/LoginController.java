@@ -147,7 +147,7 @@ public class LoginController extends BaseController {
         List<SysMenu> menus = cacheManage.getSysMenu();
         if (CollectionUtils.isEmpty(menus)) {
             // 如果缓存中没有，则查库，并刷新缓存
-            menus = sysMenuService.list();
+            menus = sysMenuService.findList(null);
             cacheManage.setSysMenu(menus);
         }
         List<SysMenuVO> list = BeanUtils.convertListTo(menus, SysMenuVO::new);

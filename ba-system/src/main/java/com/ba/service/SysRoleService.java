@@ -14,9 +14,9 @@ public interface SysRoleService extends BaseService<SysRole> {
 
     int saveDTO(SysRoleDTO dto);
 
-    int saveRoleUser(SysUserRoleDTO dto);
-
-    List<SysUserRole> findRoleUser(Long roleId);
+//    int saveRoleUser(SysUserRoleDTO dto);
+//
+//    List<SysUserRole> findRoleUser(Long roleId);
 
     List<SysRoleMenu> findRoleMenu(Long roleId);
 }

@@ -1,5 +1,18 @@
 server:
   port: 8100
+
+customer:
+  mysql:
+    host: 127.0.0.1
+    port: 3306
+    database: barry_netdisk
+    username: root
+    password: 123456
+  redis:
+    host: 172.22.134.7
+    port: 6999
+    password:
+
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
@@ -7,9 +20,9 @@ spring:
     druid:
       driver-class-name: com.mysql.jdbc.Driver
       #基本属性
-      url: jdbc:mysql://192.168.182.3:3306/smart_user?useUnicode=true&characterEncoding=utf-8&useSSL=false
-      username: root
-      password: 123456
+      url: jdbc:mysql://${customer.mysql.host}:${customer.mysql.port}/${customer.mysql.database}?useUnicode=true&characterEncoding=utf-8&useSSL=false
+      username: ${customer.mysql.username}
+      password: ${customer.mysql.password}
       #配置初始化大小/最小/最大
       initial-size: 1
       min-idle: 1
@@ -28,21 +41,17 @@ spring:
       pool-prepared-statements: false
       max-pool-prepared-statement-per-connection-size: 20
   redis:
-    host: 192.168.182.3
-    port: 6379
-    database: 10
+    host: ${customer.redis.host}
+    port: ${customer.redis.port}
+    database: 4
     timeout: 60000
-    password: 123456
+    password: ${customer.redis.password}
     lettuce:
       pool:
-        # 连接池最大连接数（使用负值表示没有限制）
-        max-active: 10
-        # 连接池中的最大空闲连接
-        max-idle: 10
-        # 连接池中的最小空闲连接
-        min-idle: 5
-        # 连接池最大阻塞等待时间（使用负值表示没有限制）
-        max-wait: -1ms
+        max-active: 1000 # 连接池最大连接数（使用负值表示没有限制）默认 8
+        max-wait: -1 # 连接池最大阻塞等待时间（使用负值表示没有限制）默认 -1
+        max-idle: 10 # 连接池中的最大空闲连接默认 8
+        min-idle: 5  # 连接池中的最小空闲连接默认 0
 # 控制台输出sql、查询下划线转驼峰
 mybatis:
   configuration:

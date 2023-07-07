@@ -19,7 +19,7 @@ import com.ba.mapper.WorkerNodeMapper;
 import com.ba.model.WorkerNode;
 import com.ba.uid.utils.DockerUtils;
 import com.ba.uid.utils.NetUtils;
-import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -72,7 +72,7 @@ public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
         } else {
             workerNodeEntity.setType(WorkerNodeType.ACTUAL.value());
             workerNodeEntity.setHostName(NetUtils.getLocalAddress());
-            workerNodeEntity.setPort(System.currentTimeMillis() + "-" + RandomUtils.nextInt(100000));
+            workerNodeEntity.setPort(System.currentTimeMillis() + "-" + RandomUtils.nextInt(0, 100000));
         }
 
         return workerNodeEntity;

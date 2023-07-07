@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SysMenuServiceImpl implements SysMenuService {
@@ -20,8 +21,8 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public int save(SysMenu sysMenu) {
-        return sysMenuMapper.save(sysMenu);
+    public int insert(SysMenu sysMenu) {
+        return sysMenuMapper.insert(sysMenu);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -47,7 +48,7 @@ public class SysMenuServiceImpl implements SysMenuService {
     }
 
     @Override
-    public PageView<SysMenu> findPage(int page, int pageSize, String sql, String params) {
+    public PageView<SysMenu> findPage(Map<String, Object> map) {
         return null;
     }
 
