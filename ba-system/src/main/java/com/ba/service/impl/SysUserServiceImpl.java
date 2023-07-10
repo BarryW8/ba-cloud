@@ -1,17 +1,15 @@
 package com.ba.service.impl;
 
-import com.ba.base.Page;
 import com.ba.base.PageView;
 import com.ba.base.SimpleModel;
 import com.ba.base.UserContext;
 import com.ba.base.UserInfo;
 import com.ba.cache.CacheConstant;
 import com.ba.cache.CacheManage;
-import com.ba.enums.ResEnum;
+import com.ba.response.ResEnum;
 import com.ba.exception.ServiceException;
 import com.ba.mapper.SysUserMapper;
 import com.ba.mapper.SysUserRoleMapper;
-import com.ba.model.system.SysRole;
 import com.ba.model.system.SysUser;
 import com.ba.model.system.SysUserRole;
 import com.ba.service.SysUserService;

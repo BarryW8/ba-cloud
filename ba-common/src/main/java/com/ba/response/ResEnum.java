@@ -1,4 +1,4 @@
-package com.ba.enums;
+package com.ba.response;
 
 import lombok.Getter;
 
@@ -11,6 +11,7 @@ public enum ResEnum {
      * 接口
      */
     SYSTEM_NO_PERMISSION(150010, "权限不足"),
+    SYSTEM_REQUEST_ERROR(150000, "异常请求"),
     /**
      * 账号
      */

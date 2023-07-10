@@ -3,7 +3,7 @@
 <mapper namespace="com.ba.mapper.DictionaryMapper">
 
     <resultMap id="BaseResultMap" type="com.ba.model.system.Dictionary">
-        <id column="sys_id" property="id"/>
+        <id column="id" property="id"/>
         <result column="parent_id" property="parentId"/>
         <result column="parent_code" property="parentCode"/>
         <result column="code" property="code"/>
@@ -13,15 +13,13 @@
         <result column="order_by" property="orderBy"/>
         <result column="note" property="note"/>
         <result column="create_time" property="createTime"/>
-        <result column="create_user_id" property="createUserId"/>
-        <result column="create_user_name" property="createUserName"/>
+        <result column="create_by" property="createBy"/>
         <result column="update_time" property="updateTime"/>
-        <result column="update_user_id" property="updateUserId"/>
-        <result column="update_user_name" property="updateUserName"/>
+        <result column="update_by" property="updateBy"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        sys_id,
+        id,
         parent_id,
         parent_code,
         code,
@@ -31,16 +29,14 @@
         order_by,
         note,
         create_time,
-        create_user_id,
-        create_user_name,
+        create_by,
         update_time,
-        update_user_id,
-        update_user_name
+        update_by
     </sql>
 
     <insert id="insert">
         insert into dictionary (
-            sys_id,
+            id,
             parent_id,
             parent_code,
             code,
@@ -50,8 +46,7 @@
             order_by,
             note,
             create_time,
-            create_user_id,
-            create_user_name
+            create_by
         ) values (
              #{id},
              #{parentId},
@@ -63,21 +58,20 @@
              #{orderBy},
              #{note},
              #{createTime},
-             #{createUserId},
-             #{createUserName}
+             #{createBy}
          )
     </insert>
 
     <!-- 逻辑删除 -->
     <update id="deleteBySm">
-        update dictionary set is_delete=1, update_user_id=#{delUser}, update_user_name=#{delUserName}, update_time=#{delDate}
-        where sys_id=#{modelId}
+        update dictionary set is_delete=1, update_by=#{delUser}, update_time=#{delDate}
+        where id=#{modelId}
     </update>
 
   	<!-- 逻辑删除 -->
     <update id="batchDeleteBySm">
-        update dictionary set is_delete=1, update_user_id=#{delUser}, update_user_name=#{delUserName}, update_time=#{delDate}
-        where sys_id in
+        update dictionary set is_delete=1, update_by=#{delUser}, update_time=#{delDate}
+        where id in
         <foreach collection="ids" open="(" separator="," close=")" item="id">
         #{id}
       </foreach>
@@ -92,16 +86,15 @@
             order_by = #{orderBy},
             note = #{note},
             update_time = #{updateTime},
-            update_user_id = #{updateUserId},
-            update_user_name = #{updateUserName}
-        where sys_id = #{id}
+            update_by = #{updateBy}
+        where id = #{id}
     </update>
 
     <select id="findById" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from dictionary
-        where is_delete=0 and sys_id = #{id}
+        where is_delete=0 and id = #{id}
     </select>
 
     <select id="findPage" resultMap="BaseResultMap">
@@ -113,7 +106,7 @@
             ${sql}
         </if>
         order by create_time desc
-        limit #{page},#{pageSize}
+        limit #{pageNum},#{pageSize}
     </select>
 
     <select id="count" resultType="java.lang.Integer">
@@ -137,7 +130,7 @@
 
     <!-- 下拉列表 -->
     <select id="optionList" resultType="com.ba.vo.OptionVO">
-        select sys_id as id,code as code,name as name
+        select id as id,code as code,name as name
         from dictionary
         where is_delete=0
         <if test="sql != '' and sql != null">

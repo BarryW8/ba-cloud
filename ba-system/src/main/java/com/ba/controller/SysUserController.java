@@ -4,13 +4,8 @@ import com.ba.base.BaseCommonController;
 import com.ba.base.BaseController;
 import com.ba.base.PageView;
 import com.ba.base.SimpleModel;
-import com.ba.base.UserInfo;
 import com.ba.cache.CacheManage;
-import com.ba.dto.SysRolePage;
 import com.ba.dto.SysUserPage;
-import com.ba.dto.UserLoginDTO;
-import com.ba.enums.ResEnum;
-import com.ba.model.system.SysRoleMenu;
 import com.ba.model.system.SysUser;
 import com.ba.model.system.SysUserRole;
 import com.ba.service.SysMenuService;
@@ -18,14 +13,8 @@ import com.ba.service.SysRoleService;
 import com.ba.service.SysUserService;
 import com.ba.uid.impl.CachedUidGenerator;
 import com.ba.util.CommonUtils;
-import com.ba.util.JWTUtil;
 import com.ba.response.ResData;
-import com.ba.vo.SysMenuVO;
-import com.ba.vo.UserInfoVO;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,14 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/sysUser")

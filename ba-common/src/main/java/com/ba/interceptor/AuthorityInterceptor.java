@@ -5,7 +5,7 @@ import com.ba.base.UserContext;
 import com.ba.base.UserInfo;
 import com.ba.cache.CacheConstant;
 import com.ba.enums.PermissionEnum;
-import com.ba.enums.ResEnum;
+import com.ba.response.ResEnum;
 import com.ba.response.ResData;
 import com.ba.util.CommonUtils;
 import com.ba.util.RedisCache;

@@ -1,6 +1,8 @@
 package com.ba.util;
 
 import com.alibaba.nacos.shaded.com.google.common.base.Strings;
+import com.ba.exception.ServiceException;
+import com.ba.response.ResEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -44,7 +46,7 @@ public class RequestUtils {
     public static final String APP_TYPE = "x-http-app";
 
     /**
-     * APP_TYPE
+     * PLATFORM
      */
     public static final String PLATFORM = "x-http-os";
 
@@ -284,7 +286,8 @@ public class RequestUtils {
         String headerValue = request.getHeader(headerName);
         // or header
         if (StringUtils.isEmpty(headerValue)) {
-            headerValue = request.getHeader(headerName.toLowerCase());
+//            headerValue = request.getHeader(headerName.toLowerCase());
+            throw new ServiceException(ResEnum.SYSTEM_REQUEST_ERROR);
         }
         return headerValue;
     }

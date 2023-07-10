@@ -1,6 +1,6 @@
 package com.ba.exception;
 
-import com.ba.enums.ResEnum;
+import com.ba.response.ResEnum;
 import lombok.Getter;
 
 /**

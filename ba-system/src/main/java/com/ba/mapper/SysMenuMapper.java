@@ -10,6 +10,5 @@ import java.util.List;
 @Repository
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
-    List<SysMenuVO> findAllList(String sql);
 
 }

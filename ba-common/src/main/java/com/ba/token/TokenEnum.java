@@ -1,5 +1,8 @@
 package com.ba.token;
 
+import com.ba.exception.ServiceException;
+import com.ba.response.ResEnum;
+
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -33,7 +36,10 @@ public enum TokenEnum {
 
     public static TokenEnum getEnum(String gCode) {
         Optional<TokenEnum> resultOps = Arrays.stream(TokenEnum.values()).filter(t -> t.code.equals(gCode)).findFirst();
-        return resultOps.get();
+        if (resultOps.isPresent()) {
+            return resultOps.get();
+        }
+        throw new ServiceException(ResEnum.SYSTEM_REQUEST_ERROR);
     }
 
 }

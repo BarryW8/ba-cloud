@@ -3,122 +3,125 @@
 <mapper namespace="com.ba.mapper.SysMenuMapper">
 
     <resultMap id="BaseResultMap" type="com.ba.model.system.SysMenu">
-        <id column="sys_id" property="id"/>
-        <result column="label" property="label"/>
+        <id column="id" property="id"/>
         <result column="parent_id" property="parentId"/>
-        <result column="page_path" property="pagePath"/>
+        <result column="menu_name" property="menuName"/>
+        <result column="menu_code" property="menuCode"/>
+        <result column="menu_type" property="menuType"/>
+        <result column="icon" property="icon"/>
+        <result column="is_frame" property="isFrame"/>
         <result column="route_path" property="routePath"/>
-        <result column="icon_path" property="iconPath"/>
+        <result column="page_path" property="pagePath"/>
         <result column="perms" property="perms"/>
-        <result column="link_type" property="linkType"/>
-        <result column="is_hide" property="isHide"/>
+        <result column="query" property="query"/>
+        <result column="is_cache" property="isCache"/>
+        <result column="visible" property="visible"/>
+        <result column="status" property="status"/>
         <result column="order_by" property="orderBy"/>
         <result column="note" property="note"/>
         <result column="create_time" property="createTime"/>
-        <result column="create_user_id" property="createUserId"/>
-        <result column="create_user_name" property="createUserName"/>
+        <result column="create_by" property="createBy"/>
         <result column="update_time" property="updateTime"/>
-        <result column="update_user_id" property="updateUserId"/>
-        <result column="update_user_name" property="updateUserName"/>
-    </resultMap>
-
-    <resultMap id="listMap" type="com.ba.vo.SysMenuVO">
-        <id column="sys_id" property="id"/>
-        <result column="label" property="label"/>
-        <result column="parent_id" property="parentId"/>
-        <result column="page_path" property="pagePath"/>
-        <result column="route_path" property="routePath"/>
-        <result column="icon_path" property="iconPath"/>
-        <result column="perms" property="perms"/>
-        <result column="link_type" property="linkType"/>
-        <result column="is_hide" property="isHide"/>
-        <result column="order_by" property="orderBy"/>
-        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        sys_id,
-        label,
+        id,
         parent_id,
-        page_path,
+        menu_name,
+        menu_code,
+        menu_type,
+        icon,
+        is_frame,
         route_path,
-        icon_path,
-        link_type,
-        is_hide,
+        page_path,
         perms,
+        query,
+        is_cache,
+        visible,
+        status,
         order_by,
         note,
-        create_time,
-        create_user_id,
-        create_user_name,
-        update_time,
-        update_user_id,
-        update_user_name
+        create_time
     </sql>
 
     <insert id="insert">
         insert into sys_menu (
-            sys_id,
-            label,
+            id,
             parent_id,
-            page_path,
+            menu_name,
+            menu_code,
+            menu_type,
+            icon,
+            is_frame,
             route_path,
-            icon_path,
-            link_type,
-            is_hide,
+            page_path,
             perms,
+            query,
+            is_cache,
+            visible,
+            status,
             order_by,
             note,
             create_time,
-            create_user_id,
-            create_user_name
+            create_by
         ) values (
              #{id},
-             #{label},
              #{parentId},
-             #{pagePath},
+             #{menuName},
+             #{menuCode},
+             #{menuType},
+             #{icon},
+             #{isFrame},
              #{routePath},
-             #{iconPath},
-             #{linkType},
-             #{isHide},
+             #{pagePath},
              #{perms},
+             #{query},
+             #{isCache},
+             #{visible},
+             #{status},
              #{orderBy},
              #{note},
              #{createTime},
-             #{createUserId},
-             #{createUserName}
+             #{createBy}
          )
     </insert>
 
     <!-- 逻辑删除 -->
     <update id="deleteBySm">
-        update sys_menu set is_delete=1, update_user_id=#{delUser}, update_user_name=#{delUserName}, update_time=#{delDate}
-        where sys_id=#{modelId}
+        update sys_menu set is_delete=1, update_by=#{delUser}, update_time=#{delDate}
+        where id=#{modelId}
     </update>
 
     <update id="update">
         update sys_menu
-        set label = #{label},
-            parent_id = #{parentId},
-            page_path = #{pagePath},
+        set parent_id = #{parentId},
+            menu_name = #{menuName},
+            menu_code = #{menuCode},
+            menu_type = #{menuType},
+            icon = #{icon},
+            is_frame = #{isFrame},
             route_path = #{routePath},
-            icon_path = #{iconPath},
-            link_type = #{linkType},
-            is_hide = #{isHide},
+            page_path = #{pagePath},
             perms = #{perms},
+            query = #{query},
+            is_cache = #{isCache},
+            visible = #{visible},
+            status = #{status},
             order_by = #{orderBy},
             note = #{note},
+            create_time = #{createTime},
+            create_by = #{createBy},
             update_time = #{updateTime},
-            update_user_id = #{updateUserId},
-            update_user_name = #{updateUserName}
-        where sys_id = #{id}
+            update_by = #{updateBy}
+        where id = #{id}
     </update>
 
     <select id="findById" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from sys_menu
-        where is_delete=0 and sys_id = #{id}
+        where is_delete=0 and id = #{id}
     </select>
 
     <select id="findPage" resultMap="BaseResultMap">
@@ -130,7 +133,7 @@
             ${sql}
         </if>
         order by create_time desc
-        limit #{page},#{pageSize}
+        limit #{pageNum},#{pageSize}
     </select>
 
     <select id="count" resultType="java.lang.Integer">
@@ -149,18 +152,6 @@
         <if test="sql != '' and sql != null">
             ${sql}
         </if>
-    </select>
-
-    <!-- 查询所有菜单 -->
-    <select id="findAllList" resultMap="BaseResultMap">
-        SELECT
-        <include refid="Base_Column_List" />
-        FROM sys_menu
-        where is_delete = 0
-        <if test="sql != '' and sql != null">
-            ${sql}
-        </if>
-        order by order_by
     </select>
 
 </mapper>

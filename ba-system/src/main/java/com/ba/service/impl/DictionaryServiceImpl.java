@@ -67,7 +67,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     public List<Dictionary> checkNameSame(Dictionary dictionary) {
         StringBuilder sql = new StringBuilder();
         if (dictionary.getId() != null) {
-            sql.append(" and sys_id != ").append(dictionary.getId());
+            sql.append(" and id != ").append(dictionary.getId());
         }
         if (StringUtils.isNotEmpty(dictionary.getName())) {
             sql.append(" and name = '").append(dictionary.getName()).append("'");
@@ -84,7 +84,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     public List<Dictionary> checkCodeSame(Dictionary dictionary) {
         StringBuilder sql = new StringBuilder();
         if (dictionary.getId() != null) {
-            sql.append(" and sys_id != ").append(dictionary.getId());
+            sql.append(" and id != ").append(dictionary.getId());
         }
         if (StringUtils.isNotEmpty(dictionary.getCode())) {
             sql.append(" and code = '").append(dictionary.getCode()).append("'");

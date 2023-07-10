@@ -4,7 +4,7 @@
 <mapper namespace="com.ba.mapper.SysUserRoleMapper">
 
     <resultMap id="BaseResultMap" type="com.ba.vo.SysUserRoleVO">
-        <result column="sys_id" property="id"/>
+        <result column="id" property="id"/>
         <result column="user_id" property="userId"/>
         <result column="user_name" property="userName"/>
         <result column="role_id" property="roleId"/>
@@ -12,38 +12,34 @@
         <result column="note" property="note"/>
         <result column="order_by" property="orderBy"/>
         <result column="create_time" property="createTime"/>
-        <result column="create_user_id" property="createUserId"/>
-        <result column="create_user_name" property="createUserName"/>
+        <result column="create_by" property="createBy"/>
         <result column="update_time" property="updateTime"/>
-        <result column="update_user_id" property="updateUserId"/>
-        <result column="update_user_name" property="updateUserName"/>
+        <result column="update_by" property="updateBy"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        ur.sys_id,
+        ur.id,
         ur.user_id,
         ur.role_id,
         ur.order_by,
         ur.note,
         ur.create_time,
-        ur.create_user_id,
+        ur.create_by,
         ur.update_time,
-        ur.update_user_id,
-        ur.update_user_name,
+        ur.update_by,
         u.user_name,
         r.role_name
     </sql>
 
     <insert id="insert" parameterType="com.ba.vo.SysUserRoleVO">
         insert into sys_user_role (
-            sys_id,
+            id,
             user_id,
             role_id,
             note,
             order_by,
             create_time,
-            create_user_id,
-            create_user_name
+            create_by
         ) values (
              #{id},
              #{userId},
@@ -51,22 +47,20 @@
              #{note},
              #{orderBy},
              #{createTime},
-             #{createUserId},
-             #{createUserName}
+             #{createBy}
         )
     </insert>
 
     <!-- 批量新增 -->
     <insert id="saveList">
         insert into sys_user_role (
-            sys_id,
+            id,
             user_id,
             role_id,
             note,
             order_by,
             create_time,
-            create_user_id,
-            create_user_name
+            create_by
         ) values
         <foreach collection="list" item="item" index="index" separator=",">
         (
@@ -76,8 +70,7 @@
             #{item.note},
             #{item.orderBy},
             #{item.createTime},
-            #{item.createUserId},
-            #{item.createUserName}
+            #{item.createBy}
         )
         </foreach>
     </insert>
@@ -86,10 +79,9 @@
     <update id="deleteBySm" parameterType="com.ba.base.SimpleModel">
         update sys_user_role
         set is_delete=1,
-            update_user_id=#{delUser},
-            update_user_name=#{delUserName},
+            update_by=#{delUser},
             update_time=#{delDate}
-        where sys_id = #{modelId}
+        where id = #{modelId}
     </update>
 
     <update id="update" parameterType="com.ba.vo.SysUserRoleVO">
@@ -99,8 +91,7 @@
             note = #{note},
             order_by = #{orderBy},
             update_time = #{updateTime},
-            update_user_id = #{updateUserId},
-            update_user_name = #{updateUserName}
+            update_by = #{updateBy}
         where id = #{id}
     </update>
 
@@ -108,20 +99,20 @@
         select
         <include refid="Base_Column_List"/>
         from sys_user_role ur
-        left join sys_user u on ur.user_id = u.sys_id
-        left join sys_role r on ur.role_id = r.sys_id
+        left join sys_user u on ur.user_id = u.id
+        left join sys_role r on ur.role_id = r.id
         where ur.is_delete=0
         and u.is_delete=0
         and r.is_delete=0
-        and sys_id = #{id}
+        and id = #{id}
     </select>
 
     <select id="findPage" resultMap="BaseResultMap" parameterType="com.ba.base.Page">
         select
         <include refid="Base_Column_List"/>
         from sys_user_role ur
-        left join sys_user u on ur.user_id = u.sys_id
-        left join sys_role r on ur.role_id = r.sys_id
+        left join sys_user u on ur.user_id = u.id
+        left join sys_role r on ur.role_id = r.id
         where ur.is_delete=0
         and u.is_delete=0
         and r.is_delete=0
@@ -129,14 +120,14 @@
             ${sql}
         </if>
         order by ur.create_time desc, ur.order_by desc
-        limit #{page},#{pageSize}
+        limit #{pageNum},#{pageSize}
     </select>
 
     <select id="count" resultType="java.lang.Integer">
         select count(*)
         from sys_user_role ur
-        left join sys_user u on ur.user_id = u.sys_id
-        left join sys_role r on ur.role_id = r.sys_id
+        left join sys_user u on ur.user_id = u.id
+        left join sys_role r on ur.role_id = r.id
         where ur.is_delete=0
         and u.is_delete=0
         and r.is_delete=0
@@ -149,8 +140,8 @@
         select
         <include refid="Base_Column_List"/>
         FROM sys_user_role ur
-        left join sys_user u on ur.user_id = u.sys_id
-        left join sys_role r on ur.role_id = r.sys_id
+        left join sys_user u on ur.user_id = u.id
+        left join sys_role r on ur.role_id = r.id
         where ur.is_delete=0
         and u.is_delete=0
         and r.is_delete=0

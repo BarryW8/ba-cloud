@@ -3,7 +3,7 @@ package com.ba.interceptor;
 import com.alibaba.fastjson.JSON;
 import com.ba.base.UserContext;
 import com.ba.base.UserInfo;
-import com.ba.enums.ResEnum;
+import com.ba.response.ResEnum;
 import com.ba.response.ResData;
 import com.ba.token.TokenEnum;
 import com.ba.token.TokenManage;

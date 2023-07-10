@@ -5,7 +5,7 @@ customer:
   mysql:
     host: 127.0.0.1
     port: 3306
-    database: barry_netdisk
+    database: ba-cloud
     username: root
     password: 123456
   redis:
@@ -18,7 +18,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     #druid相关配置
     druid:
-      driver-class-name: com.mysql.jc.jdbc.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver
       #基本属性
       url: jdbc:mysql://${customer.mysql.host}:${customer.mysql.port}/${customer.mysql.database}?useUnicode=true&characterEncoding=utf-8&useSSL=false
       username: ${customer.mysql.username}

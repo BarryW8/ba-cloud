@@ -51,9 +51,4 @@ public class SysMenuServiceImpl implements SysMenuService {
     public PageView<SysMenu> findPage(Map<String, Object> map) {
         return null;
     }
-
-    @Override
-    public List<SysMenuVO> findAllList(String sql) {
-        return sysMenuMapper.findAllList(sql);
-    }
 }

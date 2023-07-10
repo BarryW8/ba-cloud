@@ -1,7 +1,7 @@
 package com.ba.interceptor;
 
 import com.ba.base.UserContext;
-import com.ba.enums.ResEnum;
+import com.ba.response.ResEnum;
 import com.ba.response.ResData;
 import com.ba.token.TokenEnum;
 import com.ba.util.CommonUtils;
