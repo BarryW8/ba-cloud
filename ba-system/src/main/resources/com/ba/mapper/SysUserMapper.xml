@@ -73,6 +73,12 @@
         where id=#{modelId}
     </update>
 
+    <!-- 逻辑删除 -->
+    <update id="deleteById">
+        update sys_user set is_delete=1, update_by=#{updateBy}, update_time=#{updateTime}
+        where id=#{id}
+    </update>
+
     <update id="update">
         update sys_user
         set

@@ -1,6 +1,8 @@
 package com.ba.util;
 
 
+import com.ba.base.BaseModel;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;

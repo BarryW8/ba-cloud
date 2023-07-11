@@ -11,6 +11,7 @@ import com.ba.service.DictionaryService;
 import com.ba.uid.impl.CachedUidGenerator;
 import com.ba.util.BeanUtils;
 import com.ba.vo.DictionaryVO;
+import com.ba.vo.SysMenuVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,13 +78,9 @@ public class DictionaryController extends BaseController implements BaseCommonCo
         if (dictionary.getId() == null) {
             // 新增
             dictionary.setId(uidGenerator.getUID());
-            dictionary.setCreateBy(getCurrentUserId());
-            dictionary.setCreateTime(getCurrentDateStr());
             result = dictionaryService.insert(dictionary);
         } else {
             //编辑
-            dictionary.setUpdateBy(getCurrentUserId());
-            dictionary.setUpdateTime(getCurrentDateStr());
             result = dictionaryService.update(dictionary);
         }
         if (result > 0) {
@@ -141,14 +138,11 @@ public class DictionaryController extends BaseController implements BaseCommonCo
     private List<DictionaryVO> builder(List<DictionaryVO> nodes) {
         List<DictionaryVO> treeNodes = new ArrayList<>();
         for (DictionaryVO n1 : nodes) {
-            // 判断是否为根节点
-            if (n1.getParentId() == null) {
+            // -1 代表根节点(顶级父节点)
+            if (n1.getParentId() == -1L) {
                 treeNodes.add(n1);
             }
             for (DictionaryVO n2 : nodes) {
-                if (n2.getParentId() == null) {
-                    continue;
-                }
                 if (n2.getParentId().equals(n1.getId())) {
                     n1.getChildren().add(n2);
                 }

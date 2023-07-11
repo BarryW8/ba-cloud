@@ -4,11 +4,10 @@
 
     <resultMap id="BaseResultMap" type="com.ba.model.system.Dictionary">
         <id column="id" property="id"/>
-        <result column="parent_id" property="parentId"/>
-        <result column="parent_code" property="parentCode"/>
         <result column="code" property="code"/>
         <result column="name" property="name"/>
-        <result column="config_value" property="configValue"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="parent_code" property="parentCode"/>
         <result column="status" property="status"/>
         <result column="order_by" property="orderBy"/>
         <result column="note" property="note"/>
@@ -20,11 +19,10 @@
 
     <sql id="Base_Column_List">
         id,
-        parent_id,
-        parent_code,
         code,
         name,
-        config_value,
+        parent_id,
+        parent_code,
         status,
         order_by,
         note,
@@ -37,11 +35,10 @@
     <insert id="insert">
         insert into dictionary (
             id,
-            parent_id,
-            parent_code,
             code,
             name,
-            config_value,
+            parent_id,
+            parent_code,
             status,
             order_by,
             note,
@@ -49,11 +46,10 @@
             create_by
         ) values (
              #{id},
-             #{parentId},
-             #{parentCode},
              #{code},
              #{name},
-             #{configValue},
+             #{parentId},
+             #{parentCode},
              #{status},
              #{orderBy},
              #{note},
@@ -81,7 +77,8 @@
         update dictionary
         set code = #{code},
             name = #{name},
-            config_value = #{configValue},
+            parent_id = #{parentId},
+            parent_code = #{parentCode},
             status = #{status},
             order_by = #{orderBy},
             note = #{note},

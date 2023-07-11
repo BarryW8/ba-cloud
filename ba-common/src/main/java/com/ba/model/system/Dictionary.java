@@ -1,20 +1,14 @@
 package com.ba.model.system;
 
 import com.ba.base.BaseModel;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class Dictionary extends BaseModel {
-
-    /**
-     * 父ID
-     */
-    private Long parentId;
-
-    /**
-     * 父code
-     */
-    private String parentCode;
 
     /**
      * 字典编号
@@ -27,13 +21,18 @@ public class Dictionary extends BaseModel {
     private String name;
 
     /**
+     * 父ID
+     */
+    private Long parentId;
+
+    /**
+     * 父编号
+     */
+    private String parentCode;
+
+    /**
      * 状态：0-正常，1-禁用
      */
     private int status;
-
-    /**
-     * 相关配置，以标准json格式存储
-     */
-    private String configValue;
 
 }

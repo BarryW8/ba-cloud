@@ -16,7 +16,8 @@ public class CorsConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
         //允许任何域名
-        corsConfiguration.addAllowedOrigin("*");
+//        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedOriginPattern("*"); // Springboot 2.4.0+
         //允许任何头
         corsConfiguration.addAllowedHeader("*");
         //允许任何方法

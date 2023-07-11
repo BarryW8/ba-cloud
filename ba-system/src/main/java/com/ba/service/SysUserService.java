@@ -25,4 +25,6 @@ public interface SysUserService extends BaseService<SysUser> {
     int saveUserRole(SysUserRole model);
 
     SysUserRole findUserRole(Long userId);
+
+    public int deleteById(SysUser model);
 }

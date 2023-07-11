@@ -23,6 +23,8 @@ public interface BaseMapper<T> {
 
 	public int deleteBySm(SimpleModel del);
 
-	public T findById(Long id);
+	public int deleteById(T t);
+
+	public T findById(@Param("id") Long id);
 
 }

@@ -97,6 +97,12 @@ public class SysUserServiceImpl implements SysUserService {
         return sysUserMapper.deleteBySm(simpleModel);
     }
 
+    @Transactional
+    @Override
+    public int deleteById(SysUser model) {
+        return sysUserMapper.deleteById(model);
+    }
+
     @Override
     public List<SysUser> findList(String condition) {
         return sysUserMapper.findList(condition);

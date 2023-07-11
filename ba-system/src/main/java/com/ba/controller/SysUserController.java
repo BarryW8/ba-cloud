@@ -1,5 +1,6 @@
 package com.ba.controller;
 
+import cn.hutool.crypto.SecureUtil;
 import com.ba.base.BaseCommonController;
 import com.ba.base.BaseController;
 import com.ba.base.PageView;
@@ -14,6 +15,7 @@ import com.ba.service.SysUserService;
 import com.ba.uid.impl.CachedUidGenerator;
 import com.ba.util.CommonUtils;
 import com.ba.response.ResData;
+import com.ba.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/sysUser")
@@ -56,17 +59,15 @@ public class SysUserController extends BaseController implements BaseCommonContr
     public ResData save(@RequestBody SysUser model) {
         int result;
         if (model.getId() == null) {
-            // 初始化密码
-            String defaultPassword = "123456";
-            model.setPassword(CommonUtils.MD5Lower(CommonUtils.MD5Lower(defaultPassword)));
+            if (StringUtils.isEmpty(model.getPassword())) {
+                // 初始化密码
+                String defaultPassword = "123456";
+                model.setPassword(SecureUtil.md5((SecureUtil.md5(defaultPassword))));
+            }
             model.setId(uidGenerator.getUID());
-            model.setCreateBy(getCurrentUserId());
-            model.setCreateTime(getCurrentDateStr());
             result = sysUserService.insert(model);
         } else {
             //编辑
-            model.setUpdateBy(getCurrentUserId());
-            model.setUpdateTime(getCurrentDateStr());
             result = sysUserService.update(model);
         }
         if (result > 0) {
@@ -98,11 +99,9 @@ public class SysUserController extends BaseController implements BaseCommonContr
     @GetMapping("deleteById")
     @Override
     public ResData deleteById(@RequestParam Long modelId) {
-        SimpleModel simpleModel = new SimpleModel();
-        simpleModel.setModelId(modelId);
-        simpleModel.setDelUser(getCurrentUserId());
-        simpleModel.setDelDate(getCurrentDateStr());
-        int result = sysUserService.deleteBySm(simpleModel);
+        SysUser model = new SysUser();
+        model.setId(modelId);
+        int result = sysUserService.deleteById(model);
         if (result > 0) {
             return ResData.success();
         }

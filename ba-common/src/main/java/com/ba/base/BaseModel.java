@@ -1,5 +1,7 @@
 package com.ba.base;
 
+import com.ba.field.FieldFill;
+import com.ba.field.TableField;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -27,21 +29,25 @@ public class BaseModel implements Serializable {
 	/**
 	 * 创建人
 	 */
+	@TableField(fill = FieldFill.INSERT)
 	private Long createBy;
 
 	/**
 	 * 创建时间
 	 */
+	@TableField(fill = FieldFill.INSERT)
 	private String createTime;
 
 	/**
 	 * 修改人
 	 */
+	@TableField(fill = FieldFill.UPDATE)
 	private Long updateBy;
 
 	/**
 	 * 修改时间
 	 */
+	@TableField(fill = FieldFill.UPDATE)
 	private String updateTime;
 
 }
