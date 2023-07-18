@@ -110,8 +110,6 @@
             status = #{status},
             order_by = #{orderBy},
             note = #{note},
-            create_time = #{createTime},
-            create_by = #{createBy},
             update_time = #{updateTime},
             update_by = #{updateBy}
         where id = #{id}
@@ -132,7 +130,7 @@
         <if test="sql != '' and sql != null">
             ${sql}
         </if>
-        order by create_time desc
+        order by order_by, create_time desc
         limit #{pageNum},#{pageSize}
     </select>
 
@@ -152,6 +150,7 @@
         <if test="sql != '' and sql != null">
             ${sql}
         </if>
+        order by order_by, create_time desc
     </select>
 
 </mapper>
