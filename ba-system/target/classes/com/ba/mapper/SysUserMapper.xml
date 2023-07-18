@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ba.mapper.SysUserMapper">
+    <resultMap id="BaseResultMap" type="com.ba.model.system.SysUser">
+        <id column="id" property="id"/>
+        <result column="user_code" property="userCode"/>
+        <result column="user_name" property="userName"/>
+        <result column="real_name" property="realName"/>
+        <result column="telephone" property="telephone"/>
+        <result column="email" property="email"/>
+        <result column="sex" property="sex"/>
+        <result column="user_status" property="userStatus"/>
+        <result column="order_by" property="orderBy"/>
+        <result column="note" property="note"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_by" property="updateBy"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,
+        user_code,
+        user_name,
+        real_name,
+        telephone,
+        email,
+        sex,
+        user_status,
+        order_by,
+        note,
+        create_time,
+        create_by,
+        update_time,
+        update_by
+    </sql>
+
+    <insert id="insert">
+        insert into sys_user (
+            id,
+            user_code,
+            user_name,
+            password,
+            real_name,
+            telephone,
+            email,
+            sex,
+            user_status,
+            order_by,
+            note,
+            create_time,
+            create_by
+        ) values (
+             #{id},
+             #{userCode},
+             #{userName},
+             #{password},
+             #{realName},
+             #{telephone},
+             #{email},
+             #{sex},
+             #{userStatus},
+             #{orderBy},
+             #{note},
+             #{createTime},
+             #{createBy}
+         )
+    </insert>
+
+    <!-- 逻辑删除 -->
+    <update id="deleteBySm">
+        update sys_user set is_delete=1, update_by=#{delUser}, update_time=#{delDate}
+        where id=#{modelId}
+    </update>
+
+    <!-- 逻辑删除 -->
+    <update id="deleteById">
+        update sys_user set is_delete=1, update_by=#{updateBy}, update_time=#{updateTime}
+        where id=#{id}
+    </update>
+
+    <update id="update">
+        update sys_user
+        set
+            user_code = #{userCode},
+            user_name = #{userName},
+            real_name = #{realName},
+            telephone = #{telephone},
+            email = #{email},
+            sex = #{sex},
+            user_status = #{userStatus},
+            order_by = #{orderBy},
+            note = #{note},
+            update_time = #{updateTime},
+            update_by = #{updateBy}
+        where id = #{id}
+    </update>
+
+    <select id="findById" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user
+        where is_delete=0 and id = #{id}
+    </select>
+
+    <select id="findPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user
+        where is_delete = 0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+        order by create_time desc
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*)
+        from sys_user
+        where is_delete = 0
+        <if test="tmpSql != '' and tmpSql != null">
+            ${tmpSql}
+        </if>
+    </select>
+
+    <select id="findList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        FROM sys_user WHERE is_delete=0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+    </select>
+    <select id="findListHasPwd" resultMap="BaseResultMap">
+        select
+        password,
+        <include refid="Base_Column_List" />
+        FROM sys_user WHERE is_delete=0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+    </select>
+
+</mapper>

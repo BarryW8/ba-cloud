@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ba.mapper.SysUserRoleMapper">
+
+    <resultMap id="BaseResultMap" type="com.ba.vo.SysUserRoleVO">
+        <result column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+        <result column="role_id" property="roleId"/>
+        <result column="role_name" property="roleName"/>
+        <result column="note" property="note"/>
+        <result column="order_by" property="orderBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_by" property="updateBy"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ur.id,
+        ur.user_id,
+        ur.role_id,
+        ur.order_by,
+        ur.note,
+        ur.create_time,
+        ur.create_by,
+        ur.update_time,
+        ur.update_by,
+        u.user_name,
+        r.role_name
+    </sql>
+
+    <insert id="insert" parameterType="com.ba.vo.SysUserRoleVO">
+        insert into sys_user_role (
+            id,
+            user_id,
+            role_id,
+            note,
+            order_by,
+            create_time,
+            create_by
+        ) values (
+             #{id},
+             #{userId},
+             #{roleId},
+             #{note},
+             #{orderBy},
+             #{createTime},
+             #{createBy}
+        )
+    </insert>
+
+    <!-- 批量新增 -->
+    <insert id="saveList">
+        insert into sys_user_role (
+            id,
+            user_id,
+            role_id,
+            note,
+            order_by,
+            create_time,
+            create_by
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+        (
+            #{item.id},
+            #{item.userId},
+            #{item.roleId},
+            #{item.note},
+            #{item.orderBy},
+            #{item.createTime},
+            #{item.createBy}
+        )
+        </foreach>
+    </insert>
+
+    <!-- 逻辑删除 -->
+    <update id="deleteBySm" parameterType="com.ba.base.SimpleModel">
+        update sys_user_role
+        set is_delete=1,
+            update_by=#{delUser},
+            update_time=#{delDate}
+        where id = #{modelId}
+    </update>
+
+    <update id="update" parameterType="com.ba.vo.SysUserRoleVO">
+        update sys_user_role
+        SET user_id = #{userId},
+            role_id = #{roleId},
+            note = #{note},
+            order_by = #{orderBy},
+            update_time = #{updateTime},
+            update_by = #{updateBy}
+        where id = #{id}
+    </update>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user_role ur
+        left join sys_user u on ur.user_id = u.id
+        left join sys_role r on ur.role_id = r.id
+        where ur.is_delete=0
+        and u.is_delete=0
+        and r.is_delete=0
+        and id = #{id}
+    </select>
+
+    <select id="findPage" resultMap="BaseResultMap" parameterType="com.ba.base.Page">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user_role ur
+        left join sys_user u on ur.user_id = u.id
+        left join sys_role r on ur.role_id = r.id
+        where ur.is_delete=0
+        and u.is_delete=0
+        and r.is_delete=0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+        order by ur.create_time desc, ur.order_by desc
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*)
+        from sys_user_role ur
+        left join sys_user u on ur.user_id = u.id
+        left join sys_role r on ur.role_id = r.id
+        where ur.is_delete=0
+        and u.is_delete=0
+        and r.is_delete=0
+        <if test="tmpSql != '' and tmpSql != null">
+            ${tmpSql}
+        </if>
+    </select>
+
+    <select id="findList" parameterType="String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        FROM sys_user_role ur
+        left join sys_user u on ur.user_id = u.id
+        left join sys_role r on ur.role_id = r.id
+        where ur.is_delete=0
+        and u.is_delete=0
+        and r.is_delete=0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+        order by ur.create_time desc, ur.order_by desc
+    </select>
+
+    <!-- 根据角色ID删除 -->
+    <delete id="deleteByRoleId">
+        delete from sys_user_role
+        where role_id = #{roleId}
+    </delete>
+
+    <!-- 根据用户ID删除 -->
+    <delete id="deleteByUserId">
+        delete from sys_user_role
+        where user_id = #{userId}
+    </delete>
+
+</mapper>
