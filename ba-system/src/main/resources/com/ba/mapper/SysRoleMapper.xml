@@ -3,9 +3,9 @@
 <mapper namespace="com.ba.mapper.SysRoleMapper">
     <resultMap id="BaseResultMap" type="com.ba.model.system.SysRole">
         <id column="id" property="id"/>
+        <result column="role_code" property="roleCode"/>
         <result column="role_name" property="roleName"/>
         <result column="status" property="status"/>
-        <result column="is_manager" property="isManager"/>
         <result column="order_by" property="orderBy"/>
         <result column="note" property="note"/>
         <result column="create_time" property="createTime"/>
@@ -16,9 +16,9 @@
 
     <sql id="Base_Column_List">
         id,
+        role_code,
         role_name,
         status,
-        is_manager,
         order_by,
         note,
         create_time,
@@ -30,6 +30,7 @@
     <insert id="insert">
         insert into sys_role (
             id,
+            role_code,
             role_name,
             status,
             order_by,
@@ -38,6 +39,7 @@
             create_by
         ) values (
              #{id},
+             #{roleCode},
              #{roleName},
              #{status},
              #{orderBy},
@@ -56,6 +58,7 @@
     <update id="update">
         update sys_role
         set
+            role_code = #{roleCode},
             role_name = #{roleName},
             status = #{status},
             order_by = #{orderBy},

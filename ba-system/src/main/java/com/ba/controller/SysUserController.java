@@ -7,15 +7,18 @@ import com.ba.base.PageView;
 import com.ba.base.SimpleModel;
 import com.ba.cache.CacheManage;
 import com.ba.dto.SysUserPage;
+import com.ba.model.system.SysRole;
 import com.ba.model.system.SysUser;
 import com.ba.model.system.SysUserRole;
 import com.ba.service.SysMenuService;
 import com.ba.service.SysRoleService;
 import com.ba.service.SysUserService;
 import com.ba.uid.impl.CachedUidGenerator;
+import com.ba.util.BeanUtils;
 import com.ba.util.CommonUtils;
 import com.ba.response.ResData;
 import com.ba.util.StringUtils;
+import com.ba.vo.SysUserVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +28,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -81,7 +88,22 @@ public class SysUserController extends BaseController implements BaseCommonContr
     public ResData findPage(@RequestBody SysUserPage dto) {
         Map<String, Object> queryMap = this.queryCondition(dto);
         PageView<SysUser> pageList = sysUserService.findPage(queryMap);
-        return ResData.success(pageList);
+
+        // 封装角色名称字段
+        List<SysUserVO> voList = BeanUtils.convertListTo(pageList.getData(), SysUserVO::new);
+        for (SysUserVO vo : voList) {
+            SysUserRole userRole = sysUserService.findUserRole(vo.getId());
+            if (Objects.isNull(userRole)) continue;
+            SysRole role = sysRoleService.findById(userRole.getRoleId());
+            if (Objects.isNull(role)) continue;
+            vo.setRoleName(role.getRoleName());
+        }
+
+        // 封装结果集
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("data", voList);
+        resultMap.put("total", pageList.getTotal());
+        return ResData.success(resultMap);
     }
 
     private Map<String, Object> queryCondition(SysUserPage dto) {

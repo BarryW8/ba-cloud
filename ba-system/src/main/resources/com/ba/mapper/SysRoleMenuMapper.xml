@@ -7,37 +7,34 @@
         <result property="id" column="id"/>
         <result property="roleId" column="role_id"/>
         <result property="menuId" column="menu_id"/>
-        <result property="menuAction" column="menu_action"/>
+        <result property="menuCode" column="menu_code"/>
+        <result property="permission" column="permission"/>
         <result property="note" column="note"/>
         <result property="orderBy" column="order_by"/>
         <result property="createTime" column="create_time"/>
-        <result property="createUserId" column="create_user_id"/>
-        <result property="createUserName" column="create_user_name"/>
+        <result property="createBy" column="create_by"/>
         <result property="updateTime" column="update_time"/>
-        <result property="updateUserId" column="update_user_id"/>
-        <result property="updateUserName" column="update_user_name"/>
+        <result property="updateBy" column="update_by"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id
-        ,    role_id,    menu_id,    menu_action,    note,       order_by,    create_time,    create_user_id,    create_user_name,    update_time,    update_user_id,     update_user_name
+        ,    role_id,    menu_id,    menu_code,    permission,note,       order_by,    create_time,    create_by,    update_time,    update_by
     </sql>
 
     <insert id="insert" parameterType="com.ba.model.system.SysRoleMenu">
-        insert into sys_role_menu (id, role_id, menu_id, menu_action, note, order_by, create_time, create_user_id,
-                                   create_user_name, update_time, update_user_id, update_user_name)
-        values (#{id}, #{roleId}, #{menuId}, #{menuAction}, #{note}, #{orderBy}, #{createTime}, #{createUserId},
-                #{createUserName}, #{updateTime}, #{updateUserId}, #{updateUserName})
-
+        insert into sys_role_menu (id, role_id, menu_id, menu_code, permission, note, order_by, create_time, create_by,
+                                   update_time, update_by)
+        values (#{id}, #{roleId}, #{menuId}, #{menuCode}, #{permission}, #{note}, #{orderBy}, #{createTime},
+                #{createBy}, #{updateTime}, #{updateBy})
     </insert>
     <insert id="saveList">
-        insert into sys_role_menu (id, role_id, menu_id, menu_action, note, order_by, create_time, create_user_id,
-        create_user_name, update_time, update_user_id, update_user_name)
+        insert into sys_role_menu (id, role_id, menu_id, menu_code,    permission, note, order_by, create_time, create_by,
+        update_time, update_by)
         values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.id}, #{item.roleId}, #{item.menuId}, #{item.menuAction}, #{item.note}, #{item.orderBy},
-            #{item.createTime}, #{item.createUserId},#{item.createUserName}, #{item.updateTime}, #{item.updateUserId},
-            #{item.updateUserName})
+            (#{item.id}, #{item.roleId}, #{item.menuId}, #{item.menuCode},  #{item.permission}, #{item.note}, #{item.orderBy},
+            #{item.createTime}, #{item.createBy}, #{item.updateTime}, #{item.updateBy})
         </foreach>
     </insert>
 
@@ -45,8 +42,7 @@
     <update id="deleteBySm" parameterType="com.ba.base.SimpleModel">
         update sys_role_menu
         set is_delete=1,
-            update_user_id=#{delUser},
-            update_user_name=#{delUserName},
+            update_by=#{delUser},
             update_time=#{delDate}
         where id = #{modelId}
     </update>
@@ -56,13 +52,12 @@
         update sys_role_menu
         SET role_id          = #{roleId},
             menu_id          = #{menuId},
-            menu_action      = #{menuAction},
+            menu_code      = #{menuCode},
+            permission      = #{permission},
             note             = #{note},
             order_by         = #{orderBy},
-            create_user_name = #{createUserName},
             update_time        = #{updateTime},
-            update_user_id     = #{updateUserId},
-            update_user_name   = #{updateUserName}
+            update_by     = #{updateBy}
         where id = #{id}
     </update>
     <delete id="delByRoleId">
