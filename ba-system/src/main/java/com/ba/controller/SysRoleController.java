@@ -3,9 +3,11 @@ package com.ba.controller;
 import com.ba.base.BaseCommonController;
 import com.ba.base.BaseController;
 import com.ba.base.PageView;
+import com.ba.base.Permission;
 import com.ba.base.SimpleModel;
 import com.ba.dto.SysRoleDTO;
 import com.ba.dto.SysRolePage;
+import com.ba.enums.PermissionEnum;
 import com.ba.model.system.SysRole;
 import com.ba.model.system.SysRoleMenu;
 import com.ba.service.SysRoleService;
@@ -32,6 +34,8 @@ import java.util.Map;
 @RequestMapping("/sysRole")
 @Slf4j
 public class SysRoleController extends BaseController implements BaseCommonController<SysRole, SysRolePage> {
+
+    private static final String MENU_CODE = "system:role";
 
     @Resource
     private SysRoleService sysRoleService;
@@ -68,6 +72,7 @@ public class SysRoleController extends BaseController implements BaseCommonContr
 //        return ResData.success(list);
 //    }
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
     @GetMapping("findById")
     @Override
     public ResData findById(@RequestParam Long modelId) {
@@ -108,6 +113,7 @@ public class SysRoleController extends BaseController implements BaseCommonContr
         return null;
     }
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.ADD, PermissionEnum.EDIT})
     @PostMapping("save")
     public ResData save(@RequestBody @Valid SysRoleDTO dto) {
         int result = sysRoleService.saveDTO(dto);
@@ -118,6 +124,7 @@ public class SysRoleController extends BaseController implements BaseCommonContr
         return ResData.error("保存失败!");
     }
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
     @PostMapping("findPage")
     @Override
     public ResData findPage(@RequestBody SysRolePage dto) {
@@ -137,6 +144,7 @@ public class SysRoleController extends BaseController implements BaseCommonContr
         return queryMap;
     }
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.DELETE})
     @GetMapping("deleteById")
     @Override
     public ResData deleteById(@RequestParam Long modelId) {

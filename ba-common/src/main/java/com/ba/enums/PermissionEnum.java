@@ -1,10 +1,11 @@
 package com.ba.enums;
 
 public enum PermissionEnum {
+    VIEW("0", "查询", "VIEW"),
     ADD("1", "新增", "Add"),
     EDIT("2", "编辑", "Edit"),
     DELETE("3", "删除", "Delete"),
-    DETAIL("4", "查看", "Detail"),
+    AUTH("4", "授权", "AUTH"),
     IMPORT("5", "导入", "Import"),
     EXPORT("6", "导出", "Export"),
     REFRESH("7", "刷新", "Refresh"),

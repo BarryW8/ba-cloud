@@ -3,8 +3,10 @@ package com.ba.controller;
 import com.ba.base.BaseCommonController;
 import com.ba.base.BaseController;
 import com.ba.base.BasePage;
+import com.ba.base.Permission;
 import com.ba.base.SimpleModel;
 import com.ba.dto.DictionaryPage;
+import com.ba.enums.PermissionEnum;
 import com.ba.model.system.Dictionary;
 import com.ba.response.ResData;
 import com.ba.service.DictionaryService;
@@ -31,6 +33,8 @@ import java.util.Map;
 @Slf4j
 public class DictionaryController extends BaseController implements BaseCommonController<Dictionary, BasePage> {
 
+    private static final String MENU_CODE = "system:dictionary";
+
     @Resource
     private DictionaryService dictionaryService;
 
@@ -41,11 +45,13 @@ public class DictionaryController extends BaseController implements BaseCommonCo
      * 下拉列表
      * @param parentCode 父级编码
      */
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
     @GetMapping("optionList")
     public ResData optionList(@RequestParam String parentCode) {
         return ResData.success(dictionaryService.optionList(parentCode));
     }
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
     @GetMapping("findById")
     @Override
     public ResData findById(@RequestParam Long modelId) {
@@ -56,7 +62,7 @@ public class DictionaryController extends BaseController implements BaseCommonCo
         return ResData.success(dictionary);
     }
 
-
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.ADD, PermissionEnum.EDIT})
     @PostMapping("save")
     @Override
     public ResData save(@RequestBody Dictionary dictionary) {
@@ -89,12 +95,14 @@ public class DictionaryController extends BaseController implements BaseCommonCo
         return ResData.error("保存失败!");
     }
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
     @PostMapping("findPage")
     @Override
     public ResData findPage(@RequestBody BasePage dto) {
         return null;
     }
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.DELETE})
     @GetMapping("deleteById")
     @Override
     public ResData deleteById(@RequestParam Long modelId) {
@@ -112,6 +120,7 @@ public class DictionaryController extends BaseController implements BaseCommonCo
     /**
      * 查询树
      */
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
     @PostMapping("findTree")
     public ResData findTree(@RequestBody DictionaryPage dto) {
         Map<String, Object> queryMap = this.queryCondition(dto);

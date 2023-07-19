@@ -34,10 +34,9 @@ public class AuthorityInterceptor implements HandlerInterceptor {
     @Resource
     private RedisCache redisCache;
 
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        boolean hasPermission = true;
+        boolean hasPermission = false;
         if (handler instanceof HandlerMethod) {
             HandlerMethod hm = (HandlerMethod) handler;
 
@@ -58,36 +57,36 @@ public class AuthorityInterceptor implements HandlerInterceptor {
                         return true;
                     }
                     UserInfo userInfo = UserContext.getUserInfo();
-                    //如果是平台的超管就直接放行
+                    // 如果是超管，直接放行
                     if (userInfo.isSuperManager()) {
-                        //指定具体的超管
                         return true;
                     }
+                    // 判断用户是否授权角色
                     if (userInfo.getRoleId() == null) {
                         CommonUtils.sendJsonMessage(response, ResData.result(ResEnum.SYSTEM_NO_PERMISSION));
-                        log.error("权限不足");
+                        log.error("未授权角色");
                         return false;
                     }
+                    // 判断角色是否具有权限
                     String idKey = String.format(CacheConstant.CACHE_STR_KEY_ROLE_PERMISSION, userInfo.getRoleId());
-                    List<String> permsList = redisCache.getHashValue4List(idKey, permission.menuFlag(),String.class);
+                    List<String> rolePermsList = redisCache.getHashValue4List(idKey, permission.menuFlag(),String.class);
+                    if (CollectionUtils.isEmpty(rolePermsList)) {
+                        CommonUtils.sendJsonMessage(response, ResData.result(ResEnum.SYSTEM_NO_PERMISSION));
+                        log.error("角色权限不足");
+                        return false;
+                    }
+                    // 判断接口是否设置权限
+                    List<PermissionEnum> permsList = Arrays.asList(permission.perms());
                     if (CollectionUtils.isEmpty(permsList)) {
                         CommonUtils.sendJsonMessage(response, ResData.result(ResEnum.SYSTEM_NO_PERMISSION));
-                        log.error("尚未有权限");
+                        log.error("接口未设置权限");
                         return false;
                     }
-                    List<PermissionEnum> methPermsList = Arrays.asList(permission.perms());
-                    if (CollectionUtils.isEmpty(methPermsList)) {
-                        CommonUtils.sendJsonMessage(response, ResData.result(ResEnum.SYSTEM_NO_PERMISSION));
-                        log.error("权限不足");
-                        return false;
-                    }
-                    hasPermission = false;
-                    if (!CollectionUtils.isEmpty(permsList)) {
-                        List<String> tempPermsList = methPermsList.stream().map(o -> o.getCode()).collect(Collectors.toList());
-                        Collection<String> intersection = CollectionUtils.intersection(tempPermsList, permsList);
-                        if (!intersection.isEmpty()) {
-                            hasPermission = true;
-                        }
+                    // 判断接口权限集合与角色权限集合是否存在交集
+                    List<String> methodPermsList = permsList.stream().map(PermissionEnum::getCode).collect(Collectors.toList());
+                    Collection<String> intersection = CollectionUtils.intersection(methodPermsList, rolePermsList);
+                    if (CollectionUtils.isNotEmpty(intersection)) {
+                        hasPermission = true;
                     }
                     if (!hasPermission) {
                         CommonUtils.sendJsonMessage(response, ResData.result(ResEnum.SYSTEM_NO_PERMISSION));

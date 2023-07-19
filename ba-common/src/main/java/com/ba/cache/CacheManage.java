@@ -3,7 +3,9 @@ package com.ba.cache;
 import com.alibaba.fastjson.JSON;
 import com.ba.base.UserInfo;
 import com.ba.model.system.SysMenu;
+import com.ba.model.system.SysRoleMenu;
 import com.ba.token.TokenEnum;
+import com.ba.util.RedisCache;
 import com.ba.vo.SysMenuVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +23,9 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 public class CacheManage {
+
+    @Autowired
+    private RedisCache redisCache;
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
@@ -76,6 +81,40 @@ public class CacheManage {
         String infoKey = CacheConstant.CACHE_KEY_USER_INFO + TokenEnum.WEB.getCode() + ":" + id;
         log.info("刷新系统用户时间---------ID={}", id);
         redisTemplate.expire(infoKey, TokenEnum.WEB.getTime(), TimeUnit.SECONDS);
+    }
+
+    /**
+     * 系统用户缓存管理 ->初始化、增加|修改、单个详情、删除、列表
+     */
+    public void setSysRoleMenu(Long roleId, String menuCode, List<String> permission) {
+        if (roleId == null) {
+            log.error("系统用户缓存设置,对象为NULL!!!");
+            return;
+        }
+        log.info("系统用户缓存设置,ID={},name={}--begin", roleId, menuCode);
+        String infoKey = String.format(CacheConstant.CACHE_STR_KEY_ROLE_PERMISSION, roleId);
+        redisCache.setHashValue(infoKey, menuCode, permission.toString());
+        log.info("系统用户缓存设置,ID={},name={}--end", roleId, menuCode);
+    }
+
+    public List<String> getSysRoleMenu(String roleId, String menuCode) {
+        if (StringUtils.isEmpty(roleId)) {
+            log.error("系统用户ID={},为空!!", roleId);
+            return null;
+        }
+        String infoKey = String.format(CacheConstant.CACHE_STR_KEY_ROLE_PERMISSION, roleId);
+        List<String> hashValue4List = redisCache.getHashValue4List(infoKey, menuCode, String.class);
+        return hashValue4List;
+    }
+
+    public void delSysRoleMenu(String roleId, String menuCode) {
+        String infoKey = String.format(CacheConstant.CACHE_STR_KEY_ROLE_PERMISSION, roleId);
+        redisCache.deleteHashValue(infoKey, menuCode);
+    }
+
+    public void delSysRoleMenuAll(String roleId) {
+        String infoKey = String.format(CacheConstant.CACHE_STR_KEY_ROLE_PERMISSION, roleId);
+        redisCache.deleteHashValueAll(infoKey);
     }
 
 

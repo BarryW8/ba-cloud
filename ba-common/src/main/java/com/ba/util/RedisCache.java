@@ -489,6 +489,20 @@ public class RedisCache {
         }
     }
 
+    public boolean deleteHashValueAll(String key) {
+        try {
+            if (StringUtils.isEmpty(key)) {
+                log.error("deleteHashValue key 不能为空");
+                return false;
+            }
+            log.info("deleteHashValueAll key={}", key);
+            redisTemplate.boundHashOps(key).delete();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public List<Object> getAllHashValue(String key) {
         try {
             if (StringUtils.isEmpty(key)) {

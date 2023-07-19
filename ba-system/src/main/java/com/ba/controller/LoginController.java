@@ -33,6 +33,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,8 +173,10 @@ public class LoginController extends BaseController {
                 for (Long menuId : menuIds) {
                     resultMenus(menuId, menuAllMap, menuPerms, resultList);
                 }
+                //菜单排序
+                resultList = resultList.stream().sorted(Comparator.comparing(SysMenuVO::getOrderBy)).collect(Collectors.toList());
                 //菜单树构建
-                vo.setMenuList(builder(list));
+                vo.setMenuList(builder(resultList));
             }
         }
         return ResData.success(vo);

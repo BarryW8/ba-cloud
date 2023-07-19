@@ -4,9 +4,11 @@ import cn.hutool.crypto.SecureUtil;
 import com.ba.base.BaseCommonController;
 import com.ba.base.BaseController;
 import com.ba.base.PageView;
+import com.ba.base.Permission;
 import com.ba.base.SimpleModel;
 import com.ba.cache.CacheManage;
 import com.ba.dto.SysUserPage;
+import com.ba.enums.PermissionEnum;
 import com.ba.model.system.SysRole;
 import com.ba.model.system.SysUser;
 import com.ba.model.system.SysUserRole;
@@ -40,6 +42,8 @@ import java.util.Optional;
 @Slf4j
 public class SysUserController extends BaseController implements BaseCommonController<SysUser, SysUserPage> {
 
+    private static final String MENU_CODE = "system:user";
+
     @Resource
     private SysUserService sysUserService;
 
@@ -55,12 +59,14 @@ public class SysUserController extends BaseController implements BaseCommonContr
     @Resource
     private SysRoleService sysRoleService;
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
     @GetMapping("findById")
     @Override
     public ResData findById(@RequestParam Long modelId) {
         return ResData.success(sysUserService.findById(modelId));
     }
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.ADD, PermissionEnum.EDIT})
     @PostMapping("save")
     @Override
     public ResData save(@RequestBody SysUser model) {
@@ -83,6 +89,7 @@ public class SysUserController extends BaseController implements BaseCommonContr
         return ResData.error("保存失败!");
     }
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
     @PostMapping("findPage")
     @Override
     public ResData findPage(@RequestBody SysUserPage dto) {
@@ -118,6 +125,7 @@ public class SysUserController extends BaseController implements BaseCommonContr
         return queryMap;
     }
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.DELETE})
     @GetMapping("deleteById")
     @Override
     public ResData deleteById(@RequestParam Long modelId) {
@@ -133,7 +141,7 @@ public class SysUserController extends BaseController implements BaseCommonContr
     /**
      * 保存用户授权角色信息
      */
-//    @Permission(menuFlag = MENU_FLAG, perms = {PermissionBtnEnum.AUTH_ROLE})
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.AUTH})
     @PostMapping("saveUserRole")
     public ResData saveUserRole(@RequestBody SysUserRole model) {
         int result = sysUserService.saveUserRole(model);
@@ -147,7 +155,7 @@ public class SysUserController extends BaseController implements BaseCommonContr
     /**
      * 查询用户授权角色信息
      */
-//    @Permission(menuFlag = MENU_FLAG, perms = {PermissionBtnEnum.AUTH_ROLE})
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.AUTH})
     @GetMapping("findUserRole")
     public ResData findUserRole(@RequestParam Long modelId) {
         return ResData.success(sysUserService.findUserRole(modelId));

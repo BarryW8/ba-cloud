@@ -2,11 +2,13 @@ package com.ba.controller;
 
 import com.ba.base.BaseCommonController;
 import com.ba.base.BaseController;
+import com.ba.base.Permission;
 import com.ba.base.SimpleModel;
 import com.ba.base.UserContext;
 import com.ba.base.UserInfo;
 import com.ba.cache.CacheManage;
 import com.ba.dto.SysMenuPage;
+import com.ba.enums.PermissionEnum;
 import com.ba.model.system.Dictionary;
 import com.ba.model.system.SysMenu;
 import com.ba.model.system.SysRoleMenu;
@@ -19,6 +21,7 @@ import com.ba.util.BeanUtils;
 import com.ba.vo.OptionVO;
 import com.ba.vo.SysMenuVO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +44,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SysMenuController extends BaseController implements BaseCommonController<SysMenu, SysMenuPage> {
 
+    private static final String MENU_CODE = "system:menu";
+
     @Resource
     private SysMenuService sysMenuService;
 
@@ -56,6 +61,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     @Resource
     private DictionaryService dictionaryService;
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
     @GetMapping("findById")
     @Override
     public ResData findById(@RequestParam Long modelId) {
@@ -66,6 +72,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
         return ResData.success(sysMenu);
     }
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.ADD, PermissionEnum.EDIT})
     @PostMapping("save")
     @Override
     public ResData save(@RequestBody SysMenu model) {
@@ -94,12 +101,14 @@ public class SysMenuController extends BaseController implements BaseCommonContr
         return ResData.error("保存失败!");
     }
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
     @PostMapping("findPage")
     @Override
     public ResData findPage(@RequestBody SysMenuPage dto) {
         return null;
     }
 
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.DELETE})
     @GetMapping("deleteById")
     @Override
     public ResData deleteById(@RequestParam Long modelId) {
@@ -120,6 +129,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     /**
      * 查询树
      */
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
     @PostMapping("findTree")
     public ResData findTree(@RequestBody SysMenuPage dto) {
         Map<String, Object> queryMap = this.queryCondition(dto);
@@ -171,20 +181,21 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     /**
      * 查询树-构建按钮权限
      */
+    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
     @GetMapping("findTreePerms")
     public ResData findTreePerms() {
 //        List<SysMenu> menus = cacheManage.getSysMenu();
         List<SysMenu> menus = sysMenuService.findList(null);
         List<SysMenuVO> allMenus = BeanUtils.convertListTo(menus, SysMenuVO::new);
-        if (org.apache.commons.collections4.CollectionUtils.isEmpty(allMenus)) {
+        if (CollectionUtils.isEmpty(allMenus)) {
             return ResData.success();
         }
         UserInfo currentUser = UserContext.getUserInfo();
         // 如果不是超管
-        if (StringUtils.isNotEmpty(currentUser.getUserCode())) {
+        if (!currentUser.isSuperManager()) {
             // 查询角色绑定菜单信息
             List<SysRoleMenu> roleMenus = sysRoleService.findRoleMenu(currentUser.getRoleId());
-            if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(roleMenus)) {
+            if (CollectionUtils.isNotEmpty(roleMenus)) {
                 //处理菜单树结构，得到最终结果
                 List<Long> menuIds = roleMenus.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
                 Map<Long, String> menuPerms = roleMenus.stream().collect(Collectors.toMap(SysRoleMenu::getMenuId, SysRoleMenu::getPermission));
@@ -263,14 +274,16 @@ public class SysMenuController extends BaseController implements BaseCommonContr
                 }
             }
             // 子节点为空、存在按钮权限才添加
-            if (org.apache.commons.collections4.CollectionUtils.isEmpty(n1.getChildren()) && StringUtils.isNotEmpty(n1.getPerms())) {
+            if (CollectionUtils.isEmpty(n1.getChildren()) && StringUtils.isNotEmpty(n1.getPerms())) {
                 String[] split = n1.getPerms().split(",");
                 List<String> permList = Arrays.asList(split);
                 for (String perm : permList) {
                     for (OptionVO option : auths) {
                         if (perm.equals(option.getCode())) {
                             SysMenuVO vo = new SysMenuVO();
+                            vo.setId(n1.getId());
                             vo.setTreeId(n1.getId() + "-" + option.getCode());
+                            vo.setMenuCode(n1.getMenuCode());
                             vo.setMenuName(option.getName());
                             n1.getChildren().add(vo);
                         }

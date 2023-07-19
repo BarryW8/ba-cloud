@@ -1,5 +1,6 @@
 package com.ba.config;
 
+import com.ba.base.UserContext;
 import com.ba.interceptor.AuthorityInterceptor;
 import com.ba.interceptor.CommonInterceptor;
 import com.ba.interceptor.LoginInterceptor;
@@ -50,11 +51,11 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .excludePathPatterns(passPaths);
 
         // 权限校验拦截器
-//        registry.addInterceptor(authorityInterceptor)
-//                // 拦截的路径
-//                .addPathPatterns("/**")
-//                // 放行的路径
-//                .excludePathPatterns(passPaths);
+        registry.addInterceptor(authorityInterceptor)
+                // 拦截的路径
+                .addPathPatterns("/**")
+                // 放行的路径
+                .excludePathPatterns(passPaths);
     }
 
 }
