@@ -1,0 +1,78 @@
+server:
+  port: 8101
+  servlet:
+    context-path: /file
+
+customer:
+  mysql:
+    host: 127.0.0.1
+    port: 3306
+    database: ba-cloud
+    username: root
+    password: 123456
+  redis:
+    host: 172.22.134.7
+    port: 6999
+    password:
+  minio:
+    host: 127.0.0.1
+    port: 9000
+    username: minioadmin
+    password: minioadmin
+
+spring:
+  application:
+    name: ba-file
+  # 配置文件上传大小限制
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    #druid相关配置
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      #基本属性
+      url: jdbc:mysql://${customer.mysql.host}:${customer.mysql.port}/${customer.mysql.database}?useUnicode=true&characterEncoding=utf-8&useSSL=false
+      username: ${customer.mysql.username}
+      password: ${customer.mysql.password}
+      #配置初始化大小/最小/最大
+      initial-size: 1
+      min-idle: 1
+      max-active: 20
+      #获取连接等待超时时间
+      max-wait: 60000
+      #间隔多久进行一次检测，检测需要关闭的空闲连接
+      time-between-eviction-runs-millis: 60000
+      #一个连接在池中最小生存的时间
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 'x'
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      #打开PSCache，并指定每个连接上PSCache的大小。oracle设为true，mysql设为false。分库分表较多推荐设置为false
+      pool-prepared-statements: false
+      max-pool-prepared-statement-per-connection-size: 20
+  redis:
+    host: ${customer.redis.host}
+    port: ${customer.redis.port}
+    database: 4
+    timeout: 60000
+    password: ${customer.redis.password}
+    lettuce:
+      pool:
+        max-active: 1000 # 连接池最大连接数（使用负值表示没有限制）默认 8
+        max-wait: -1 # 连接池最大阻塞等待时间（使用负值表示没有限制）默认 -1
+        max-idle: 10 # 连接池中的最大空闲连接默认 8
+        min-idle: 5  # 连接池中的最小空闲连接默认 0
+
+# MinIO
+minio:
+  endpoint: http://${customer.minio.host}:${customer.minio.port}      # MinIO服务地址
+  fileHost: http://${customer.minio.host}:${customer.minio.port}        # 文件地址host
+  bucketName: ${spring.application.name}   # 存储桶bucket名称
+  accessKey: ${customer.minio.username}   # 用户名
+  secretKey: ${customer.minio.password}   # 密码
+  imgSize: 1024                           # 图片大小限制，单位：m
+  fileSize: 1024                          # 文件大小限制，单位：m

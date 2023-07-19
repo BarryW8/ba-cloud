@@ -14,6 +14,15 @@ spring:
           filters: #过滤器，请求在传递过程中通过过滤器修改
             - StripPrefix=1  #去掉第一层前缀（转发地址：lb://ba-system/**，去掉 /system-server）
             - PrefixPath=/system  # 添加前缀（转发地址：lb://ba-system/system/**，加上 /system）
+        - id: ba-file
+          uri: http://127.0.0.1:8101
+#          uri: lb://ba-file #从nacos进行转发
+          order: 1
+          predicates:
+            - Path=/file-server/**
+          filters:
+            - StripPrefix=1
+            - PrefixPath=/file
       #开启网关拉取nacos的服务
       discovery:
         locator:
