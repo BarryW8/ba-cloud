@@ -82,13 +82,15 @@ public class LogAspect {
 
     protected void handleLog(final JoinPoint joinPoint, Log controllerLog, final Exception e, Object jsonResult) {
         try {
+            HttpServletRequest request = ServletUtils.getRequest();
             // *========数据库日志=========*//
             SysOperLog operLog = new SysOperLog();
             operLog.setStatus(BusinessStatus.SUCCESS.ordinal());
+            operLog.setOperTime(CommonUtils.getCurrentDate());
             // 请求的地址
-            String ip = CommonUtils.getIpAddr(ServletUtils.getRequest());
+            String ip = CommonUtils.getIpAddr(request);
             operLog.setOperIp(ip);
-            operLog.setOperUrl(StringUtils.substring(ServletUtils.getRequest().getRequestURI(), 0, 255));
+            operLog.setOperUrl(StringUtils.substring(request.getRequestURI(), 0, 255));
             UserInfo userInfo = UserContext.getUserInfo();
             if (Objects.nonNull(userInfo)) {
                 operLog.setOperatorId(userInfo.getId());
@@ -105,7 +107,7 @@ public class LogAspect {
             String methodName = joinPoint.getSignature().getName();
             operLog.setMethod(className + "." + methodName + "()");
             // 设置请求方式
-            operLog.setReqType(ServletUtils.getRequest().getMethod());
+            operLog.setReqType(request.getMethod());
             // 处理设置注解上的参数
             getControllerMethodDescription(joinPoint, controllerLog, operLog, jsonResult);
             // 设置消耗时间
