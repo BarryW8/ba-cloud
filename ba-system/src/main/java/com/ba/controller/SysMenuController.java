@@ -2,14 +2,13 @@ package com.ba.controller;
 
 import com.ba.base.BaseCommonController;
 import com.ba.base.BaseController;
-import com.ba.base.Permission;
+import com.ba.annotation.Permission;
 import com.ba.base.SimpleModel;
 import com.ba.base.UserContext;
 import com.ba.base.UserInfo;
 import com.ba.cache.CacheManage;
 import com.ba.dto.SysMenuPage;
-import com.ba.enums.PermissionEnum;
-import com.ba.model.system.Dictionary;
+import com.ba.enums.OperationEnum;
 import com.ba.model.system.SysMenu;
 import com.ba.model.system.SysRoleMenu;
 import com.ba.response.ResData;
@@ -61,7 +60,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     @Resource
     private DictionaryService dictionaryService;
 
-    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
     @GetMapping("findById")
     @Override
     public ResData findById(@RequestParam Long modelId) {
@@ -72,7 +71,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
         return ResData.success(sysMenu);
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.ADD, PermissionEnum.EDIT})
+    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.ADD, OperationEnum.EDIT})
     @PostMapping("save")
     @Override
     public ResData save(@RequestBody SysMenu model) {
@@ -101,14 +100,14 @@ public class SysMenuController extends BaseController implements BaseCommonContr
         return ResData.error("保存失败!");
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
     @PostMapping("findPage")
     @Override
     public ResData findPage(@RequestBody SysMenuPage dto) {
         return null;
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.DELETE})
+    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.DELETE})
     @GetMapping("deleteById")
     @Override
     public ResData deleteById(@RequestParam Long modelId) {
@@ -129,7 +128,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     /**
      * 查询树
      */
-    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
     @PostMapping("findTree")
     public ResData findTree(@RequestBody SysMenuPage dto) {
         Map<String, Object> queryMap = this.queryCondition(dto);
@@ -181,7 +180,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     /**
      * 查询树-构建按钮权限
      */
-    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
     @GetMapping("findTreePerms")
     public ResData findTreePerms() {
 //        List<SysMenu> menus = cacheManage.getSysMenu();

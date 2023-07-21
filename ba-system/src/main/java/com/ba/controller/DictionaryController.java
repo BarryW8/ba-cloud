@@ -3,17 +3,16 @@ package com.ba.controller;
 import com.ba.base.BaseCommonController;
 import com.ba.base.BaseController;
 import com.ba.base.BasePage;
-import com.ba.base.Permission;
+import com.ba.annotation.Permission;
 import com.ba.base.SimpleModel;
 import com.ba.dto.DictionaryPage;
-import com.ba.enums.PermissionEnum;
+import com.ba.enums.OperationEnum;
 import com.ba.model.system.Dictionary;
 import com.ba.response.ResData;
 import com.ba.service.DictionaryService;
 import com.ba.uid.impl.CachedUidGenerator;
 import com.ba.util.BeanUtils;
 import com.ba.vo.DictionaryVO;
-import com.ba.vo.SysMenuVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,13 +44,13 @@ public class DictionaryController extends BaseController implements BaseCommonCo
      * 下拉列表
      * @param parentCode 父级编码
      */
-    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
     @GetMapping("optionList")
     public ResData optionList(@RequestParam String parentCode) {
         return ResData.success(dictionaryService.optionList(parentCode));
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
     @GetMapping("findById")
     @Override
     public ResData findById(@RequestParam Long modelId) {
@@ -62,7 +61,7 @@ public class DictionaryController extends BaseController implements BaseCommonCo
         return ResData.success(dictionary);
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.ADD, PermissionEnum.EDIT})
+    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.ADD, OperationEnum.EDIT})
     @PostMapping("save")
     @Override
     public ResData save(@RequestBody Dictionary dictionary) {
@@ -95,14 +94,14 @@ public class DictionaryController extends BaseController implements BaseCommonCo
         return ResData.error("保存失败!");
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
     @PostMapping("findPage")
     @Override
     public ResData findPage(@RequestBody BasePage dto) {
         return null;
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.DELETE})
+    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.DELETE})
     @GetMapping("deleteById")
     @Override
     public ResData deleteById(@RequestParam Long modelId) {
@@ -120,7 +119,7 @@ public class DictionaryController extends BaseController implements BaseCommonCo
     /**
      * 查询树
      */
-    @Permission(menuFlag = MENU_CODE, perms = {PermissionEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
     @PostMapping("findTree")
     public ResData findTree(@RequestBody DictionaryPage dto) {
         Map<String, Object> queryMap = this.queryCondition(dto);

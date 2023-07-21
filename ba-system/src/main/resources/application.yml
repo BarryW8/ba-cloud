@@ -16,6 +16,8 @@ customer:
     password:
 
 spring:
+  application:
+    name: ba-system
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     #druid相关配置

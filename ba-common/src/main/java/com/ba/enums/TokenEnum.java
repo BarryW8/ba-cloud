@@ -1,12 +1,12 @@
-package com.ba.token;
+package com.ba.enums;
 
 import com.ba.exception.ServiceException;
-import com.ba.response.ResEnum;
 
 import java.util.Arrays;
 import java.util.Optional;
 
 public enum TokenEnum {
+    OTHER("0", "其他", 60 * 30L),
     WEB("1", "Web", 60 * 30L),
     APP("2", "App", 60 * 60 * 24 * 7L),
     APPLET("3", "小程序", 60 * 60 * 24L),

@@ -502,4 +502,24 @@ public class CommonUtils {
           SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
           return sdf.format(cal.getTime());
       }
+
+    /**
+     * 获取一天中的第一秒，秒级时间戳
+     *
+     * @return 返回时间戳
+     */
+    public static Long getFirstSecondOfDayToSecond(Long time) {
+        return (time / (1000 * 3600 * 24) * (1000 * 3600 * 24) - TimeZone.getDefault().getRawOffset()) / 1000;
+    }
+
+    /**
+     * 获得一个UUID
+     *
+     * @return String UUID
+     */
+    public static String getUUID() {
+        String uuid = UUID.randomUUID().toString();
+        // 去掉“-”符号
+        return uuid.replaceAll("-", "");
+    }
 }

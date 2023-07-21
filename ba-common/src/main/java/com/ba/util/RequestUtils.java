@@ -2,7 +2,7 @@ package com.ba.util;
 
 import com.alibaba.nacos.shaded.com.google.common.base.Strings;
 import com.ba.exception.ServiceException;
-import com.ba.response.ResEnum;
+import com.ba.enums.ResEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;

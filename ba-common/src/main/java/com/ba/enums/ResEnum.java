@@ -1,4 +1,4 @@
-package com.ba.response;
+package com.ba.enums;
 
 import lombok.Getter;
 

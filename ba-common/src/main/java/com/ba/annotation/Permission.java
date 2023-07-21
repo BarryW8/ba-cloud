@@ -1,6 +1,6 @@
-package com.ba.base;
+package com.ba.annotation;
 
-import com.ba.enums.PermissionEnum;
+import com.ba.enums.OperationEnum;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,5 +23,5 @@ public @interface Permission {
      * 按钮权限
      * @return
      */
-    PermissionEnum[] perms() default {};
+    OperationEnum[] perms() default {};
 }

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ba.mapper.SysOperLogMapper">
+	<resultMap id="BaseResultMap" type="com.ba.model.system.SysOperLog">
+		<id column="id" property="id"/>
+		<result column="business" property="business"/>
+		<result column="method" property="method"/>
+		<result column="req_type" property="reqType"/>
+		<result column="req_param" property="reqParam"/>
+		<result column="res_param" property="resParam"/>
+		<result column="operator_id" property="operatorId"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="operator_phone" property="operatorPhone"/>
+		<result column="oper_type" property="operType"/>
+		<result column="oper_resource" property="operResource"/>
+		<result column="oper_url" property="operUrl"/>
+		<result column="oper_ip" property="operIp"/>
+		<result column="oper_location" property="operLocation"/>
+		<result column="status" property="status"/>
+		<result column="error_msg" property="errorMsg"/>
+		<result column="oper_time" property="operTime"/>
+		<result column="cost_time" property="costTime"/>
+		<result column="note" property="note"/>
+		<result column="create_time" property="createTime"/>
+		<result column="create_by" property="createBy"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_by" property="updateBy"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id,
+        business,
+        method,
+        req_type,
+        req_param,
+        res_param,
+        operator_id,
+        operator_name,
+        operator_phone,
+        oper_type,
+        oper_resource,
+        oper_url,
+        oper_ip,
+        oper_location,
+        status,
+        error_msg,
+        oper_time,
+        cost_time,
+        note,
+        create_time,
+        create_by,
+        update_time,
+        update_by
+	</sql>
+
+	<insert id="insert">
+		insert into sys_oper_log (
+			id,
+			business,
+			method,
+			req_type,
+			req_param,
+			res_param,
+			operator_id,
+			operator_name,
+			operator_phone,
+			oper_type,
+			oper_resource,
+			oper_url,
+			oper_ip,
+			oper_location,
+			status,
+			error_msg,
+			oper_time,
+			cost_time,
+			note,
+			create_time,
+			create_by
+		) values (
+					 #{id},
+					 #{business},
+					 #{method},
+					 #{reqType},
+					 #{reqParam},
+					 #{resParam},
+					 #{operatorId},
+					 #{operatorName},
+					 #{operatorPhone},
+					 #{operType},
+					 #{operResource},
+					 #{operUrl},
+					 #{operIp},
+					 #{operLocation},
+					 #{status},
+					 #{errorMsg},
+					 #{operTime},
+					 #{costTime},
+					 #{note},
+					 #{createTime},
+					 #{createBy}
+				 )
+	</insert>
+
+	<!-- 逻辑删除 -->
+	<update id="deleteBySm">
+		update sys_oper_log set is_delete=1, update_by=#{delUser}, update_time=#{delDate}
+		where id=#{modelId}
+	</update>
+
+	<update id="update">
+		update sys_oper_log
+		set
+			business = #{business},
+			method = #{method},
+			req_type = #{reqType},
+			req_param = #{reqParam},
+			res_param = #{resParam},
+			operator_id = #{operatorId},
+			operator_name = #{operatorName},
+			operator_phone = #{operatorPhone},
+			oper_type = #{operType},
+			oper_resource = #{operResource},
+			oper_url = #{operUrl},
+			oper_ip = #{operIp},
+			oper_location = #{operLocation},
+			status = #{status},
+			error_msg = #{errorMsg},
+			oper_time = #{operTime},
+			cost_time = #{costTime},
+			note = #{note},
+			update_time = #{updateTime},
+			update_by = #{updateBy}
+		where id = #{id}
+	</update>
+
+	<select id="findById" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List"/>
+		from sys_oper_log
+		where is_delete=0 and id = #{id}
+	</select>
+
+	<select id="findPage" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List"/>
+		from sys_oper_log
+		where is_delete = 0
+		<if test="sql != '' and sql != null">
+			${sql}
+		</if>
+		order by order_by desc,create_time desc
+		limit #{pageNum},#{pageSize}
+	</select>
+
+	<select id="count" resultType="java.lang.Integer">
+		select count(*)
+		from sys_oper_log
+		where is_delete = 0
+		<if test="tmpSql != '' and tmpSql != null">
+			${tmpSql}
+		</if>
+	</select>
+
+	<select id="findList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		FROM sys_oper_log WHERE is_delete=0
+		<if test="sql != '' and sql != null">
+			${sql}
+		</if>
+	</select>
+
+</mapper>

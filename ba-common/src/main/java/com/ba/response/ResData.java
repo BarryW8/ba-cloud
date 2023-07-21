@@ -1,6 +1,7 @@
 package com.ba.response;
 
 import com.alibaba.fastjson.JSON;
+import com.ba.enums.ResEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

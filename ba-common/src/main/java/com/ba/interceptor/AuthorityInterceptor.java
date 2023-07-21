@@ -1,11 +1,11 @@
 package com.ba.interceptor;
 
-import com.ba.base.Permission;
+import com.ba.annotation.Permission;
 import com.ba.base.UserContext;
 import com.ba.base.UserInfo;
 import com.ba.cache.CacheConstant;
-import com.ba.enums.PermissionEnum;
-import com.ba.response.ResEnum;
+import com.ba.enums.OperationEnum;
+import com.ba.enums.ResEnum;
 import com.ba.response.ResData;
 import com.ba.util.CommonUtils;
 import com.ba.util.RedisCache;
@@ -76,14 +76,14 @@ public class AuthorityInterceptor implements HandlerInterceptor {
                         return false;
                     }
                     // 判断接口是否设置权限
-                    List<PermissionEnum> permsList = Arrays.asList(permission.perms());
+                    List<OperationEnum> permsList = Arrays.asList(permission.perms());
                     if (CollectionUtils.isEmpty(permsList)) {
                         CommonUtils.sendJsonMessage(response, ResData.result(ResEnum.SYSTEM_NO_PERMISSION));
                         log.error("接口未设置权限");
                         return false;
                     }
                     // 判断接口权限集合与角色权限集合是否存在交集
-                    List<String> methodPermsList = permsList.stream().map(PermissionEnum::getCode).collect(Collectors.toList());
+                    List<String> methodPermsList = permsList.stream().map(OperationEnum::getCode).collect(Collectors.toList());
                     Collection<String> intersection = CollectionUtils.intersection(methodPermsList, rolePermsList);
                     if (CollectionUtils.isNotEmpty(intersection)) {
                         hasPermission = true;

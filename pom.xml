@@ -9,6 +9,7 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
+        <module>ba-api</module>
         <module>ba-file</module>
         <module>ba-system</module>
         <module>ba-common</module>

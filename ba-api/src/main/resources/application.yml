@@ -1,7 +1,7 @@
 server:
-  port: 8101
+  port: 8102
   servlet:
-    context-path: /file
+    context-path: /api
 
 customer:
   mysql:
@@ -14,20 +14,10 @@ customer:
     host: 172.22.134.7
     port: 6999
     password:
-  minio:
-    host: 172.22.134.8
-    port: 9000
-    username: minioadmin
-    password: minioadmin
 
 spring:
   application:
-    name: ba-file
-  # 配置文件上传大小限制
-  servlet:
-    multipart:
-      max-file-size: 200MB
-      max-request-size: 200MB
+    name: ba-api
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     #druid相关配置
@@ -66,13 +56,3 @@ spring:
         max-wait: -1 # 连接池最大阻塞等待时间（使用负值表示没有限制）默认 -1
         max-idle: 10 # 连接池中的最大空闲连接默认 8
         min-idle: 5  # 连接池中的最小空闲连接默认 0
-
-# MinIO
-minio:
-  endpoint: http://${customer.minio.host}:${customer.minio.port}      # MinIO服务地址
-  fileHost: http://${customer.minio.host}:${customer.minio.port}        # 文件地址host
-  bucketName: ${spring.application.name}   # 存储桶bucket名称
-  accessKey: ${customer.minio.username}   # 用户名
-  secretKey: ${customer.minio.password}   # 密码
-  imgSize: 1024                           # 图片大小限制，单位：m
-  fileSize: 1024                          # 文件大小限制，单位：m

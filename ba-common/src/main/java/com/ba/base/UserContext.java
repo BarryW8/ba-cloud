@@ -1,7 +1,7 @@
 package com.ba.base;
 
 import com.ba.interceptor.CommonInterceptor;
-import com.ba.token.TokenEnum;
+import com.ba.enums.TokenEnum;
 import lombok.Getter;
 import lombok.Setter;
 
