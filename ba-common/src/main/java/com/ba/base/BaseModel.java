@@ -1,7 +1,8 @@
 package com.ba.base;
 
-import com.ba.field.FieldFill;
-import com.ba.field.TableField;
+import com.ba.annotation.TableField;
+import com.ba.enums.FieldFill;
+import com.ba.enums.FieldType;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,6 +15,7 @@ public class BaseModel implements Serializable {
 	/**
 	 * 主键ID
 	 */
+	@TableField(type = FieldType.ID, fill = FieldFill.INSERT)
 	private Long id;
 
 	/**
@@ -29,25 +31,25 @@ public class BaseModel implements Serializable {
 	/**
 	 * 创建人
 	 */
-	@TableField(fill = FieldFill.INSERT)
+	@TableField(type = FieldType.USER, fill = FieldFill.INSERT)
 	private Long createBy;
 
 	/**
 	 * 创建时间
 	 */
-	@TableField(fill = FieldFill.INSERT)
+	@TableField(type = FieldType.TIME, fill = FieldFill.INSERT)
 	private String createTime;
 
 	/**
 	 * 修改人
 	 */
-	@TableField(fill = FieldFill.UPDATE)
+	@TableField(type = FieldType.USER, fill = FieldFill.UPDATE)
 	private Long updateBy;
 
 	/**
 	 * 修改时间
 	 */
-	@TableField(fill = FieldFill.UPDATE)
+	@TableField(type = FieldType.TIME, fill = FieldFill.UPDATE)
 	private String updateTime;
 
 }

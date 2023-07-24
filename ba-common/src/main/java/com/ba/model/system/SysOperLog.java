@@ -1,6 +1,9 @@
 package com.ba.model.system;
 
+import com.ba.annotation.TableField;
 import com.ba.base.BaseModel;
+import com.ba.enums.FieldFill;
+import com.ba.enums.FieldType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -86,6 +89,7 @@ public class SysOperLog extends BaseModel {
     /**
      * 操作日期
      */
+    @TableField(type = FieldType.TIME, fill = FieldFill.INSERT)
     private String operTime;
 
     /**

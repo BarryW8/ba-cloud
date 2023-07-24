@@ -1,8 +1,12 @@
 package com.ba.field;
 
-import com.ba.base.BaseModel;
+import com.ba.annotation.TableField;
 import com.ba.base.UserContext;
+import com.ba.enums.FieldFill;
+import com.ba.enums.FieldType;
 import com.ba.uid.impl.CachedUidGenerator;
+import com.ba.util.ApplicationUtils;
+import com.ba.util.BeanUtils;
 import com.ba.util.CommonUtils;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.executor.Executor;
@@ -15,11 +19,14 @@ import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -37,12 +44,17 @@ public class FieldInterceptor implements Interceptor {
     public Object intercept(Invocation invocation) throws Throwable {
         MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
 
-        // 获取 SQL 命令
+        // sql类型：insert、update、select、delete
         SqlCommandType sqlCommandType = mappedStatement.getSqlCommandType();
+
+        // 获取参数
+        Object parameter = invocation.getArgs()[1];
+        if (parameter == null) {
+            return invocation.proceed();
+        }
+
         // 只判断新增和修改
         if (SqlCommandType.INSERT.equals(sqlCommandType) || SqlCommandType.UPDATE.equals(sqlCommandType)) {
-            // 获取参数
-            Object parameter = invocation.getArgs()[1];
             //批量操作时
             if (parameter instanceof MapperMethod.ParamMap) {
                 MapperMethod.ParamMap map = (MapperMethod.ParamMap) parameter;
@@ -57,45 +69,52 @@ public class FieldInterceptor implements Interceptor {
                 setParameter(parameter, sqlCommandType);
             }
         }
+
         // 执行方法
         return invocation.proceed();
     }
 
     public void setParameter(Object parameter, SqlCommandType sqlCommandType) throws Throwable {
-        Class<?> aClass = parameter.getClass();
-        Field[] declaredFields;
-        //如果常用字段提取了公共类 BaseModel
-        //判断 BaseModel 是否是父类
-        if (BaseModel.class.isAssignableFrom(aClass)) {
-            // 获取父类私有成员变量
-            declaredFields = aClass.getSuperclass().getDeclaredFields();
-        } else {
-            // 获取私有成员变量
-            declaredFields = aClass.getDeclaredFields();
-        }
-        for (Field field : declaredFields) {
+        Field[] fields = getAllFields(parameter);
+        for (Field field : fields) {
             TableField annotation = field.getAnnotation(TableField.class);
             if (annotation == null) {
                 continue;
             }
+            FieldType type = annotation.type();
             FieldFill fill = annotation.fill();
-            String name = field.getName();
-            if (SqlCommandType.INSERT.equals(sqlCommandType) && FieldFill.INSERT.equals(fill)) { // insert 语句
-                if ("createBy".equals(name)) { // 插入 createBy
+
+            // insert 语句
+            if (SqlCommandType.INSERT.equals(sqlCommandType)
+                && (FieldFill.INSERT.equals(fill) || FieldFill.INSERT_UPDATE.equals(fill))
+            ) {
+//                if (FieldType.ID.equals(type)) {
+//                    field.setAccessible(true);
+//                    field.set(parameter, uidGenerator.getUID());
+//                }
+                if (FieldType.USER.equals(type)) {
                     field.setAccessible(true);
                     field.set(parameter, UserContext.getUserId());
                 }
-                if ("createTime".equals(name)) { // 插入 createTime
+                if (FieldType.TIME.equals(type)) {
                     field.setAccessible(true);
                     field.set(parameter, CommonUtils.getCurrentDate());
                 }
             }
-            if (SqlCommandType.UPDATE.equals(sqlCommandType) && FieldFill.UPDATE.equals(fill)) { // update 语句
-                if ("updateBy".equals(name)) { // 插入 updateBy
+
+            // update 语句
+            if (SqlCommandType.UPDATE.equals(sqlCommandType)
+                && (FieldFill.UPDATE.equals(fill) || FieldFill.INSERT_UPDATE.equals(fill))
+            ) {
+//                if (FieldType.ID.equals(type)) {
+//                    field.setAccessible(true);
+//                    field.set(parameter, uidGenerator.getUID());
+//                }
+                if (FieldType.USER.equals(type)) {
                     field.setAccessible(true);
                     field.set(parameter, UserContext.getUserId());
                 }
-                if ("updateTime".equals(name)) { // 插入 updateTime
+                if (FieldType.TIME.equals(type)) {
                     field.setAccessible(true);
                     field.set(parameter, CommonUtils.getCurrentDate());
                 }
@@ -103,9 +122,21 @@ public class FieldInterceptor implements Interceptor {
         }
     }
 
-    @Bean
-    private CachedUidGenerator uidGenerator() {
-        return new CachedUidGenerator();
+    /**
+     * 获取类的所有属性，包括父类
+     *
+     * @param object
+     * @return
+     */
+    private Field[] getAllFields(Object object) {
+        Class<?> clazz = object.getClass();
+        List<Field> fieldList = new ArrayList<>();
+        while (clazz != null) {
+            fieldList.addAll(new ArrayList<>(Arrays.asList(clazz.getDeclaredFields())));
+            clazz = clazz.getSuperclass();
+        }
+        Field[] fields = new Field[fieldList.size()];
+        fieldList.toArray(fields);
+        return fields;
     }
-
 }
