@@ -6,6 +6,7 @@ import com.ba.base.BaseCommonController;
 import com.ba.base.BaseController;
 import com.ba.base.PageView;
 import com.ba.annotation.Permission;
+import com.ba.base.SimpleModel;
 import com.ba.cache.CacheManage;
 import com.ba.dto.SysUserPage;
 import com.ba.enums.OperationEnum;
@@ -33,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/sysUser")
@@ -128,9 +130,9 @@ public class SysUserController extends BaseController implements BaseCommonContr
     @GetMapping("deleteById")
     @Override
     public ResData deleteById(@RequestParam Long modelId) {
-        SysUser model = new SysUser();
-        model.setId(modelId);
-        int result = sysUserService.deleteById(model);
+        SimpleModel model = new SimpleModel();
+        model.setModelId(modelId);
+        int result = sysUserService.deleteBySm(model);
         if (result > 0) {
             return ResData.success();
         }

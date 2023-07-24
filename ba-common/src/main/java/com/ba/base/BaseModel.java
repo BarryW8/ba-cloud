@@ -15,7 +15,6 @@ public class BaseModel implements Serializable {
 	/**
 	 * 主键ID
 	 */
-	@TableField(type = FieldType.ID, fill = FieldFill.INSERT)
 	private Long id;
 
 	/**
