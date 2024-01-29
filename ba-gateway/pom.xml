@@ -37,6 +37,14 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
+
+        <!-- arm架构的mac需要加该依赖，否则报错 -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-resolver-dns-native-macos</artifactId>
+            <version>4.1.73.Final</version>
+            <classifier>osx-aarch_64</classifier>
+        </dependency>
     </dependencies>
 
 <!--    <build>-->

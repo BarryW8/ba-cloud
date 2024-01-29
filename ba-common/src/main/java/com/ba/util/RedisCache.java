@@ -8,7 +8,6 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -514,6 +513,43 @@ public class RedisCache {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /**
+     * 获取分布式锁
+     * @param key 键值
+     * @param expireTime 过期时间（秒）
+     * @return 是否成功
+     */
+    public boolean getLock(String key, long expireTime) {
+        // 保证 value 值唯一
+        long value = System.currentTimeMillis() + expireTime + 1;
+        String valueStr = String.valueOf(value);
+        // 加锁时，将过期时间存入 value
+        boolean lock = redisTemplate.opsForValue().setIfAbsent(key, valueStr);
+        // 加锁成功后，对该锁设置过期时间
+        if (lock) {
+            redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
+            return true;
+        }
+        // --------逻辑完善---------
+        // 如果加锁失败，则获取锁的 value 值
+        String currentExpireTime = redisTemplate.opsForValue().get(key);
+        if (StringUtils.isNotEmpty(currentExpireTime)
+                && Long.parseLong(currentExpireTime) < System.currentTimeMillis()) {
+            // 如果同时有其他线程并发设置过期时间，
+            // 将新的过期时间，设置到锁的 value 值中，并获取旧的 value 值（只会有一个线程获取到旧值，因为 jedis.getSet 是同步的）
+            String oldExpireTime = redisTemplate.opsForValue().getAndSet(key, valueStr);
+            // 重新设置过期时间
+            redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
+            // 两次获取的值相同（valueStr重复的可能性很低），表示中间没有别的线程修改值，因此说明加锁成功
+            if (StringUtils.isNotEmpty(oldExpireTime)
+                    && oldExpireTime.equals(currentExpireTime)) {
+                // [存在问题] 如果前一个线程已经执行到这里，然后 value 值被其他线程覆盖了，会导致两个线程获取锁都能成功
+                return true;
+            }
+        }
+        return false;
     }
 
 }

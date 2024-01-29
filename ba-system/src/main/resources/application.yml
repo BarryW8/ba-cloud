@@ -5,15 +5,15 @@ server:
 
 customer:
   mysql:
-    host: 127.0.0.1
+    host: 43.138.219.96
     port: 3306
     database: ba-cloud
     username: root
     password: 123456
   redis:
-    host: 172.22.134.7
-    port: 6999
-    password:
+    host: 43.138.219.96
+    port: 6379
+    password: 123456
 
 spring:
   application:

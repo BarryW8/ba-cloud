@@ -14,7 +14,7 @@
     #{hostName},
     #{port},
     #{type},
-    #{launchDate},
+    NOW(),
     NOW(),
     NOW())
   </insert>
