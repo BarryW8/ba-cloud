@@ -6,6 +6,7 @@ import com.ba.model.system.SysMenu;
 import com.ba.enums.TokenEnum;
 import com.ba.util.RedisCache;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -119,33 +121,33 @@ public class CacheManage {
     /**
      * 系统菜单缓存管理 ->初始化、增加|修改、单个详情、删除、列表
      */
-    public void initSysMenu(List<SysMenu> list, boolean refresh) {
+    public void initSysMenu(Map<String, Object> list, boolean refresh) {
         log.info("系统菜单缓存初始化---begin!!!");
         if (refresh) {
             redisTemplate.delete(CacheConstant.CACHE_KEY_SYS_MENU);
         }
-        if (!CollectionUtils.isEmpty(list)) {
+        if (MapUtils.isNotEmpty(list)) {
             setSysMenu(list);
         }
         log.info("系统菜单缓存初始化---end!!!");
     }
 
-    public void setSysMenu(List<SysMenu> list) {
-        if (CollectionUtils.isEmpty(list)) {
+    public void setSysMenu(Map<String, Object> map) {
+        if (MapUtils.isEmpty(map)) {
             log.error("系统菜单缓存设置,对象为NULL!!!");
             return;
         }
         log.info("系统菜单缓存设置--begin");
-        redisTemplate.opsForValue().set(CacheConstant.CACHE_KEY_SYS_MENU, JSON.toJSONString(list));
+        redisTemplate.opsForValue().set(CacheConstant.CACHE_KEY_SYS_MENU, JSON.toJSONString(map));
         log.info("系统菜单缓存设置--end");
     }
 
-    public List<SysMenu> getSysMenu() {
+    public Map<String, Object> getSysMenu() {
         String menus = redisTemplate.opsForValue().get(CacheConstant.CACHE_KEY_SYS_MENU);
         if (StringUtils.isEmpty(menus)) {
             return null;
         }
-        return JSON.parseArray(menus, SysMenu.class);
+        return JSON.parseObject(menus);
     }
 
     public void delSysMenu() {

@@ -103,4 +103,14 @@
         order by create_time desc,order_by desc
     </select>
 
+    <select id="findListBySQL" parameterType="String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        FROM sys_role_menu WHERE is_delete=0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+        order by create_time desc,order_by desc
+    </select>
+
 </mapper>

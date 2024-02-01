@@ -15,7 +15,9 @@ public interface BaseMapper<T> {
 
 	public int update(T t);
 
-	public List<T> findList(String sql);
+	public List<T> findList(Map<String, Object> map);
+
+	public List<T> findListBySQL(String sql);
 
 	public List<T> findPage(Map<String, Object> map);
 

@@ -105,4 +105,13 @@
         </if>
     </select>
 
+    <select id="findListBySQL" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        FROM sys_role WHERE is_delete=0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+    </select>
+
 </mapper>

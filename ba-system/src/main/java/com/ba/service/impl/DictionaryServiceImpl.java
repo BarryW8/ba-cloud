@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,8 +44,13 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public List<Dictionary> findList(String condition) {
-        return dictionaryMapper.findList(condition);
+    public List<Dictionary> findList(Map<String, Object> map) {
+        return dictionaryMapper.findList(map);
+    }
+
+    @Override
+    public List<Dictionary> findListBySQL(String condition) {
+        return dictionaryMapper.findListBySQL(condition);
     }
 
     @Override
@@ -77,7 +81,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         } else {
             sql.append(" and parent_id = ").append(dictionary.getParentId());
         }
-        return dictionaryMapper.findList(sql.toString());
+        return dictionaryMapper.findListBySQL(sql.toString());
     }
 
     @Override
@@ -94,7 +98,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         } else {
             sql.append(" and parent_id = ").append(dictionary.getParentId());
         }
-        return dictionaryMapper.findList(sql.toString());
+        return dictionaryMapper.findListBySQL(sql.toString());
     }
 
 }

@@ -23,6 +23,7 @@ import com.ba.vo.SysMenuVO;
 import com.ba.vo.UserInfoVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -143,93 +144,34 @@ public class LoginController extends BaseController {
         UserInfoVO vo = BeanUtils.convertTo(currentUser, UserInfoVO::new);
 
         // 获取全部菜单（查缓存）
-        List<SysMenu> menus = cacheManage.getSysMenu();
-        if (CollectionUtils.isEmpty(menus)) {
+        Map<String, Object> menuMap = cacheManage.getSysMenu();
+        if (MapUtils.isEmpty(menuMap)) {
             // 如果缓存中没有，则查库，并刷新缓存
-            menus = sysMenuService.findList(null);
-            cacheManage.setSysMenu(menus);
+            menuMap = sysMenuService.findTree(null);
+            cacheManage.setSysMenu(menuMap);
         }
-        List<SysMenuVO> list = BeanUtils.convertListTo(menus, SysMenuVO::new);
-        // 如果为超级管理员，则返回全部菜单
         if (currentUser.isSuperManager()) {
-            vo.setMenuList(builder(list));
+            // 超管，直接返回全部菜单
+            vo.setMenus(menuMap);
         } else {
-            //5. 查询角色绑定菜单信息
-            List<SysRoleMenu> roleMenus = sysRoleService.findRoleMenu(currentUser.getRoleId());
-            if (!CollectionUtils.isEmpty(roleMenus)) {
-                //处理菜单树结构，得到最终结果
-                List<Long> menuIds = roleMenus.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
-                Map<Long, String> menuPerms = roleMenus.stream().collect(Collectors.toMap(SysRoleMenu::getMenuId, SysRoleMenu::getPermission));
-                Map<Long, SysMenuVO> menuAllMap = new HashMap<>(16);
-                List<Long> menuIdList = new ArrayList<>();
-                List<SysMenuVO> resultList = new ArrayList<>();
-                // 将菜单放入map中方便取值
-                for (SysMenuVO menu : list) {
-                    menuAllMap.put(menu.getId(), menu);
-                    menuIdList.add(menu.getId());
-                }
-                //取交集，防止all菜单被删，角色菜单表中未及时更新，产生脏数据
-                menuIds.retainAll(menuIdList);
-                for (Long menuId : menuIds) {
-                    resultMenus(menuId, menuAllMap, menuPerms, resultList);
-                }
-                //菜单排序
-                resultList = resultList.stream().sorted(Comparator.comparing(SysMenuVO::getOrderBy)).collect(Collectors.toList());
-                //菜单树构建
-                vo.setMenuList(builder(resultList));
-            }
+            // 非超管，查询角色绑定菜单信息
+            vo.setMenus(getRoleMenu(currentUser.getRoleId()));
         }
         return ResData.success(vo);
     }
 
-    public void resultMenus(Long id, Map<Long, SysMenuVO> menuMap, Map<Long, String> menuPerms, List<SysMenuVO> list) {
-        SysMenuVO dto = menuMap.get(id);
-        if (dto == null) {
-            return;
+    private Map<String, Object> getRoleMenu(Long roleId) {
+        Map<String, Object> menuMap = new HashMap<>();
+        // 查询用户所属角色的菜单权限
+        List<SysRoleMenu> roleMenus = sysRoleService.findRoleMenu(roleId);
+        if (CollectionUtils.isNotEmpty(roleMenus)) {
+            //处理菜单树结构，得到最终结果
+            List<Long> menuIds = roleMenus.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
+            Map<String, Object> queryMap = new HashMap<>();
+            queryMap.put("ids", menuIds);
+            menuMap = sysMenuService.findTree(queryMap);
         }
-        boolean flag = false;
-        for (SysMenuVO tree : list) {
-            if (tree.getId().equals(dto.getId())) {
-                flag = true;
-                break;
-            }
-        }
-        if (!flag) {
-            String realPerms = dto.getPerms();
-            String ownPerms = menuPerms.get(dto.getId());
-            dto.setPerms(dealPerms(realPerms, ownPerms));
-            list.add(dto);
-        }
-        if (dto.getParentId() != -1L) {
-            resultMenus(dto.getParentId(), menuMap, menuPerms, list);
-        }
-    }
-
-    private String dealPerms(String realPerms, String ownPerms) {
-        if (StringUtils.isEmpty(realPerms)
-                || StringUtils.isEmpty(ownPerms)) {
-            return "";
-        }
-        List<String> realList = Arrays.stream(realPerms.split(",")).collect(Collectors.toList());
-        List<String> ownList = Arrays.stream(ownPerms.split(",")).collect(Collectors.toList());
-        ownList.retainAll(realList);
-        return String.join(",", ownList);
-    }
-
-    private List<SysMenuVO> builder(List<SysMenuVO> nodes) {
-        List<SysMenuVO> treeNodes = new ArrayList<>();
-        for (SysMenuVO n1 : nodes) {
-            // -1 代表根节点(顶级父节点)
-            if (n1.getParentId() == -1L) {
-                treeNodes.add(n1);
-            }
-            for (SysMenuVO n2 : nodes) {
-                if (n2.getParentId().equals(n1.getId())) {
-                    n1.getChildren().add(n2);
-                }
-            }
-        }
-        return treeNodes;
+        return menuMap;
     }
 
     /**

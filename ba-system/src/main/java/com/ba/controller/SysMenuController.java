@@ -93,8 +93,8 @@ public class SysMenuController extends BaseController implements BaseCommonContr
         }
         if (result > 0) {
             // 刷新缓存
-            List<SysMenu> menus = sysMenuService.findList(null);
-            cacheManage.setSysMenu(menus);
+            Map<String, Object> menuMap = sysMenuService.findTree(null);
+            cacheManage.setSysMenu(menuMap);
             return ResData.success();
         }
         return ResData.error("保存失败!");
@@ -118,8 +118,8 @@ public class SysMenuController extends BaseController implements BaseCommonContr
         int result = sysMenuService.deleteBySm(simpleModel);
         if (result > 0) {
             // 刷新缓存
-            List<SysMenu> menus = sysMenuService.findList(null);
-            cacheManage.setSysMenu(menus);
+            Map<String, Object> menuMap = sysMenuService.findTree(null);
+            cacheManage.setSysMenu(menuMap);
             return ResData.success();
         }
         return ResData.error("删除失败!");
@@ -131,10 +131,8 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
     @PostMapping("findTree")
     public ResData findTree(@RequestBody SysMenuPage dto) {
-        Map<String, Object> queryMap = this.queryCondition(dto);
-        List<SysMenu> menus = sysMenuService.findList(null);
-        List<SysMenuVO> list = BeanUtils.convertListTo(menus, SysMenuVO::new);
-        return ResData.success(builder(list));
+        Map<String, Object> resultMap = sysMenuService.findTree(this.queryCondition(dto));
+        return ResData.success(resultMap);
     }
 
     private Map<String, Object> queryCondition(SysMenuPage dto) {

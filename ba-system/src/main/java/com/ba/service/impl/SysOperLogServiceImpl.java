@@ -61,8 +61,13 @@ public class SysOperLogServiceImpl implements SysOperLogService {
     }
 
     @Override
-    public List<SysOperLog> findList(String condition) {
-        return sysOperLogMapper.findList(condition);
+    public List<SysOperLog> findList(Map<String, Object> map) {
+        return sysOperLogMapper.findList(map);
+    }
+
+    @Override
+    public List<SysOperLog> findListBySQL(String condition) {
+        return sysOperLogMapper.findListBySQL(condition);
     }
 
     @Override

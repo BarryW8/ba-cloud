@@ -45,6 +45,18 @@
         create_time
     </sql>
 
+    <sql id="Base_Query_List">
+        <if test="menuType != null and menuType != ''">
+            and menu_type = #{menuType}
+        </if>
+        <if test="parentIds != null and parentIds.size() > 0">
+            and parent_id in
+            <foreach collection="parentIds" open="(" separator="," close=")" item="id">
+                #{id}
+            </foreach>
+        </if>
+    </sql>
+
     <insert id="insert">
         insert into sys_menu (
             id,
@@ -144,6 +156,14 @@
     </select>
 
     <select id="findList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        FROM sys_menu WHERE is_delete=0
+        <include refid="Base_Query_List" />
+        order by order_by, create_time desc
+    </select>
+
+    <select id="findListBySQL" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         FROM sys_menu WHERE is_delete=0

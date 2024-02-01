@@ -78,7 +78,7 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public List<SysRoleMenu> findRoleMenu(Long roleId) {
-        return sysRoleMenuMapper.findList(" and role_id = " + roleId);
+        return sysRoleMenuMapper.findListBySQL(" and role_id = " + roleId);
     }
 
     @Transactional
@@ -105,8 +105,13 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
-    public List<SysRole> findList(String condition) {
-        return sysRoleMapper.findList(condition);
+    public List<SysRole> findList(Map<String, Object> map) {
+        return sysRoleMapper.findList(map);
+    }
+
+    @Override
+    public List<SysRole> findListBySQL(String condition) {
+        return sysRoleMapper.findListBySQL(condition);
     }
 
     @Override

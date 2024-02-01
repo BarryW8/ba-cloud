@@ -69,7 +69,7 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public SysUserRole findUserRole(Long userId) {
-        List<SysUserRole> list = sysUserRoleMapper.findList(" and user_id = " + userId);
+        List<SysUserRole> list = sysUserRoleMapper.findListBySQL(" and user_id = " + userId);
         if (CollectionUtils.isEmpty(list)) return null;
         return list.get(0);
     }
@@ -98,8 +98,13 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public List<SysUser> findList(String condition) {
-        return sysUserMapper.findList(condition);
+    public List<SysUser> findList(Map<String, Object> map) {
+        return sysUserMapper.findList(map);
+    }
+
+    @Override
+    public List<SysUser> findListBySQL(String condition) {
+        return sysUserMapper.findListBySQL(condition);
     }
 
     @Override

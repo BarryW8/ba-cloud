@@ -125,6 +125,16 @@
         order by order_by
     </select>
 
+    <select id="findListBySQL" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        FROM dictionary WHERE is_delete=0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+        order by order_by
+    </select>
+
     <!-- 下拉列表 -->
     <select id="optionList" resultType="com.ba.vo.OptionVO">
         select id as id,code as code,name as name
