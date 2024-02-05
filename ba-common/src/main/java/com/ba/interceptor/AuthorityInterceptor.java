@@ -56,6 +56,9 @@ public class AuthorityInterceptor implements HandlerInterceptor {
                     if (permission == null) {
                         return true;
                     }
+                    String menuFlag = permission.menuFlag();
+                    OperationEnum perms = permission.perms();
+
                     UserInfo userInfo = UserContext.getUserInfo();
                     // 如果是超管，直接放行
                     if (userInfo.isSuperManager()) {
@@ -69,14 +72,14 @@ public class AuthorityInterceptor implements HandlerInterceptor {
                     }
                     // 判断角色是否具有权限
                     String idKey = String.format(CacheConstant.CACHE_STR_KEY_ROLE_PERMISSION, userInfo.getRoleId());
-                    List<String> rolePermsList = redisCache.getHashValue4List(idKey, permission.menuFlag(),String.class);
+                    List<String> rolePermsList = redisCache.getHashValue4List(idKey, menuFlag, String.class);
                     if (CollectionUtils.isEmpty(rolePermsList)) {
                         CommonUtils.sendJsonMessage(response, ResData.result(ResEnum.SYSTEM_NO_PERMISSION));
                         log.error("角色权限不足");
                         return false;
                     }
                     // 判断接口是否设置权限
-                    List<OperationEnum> permsList = Arrays.asList(permission.perms());
+                    List<OperationEnum> permsList = Arrays.asList(perms);
                     if (CollectionUtils.isEmpty(permsList)) {
                         CommonUtils.sendJsonMessage(response, ResData.result(ResEnum.SYSTEM_NO_PERMISSION));
                         log.error("接口未设置权限");

@@ -12,6 +12,7 @@ import com.ba.response.ResData;
 import com.ba.service.DictionaryService;
 import com.ba.uid.impl.CachedUidGenerator;
 import com.ba.util.BeanUtils;
+import com.ba.util.StringUtils;
 import com.ba.vo.DictionaryVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -44,13 +45,13 @@ public class DictionaryController extends BaseController implements BaseCommonCo
      * 下拉列表
      * @param parentCode 父级编码
      */
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @GetMapping("optionList")
     public ResData optionList(@RequestParam String parentCode) {
         return ResData.success(dictionaryService.optionList(parentCode));
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @GetMapping("findById")
     @Override
     public ResData findById(@RequestParam Long modelId) {
@@ -61,47 +62,69 @@ public class DictionaryController extends BaseController implements BaseCommonCo
         return ResData.success(dictionary);
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.ADD, OperationEnum.EDIT})
-    @PostMapping("save")
-    @Override
-    public ResData save(@RequestBody Dictionary dictionary) {
-        int result;
+    private String checkParams(Dictionary dictionary) {
         List<Dictionary> codeList = dictionaryService.checkCodeSame(dictionary);
         if (!CollectionUtils.isEmpty(codeList)) {
             //字典同级code不可相同
-            return ResData.error("同级字典编号不能相同！");
+            return "同级字典编号不能相同！";
         }
         List<Dictionary> nameList = dictionaryService.checkNameSame(dictionary);
         if (!CollectionUtils.isEmpty(nameList)) {
             //字典同级name不可相同
-            return ResData.error("同级字典名称不能相同！");
+            return "同级字典名称不能相同！";
+        }
+        return "";
+    }
+
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.ADD)
+    @PostMapping("add")
+    @Override
+    public ResData add(@RequestBody Dictionary dictionary) {
+        // 检验参数
+        String errorMsg = this.checkParams(dictionary);
+        if (StringUtils.isNotEmpty(errorMsg)) {
+            return ResData.error(errorMsg);
         }
         // 封装数据
         if (dictionary.getParentId() == null) {
             dictionary.setParentId(-1L);
         }
-        if (dictionary.getId() == null) {
-            // 新增
-            dictionary.setId(uidGenerator.getUID());
-            result = dictionaryService.insert(dictionary);
-        } else {
-            //编辑
-            result = dictionaryService.update(dictionary);
-        }
+        dictionary.setId(uidGenerator.getUID());
+        int result = dictionaryService.add(dictionary);
         if (result > 0) {
             return ResData.success();
         }
         return ResData.error("保存失败!");
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.EDIT)
+    @PostMapping("edit")
+    @Override
+    public ResData edit(@RequestBody Dictionary dictionary) {
+        // 检验参数
+        String errorMsg = this.checkParams(dictionary);
+        if (StringUtils.isNotEmpty(errorMsg)) {
+            return ResData.error(errorMsg);
+        }
+        // 封装数据
+        if (dictionary.getParentId() == null) {
+            dictionary.setParentId(-1L);
+        }
+        int result = dictionaryService.edit(dictionary);
+        if (result > 0) {
+            return ResData.success();
+        }
+        return ResData.error("保存失败!");
+    }
+
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @PostMapping("findPage")
     @Override
     public ResData findPage(@RequestBody BasePage dto) {
         return null;
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.DELETE})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.DELETE)
     @GetMapping("deleteById")
     @Override
     public ResData deleteById(@RequestParam Long modelId) {
@@ -119,7 +142,7 @@ public class DictionaryController extends BaseController implements BaseCommonCo
     /**
      * 查询树
      */
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @PostMapping("findTree")
     public ResData findTree(@RequestBody DictionaryPage dto) {
         Map<String, Object> queryMap = this.queryCondition(dto);

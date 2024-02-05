@@ -5,6 +5,7 @@ import com.ba.annotation.Permission;
 import com.ba.base.BaseCommonController;
 import com.ba.base.BaseController;
 import com.ba.base.PageView;
+import com.ba.base.SimpleModel;
 import com.ba.dto.SysUserPage;
 import com.ba.enums.OperationEnum;
 import com.ba.model.system.SysOperLog;
@@ -22,6 +23,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,24 +41,36 @@ public class SysOperLogController extends BaseController implements BaseCommonCo
     @Resource
     private CachedUidGenerator uidGenerator;
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @GetMapping("findById")
     @Override
     public ResData findById(@RequestParam Long modelId) {
         return ResData.success(sysOperLogService.findById(modelId));
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.ADD, OperationEnum.EDIT})
-    @PostMapping("save")
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.ADD)
+    @PostMapping("add")
     @Override
-    public ResData save(@RequestBody SysOperLog model) {
+    public ResData add(@RequestBody SysOperLog model) {
+        model.setId(uidGenerator.getUID());
+        int result = sysOperLogService.add(model);
+        if (result > 0) {
+            return ResData.success();
+        }
+        return ResData.error("保存失败!");
+    }
+
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.EDIT)
+    @PostMapping("edit")
+    @Override
+    public ResData edit(@RequestBody SysOperLog model) {
         int result;
         if (model.getId() == null) {
             model.setId(uidGenerator.getUID());
-            result = sysOperLogService.insert(model);
+            result = sysOperLogService.add(model);
         } else {
             //编辑
-            result = sysOperLogService.update(model);
+            result = sysOperLogService.edit(model);
         }
         if (result > 0) {
             return ResData.success();
@@ -62,7 +78,7 @@ public class SysOperLogController extends BaseController implements BaseCommonCo
         return ResData.error("保存失败!");
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @PostMapping("findPage")
     @Override
     public ResData findPage(@RequestBody SysUserPage dto) {
@@ -83,17 +99,28 @@ public class SysOperLogController extends BaseController implements BaseCommonCo
         return queryMap;
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.DELETE})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.DELETE)
     @GetMapping("deleteById")
     @Override
     public ResData deleteById(@RequestParam Long modelId) {
-        SysOperLog model = new SysOperLog();
-        model.setId(modelId);
-        int result = sysOperLogService.deleteById(model);
+        SimpleModel simpleModel = new SimpleModel();
+        simpleModel.setModelId(modelId);
+        simpleModel.setDelUser(getCurrentUserId());
+        simpleModel.setDelDate(getCurrentDateStr());
+        int result = sysOperLogService.deleteBySm(simpleModel);
         if (result > 0) {
             return ResData.success();
         }
         return ResData.error("删除失败!");
+    }
+
+    @GetMapping("findOperType")
+    public ResData findOperType() {
+        Map<String, Object> resultMap = new HashMap<>();
+        for (OperationEnum enums : OperationEnum.values()) {
+            resultMap.put(enums.getCode(), enums.getName());
+        }
+        return ResData.success(resultMap);
     }
 
 }

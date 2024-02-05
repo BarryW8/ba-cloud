@@ -60,7 +60,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     @Resource
     private DictionaryService dictionaryService;
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @GetMapping("findById")
     @Override
     public ResData findById(@RequestParam Long modelId) {
@@ -71,26 +71,16 @@ public class SysMenuController extends BaseController implements BaseCommonContr
         return ResData.success(sysMenu);
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.ADD, OperationEnum.EDIT})
-    @PostMapping("save")
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.ADD)
+    @PostMapping("add")
     @Override
-    public ResData save(@RequestBody SysMenu model) {
+    public ResData add(@RequestBody SysMenu model) {
         // 封装数据
         if (model.getParentId() == null) {
             model.setParentId(-1L);
         }
-        int result;
-        if (model.getId() == null) {
-            model.setId(uidGenerator.getUID());
-            model.setCreateBy(getCurrentUserId());
-            model.setCreateTime(getCurrentDateStr());
-            result = sysMenuService.insert(model);
-        } else {
-            //编辑
-            model.setUpdateBy(getCurrentUserId());
-            model.setUpdateTime(getCurrentDateStr());
-            result = sysMenuService.update(model);
-        }
+        model.setId(uidGenerator.getUID());
+        int result = sysMenuService.add(model);
         if (result > 0) {
             // 刷新缓存
             Map<String, Object> menuMap = sysMenuService.findTree(null);
@@ -100,14 +90,32 @@ public class SysMenuController extends BaseController implements BaseCommonContr
         return ResData.error("保存失败!");
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.EDIT)
+    @PostMapping("edit")
+    @Override
+    public ResData edit(@RequestBody SysMenu model) {
+        // 封装数据
+        if (model.getParentId() == null) {
+            model.setParentId(-1L);
+        }
+        int result = sysMenuService.edit(model);
+        if (result > 0) {
+            // 刷新缓存
+            Map<String, Object> menuMap = sysMenuService.findTree(null);
+            cacheManage.setSysMenu(menuMap);
+            return ResData.success();
+        }
+        return ResData.error("保存失败!");
+    }
+
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @PostMapping("findPage")
     @Override
     public ResData findPage(@RequestBody SysMenuPage dto) {
         return null;
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.DELETE})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.DELETE)
     @GetMapping("deleteById")
     @Override
     public ResData deleteById(@RequestParam Long modelId) {
@@ -128,7 +136,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     /**
      * 查询树
      */
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @PostMapping("findTree")
     public ResData findTree(@RequestBody SysMenuPage dto) {
         Map<String, Object> resultMap = sysMenuService.findTree(this.queryCondition(dto));
@@ -178,7 +186,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     /**
      * 查询树-构建按钮权限
      */
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @GetMapping("findTreePerms")
     public ResData findTreePerms() {
 //        List<SysMenu> menus = cacheManage.getSysMenu();

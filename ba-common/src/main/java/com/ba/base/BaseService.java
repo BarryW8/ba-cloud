@@ -9,9 +9,9 @@ import java.util.Map;
  */
 public interface BaseService<T> {
 
-    public int insert(T t);
+    public int add(T t);
 
-    public int update(T t);
+    public int edit(T t);
 
     public T findById(Long modelId);
 

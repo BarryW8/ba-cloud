@@ -17,8 +17,8 @@ public interface RemoteLogService {
     /**
      * 保存系统日志
      */
-    @PostMapping("/sysOperLog/save")
-    public ResData save(@RequestBody SysOperLog sysOperLog);
+    @PostMapping("/sysOperLog/add")
+    public ResData add(@RequestBody SysOperLog sysOperLog);
 
 //    /**
 //     * 保存访问记录

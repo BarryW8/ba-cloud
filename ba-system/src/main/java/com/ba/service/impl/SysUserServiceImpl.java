@@ -76,13 +76,13 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Transactional
     @Override
-    public int insert(SysUser sysUser) {
+    public int add(SysUser sysUser) {
         return sysUserMapper.insert(sysUser);
     }
 
     @Transactional
     @Override
-    public int update(SysUser sysUser) {
+    public int edit(SysUser sysUser) {
         return sysUserMapper.update(sysUser);
     }
 

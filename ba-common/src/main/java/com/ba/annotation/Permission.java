@@ -23,5 +23,5 @@ public @interface Permission {
      * 按钮权限
      * @return
      */
-    OperationEnum[] perms() default {};
+    OperationEnum perms() default OperationEnum.OTHER;
 }

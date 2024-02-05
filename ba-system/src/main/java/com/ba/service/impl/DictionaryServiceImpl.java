@@ -22,13 +22,13 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Transactional
     @Override
-    public int insert(Dictionary dictionary) {
+    public int add(Dictionary dictionary) {
         return dictionaryMapper.insert(dictionary);
     }
 
     @Transactional
     @Override
-    public int update(Dictionary dictionary) {
+    public int edit(Dictionary dictionary) {
         return dictionaryMapper.update(dictionary);
     }
 

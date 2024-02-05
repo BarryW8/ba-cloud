@@ -36,6 +36,18 @@
         update_by
     </sql>
 
+    <sql id="Base_Query_List">
+        <if test="userStatus != null and userStatus != ''">
+            and user_status = #{userStatus}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            and (
+            user_name like '%'#{keyword}'%'
+            or telephone like '%'#{keyword}'%'
+            )
+        </if>
+    </sql>
+
     <insert id="insert">
         insert into sys_user (
             id,

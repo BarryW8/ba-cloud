@@ -39,13 +39,13 @@ public class SysOperLogServiceImpl implements SysOperLogService {
 
     @Transactional
     @Override
-    public int insert(SysOperLog model) {
+    public int add(SysOperLog model) {
         return sysOperLogMapper.insert(model);
     }
 
     @Transactional
     @Override
-    public int update(SysOperLog model) {
+    public int edit(SysOperLog model) {
         return sysOperLogMapper.update(model);
     }
 
@@ -84,10 +84,5 @@ public class SysOperLogServiceImpl implements SysOperLogService {
             pageModel.setTotal(0);
         }
         return pageModel;
-    }
-
-    @Override
-    public int deleteById(SysOperLog model) {
-        return 0;
     }
 }

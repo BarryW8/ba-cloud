@@ -59,7 +59,7 @@ public class SysUserController extends BaseController implements BaseCommonContr
     @Resource
     private SysRoleService sysRoleService;
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @GetMapping("findById")
     @Override
     public ResData findById(@RequestParam Long modelId) {
@@ -67,30 +67,36 @@ public class SysUserController extends BaseController implements BaseCommonContr
     }
 
     @Log(business = BUSINESS, operationType = OperationEnum.ADD)
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.ADD, OperationEnum.EDIT})
-    @PostMapping("save")
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.ADD)
+    @PostMapping("add")
     @Override
-    public ResData save(@RequestBody SysUser model) {
-        int result;
-        if (model.getId() == null) {
-            if (StringUtils.isEmpty(model.getPassword())) {
-                // 初始化密码
-                String defaultPassword = "123456";
-                model.setPassword(SecureUtil.md5((SecureUtil.md5(defaultPassword))));
-            }
-            model.setId(uidGenerator.getUID());
-            result = sysUserService.insert(model);
-        } else {
-            //编辑
-            result = sysUserService.update(model);
+    public ResData add(@RequestBody SysUser model) {
+        if (StringUtils.isEmpty(model.getPassword())) {
+            // 初始化密码
+            String defaultPassword = "123456";
+            model.setPassword(SecureUtil.md5((SecureUtil.md5(defaultPassword))));
         }
+        model.setId(uidGenerator.getUID());
+        int result = sysUserService.add(model);
         if (result > 0) {
             return ResData.success();
         }
         return ResData.error("保存失败!");
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
+    @Log(business = BUSINESS, operationType = OperationEnum.EDIT)
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.EDIT)
+    @PostMapping("edit")
+    @Override
+    public ResData edit(@RequestBody SysUser model) {
+        int result = sysUserService.edit(model);
+        if (result > 0) {
+            return ResData.success();
+        }
+        return ResData.error("保存失败!");
+    }
+
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @PostMapping("findPage")
     @Override
     public ResData findPage(@RequestBody SysUserPage dto) {
@@ -126,7 +132,8 @@ public class SysUserController extends BaseController implements BaseCommonContr
         return queryMap;
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.DELETE})
+    @Log(business = BUSINESS, operationType = OperationEnum.DELETE)
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.DELETE)
     @GetMapping("deleteById")
     @Override
     public ResData deleteById(@RequestParam Long modelId) {
@@ -142,7 +149,8 @@ public class SysUserController extends BaseController implements BaseCommonContr
     /**
      * 保存用户授权角色信息
      */
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.AUTH})
+    @Log(business = BUSINESS, operationType = OperationEnum.AUTH)
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.AUTH)
     @PostMapping("saveUserRole")
     public ResData saveUserRole(@RequestBody SysUserRole model) {
         int result = sysUserService.saveUserRole(model);
@@ -156,7 +164,7 @@ public class SysUserController extends BaseController implements BaseCommonContr
     /**
      * 查询用户授权角色信息
      */
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.AUTH})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @GetMapping("findUserRole")
     public ResData findUserRole(@RequestParam Long modelId) {
         return ResData.success(sysUserService.findUserRole(modelId));

@@ -27,13 +27,13 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public int insert(SysMenu sysMenu) {
+    public int add(SysMenu sysMenu) {
         return sysMenuMapper.insert(sysMenu);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public int update(SysMenu sysMenu) {
+    public int edit(SysMenu sysMenu) {
         return sysMenuMapper.update(sysMenu);
     }
 

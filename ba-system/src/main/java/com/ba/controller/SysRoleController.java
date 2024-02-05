@@ -13,9 +13,12 @@ import com.ba.model.system.SysRoleMenu;
 import com.ba.service.SysRoleService;
 import com.ba.service.SysUserService;
 import com.ba.response.ResData;
+import com.ba.uid.impl.CachedUidGenerator;
+import com.ba.util.BeanUtils;
+import com.ba.vo.SysMenuVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,6 +45,9 @@ public class SysRoleController extends BaseController implements BaseCommonContr
 
     @Resource
     private SysUserService sysUserService;
+
+    @Resource
+    private CachedUidGenerator uidGenerator;
 
 //    @PostMapping("saveRoleUser")
 //    public ResData saveRoleUser(@RequestBody SysUserRoleDTO dto) {
@@ -72,7 +78,17 @@ public class SysRoleController extends BaseController implements BaseCommonContr
 //        return ResData.success(list);
 //    }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
+    @Override
+    public ResData add(SysRole sysRole) {
+        return null;
+    }
+
+    @Override
+    public ResData edit(SysRole sysRole) {
+        return null;
+    }
+
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @GetMapping("findById")
     @Override
     public ResData findById(@RequestParam Long modelId) {
@@ -108,15 +124,25 @@ public class SysRoleController extends BaseController implements BaseCommonContr
         return ResData.success(map);
     }
 
-    @Override
-    public ResData save(SysRole sysRole) {
-        return null;
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.ADD)
+    @PostMapping("add")
+    public ResData add(@RequestBody @Valid SysRoleDTO dto) {
+        SysRole model = BeanUtils.convertTo(dto, SysRole::new);
+        model.setId(uidGenerator.getUID());
+        int result = sysRoleService.add(model);
+        if (result > 0) {
+            // 刷新缓存
+            sysRoleService.refreshCache(model, dto.getPermList());
+            return ResData.success();
+        }
+        return ResData.error("保存失败!");
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.ADD, OperationEnum.EDIT})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.EDIT)
     @PostMapping("save")
     public ResData save(@RequestBody @Valid SysRoleDTO dto) {
-        int result = sysRoleService.saveDTO(dto);
+        SysRole model = BeanUtils.convertTo(dto, SysRole::new);
+        int result = sysRoleService.edit(model);
         if (result > 0) {
             // TODO 刷新缓存
             return ResData.success();
@@ -124,7 +150,7 @@ public class SysRoleController extends BaseController implements BaseCommonContr
         return ResData.error("保存失败!");
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.VIEW})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @PostMapping("findPage")
     @Override
     public ResData findPage(@RequestBody SysRolePage dto) {
@@ -144,7 +170,7 @@ public class SysRoleController extends BaseController implements BaseCommonContr
         return queryMap;
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = {OperationEnum.DELETE})
+    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.DELETE)
     @GetMapping("deleteById")
     @Override
     public ResData deleteById(@RequestParam Long modelId) {

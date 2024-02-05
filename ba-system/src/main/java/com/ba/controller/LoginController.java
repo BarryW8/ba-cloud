@@ -126,7 +126,7 @@ public class LoginController extends BaseController {
         // 5. 更新用户登录信息
         user.setLoginNum(user.getLoginNum()+1);
         user.setLoginTime(getCurrentDateStr());
-        sysUserService.update(user);
+        sysUserService.edit(user);
 
         // 封装结果集
         HashMap<String, Object> result = new HashMap<>(2);

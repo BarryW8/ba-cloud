@@ -7,7 +7,9 @@ import com.ba.response.ResData;
  */
 public interface BaseCommonController<T, V extends BasePage> {
 
-    public ResData save(T t);
+    public ResData add(T t);
+
+    public ResData edit(T t);
 
     public ResData findById(Long modelId);
 

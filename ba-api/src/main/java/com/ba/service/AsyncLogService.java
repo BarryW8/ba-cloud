@@ -20,8 +20,8 @@ public class AsyncLogService {
      * 保存系统日志记录
      */
     @Async
-    public void save(SysOperLog sysOperLog) throws Exception {
-        remoteLogService.save(sysOperLog);
+    public void add(SysOperLog sysOperLog) throws Exception {
+        remoteLogService.add(sysOperLog);
     }
 
 }

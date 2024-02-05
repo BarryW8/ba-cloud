@@ -22,9 +22,9 @@ import com.ba.util.CommonUtils;
 import com.ba.util.StringUtils;
 import com.ba.vo.SysMenuVO;
 import com.ba.vo.SysUserRoleVO;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -81,18 +81,6 @@ public class SysRoleServiceImpl implements SysRoleService {
         return sysRoleMenuMapper.findListBySQL(" and role_id = " + roleId);
     }
 
-    @Transactional
-    @Override
-    public int insert(SysRole model) {
-        return sysRoleMapper.insert(model);
-    }
-
-    @Transactional
-    @Override
-    public int update(SysRole model) {
-        return sysRoleMapper.update(model);
-    }
-
     @Override
     public SysRole findById(Long modelId) {
         return sysRoleMapper.findById(modelId);
@@ -132,63 +120,47 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Transactional
     @Override
-    public int saveDTO(SysRoleDTO dto) {
-        Long currentUserId = UserContext.getUserId();
-        String currentDateStr = CommonUtils.getCurrentDate();
+    public int add(SysRole model) {
+        return sysRoleMapper.insert(model);
+    }
 
-        // 1. 保存角色
-        SysRole role = BeanUtils.convertTo(dto, SysRole::new);
-        int result;
-        if (role.getId() == null) {
-            role.setId(uidGenerator.getUID());
-            role.setCreateBy(currentUserId);
-            role.setCreateTime(currentDateStr);
-            result = sysRoleMapper.insert(role);
-        } else {
-            //编辑
-            role.setUpdateBy(currentUserId);
-            role.setUpdateTime(currentDateStr);
-            result = sysRoleMapper.update(role);
+    @Transactional
+    @Override
+    public int edit(SysRole model) {
+        return sysRoleMapper.update(model);
+    }
+
+    public void refreshCache(SysRole role, List<SysMenuVO> permList) {
+        if (CollectionUtils.isEmpty(permList)) {
+            return;
         }
-        if (result > 0) {
-            // 2. 修改成功，删除角色菜单权限
-            sysRoleMenuMapper.delByRoleId(role.getId());
+        // 1、删除角色菜单权限
+        sysRoleMenuMapper.delByRoleId(role.getId());
+        // 2、保存角色菜单权限
+        List<SysRoleMenu> list = new ArrayList<>();
+        // 处理权限数据
+        List<String> perms = permList.stream().map(SysMenuVO::getTreeId).distinct().collect(Collectors.toList());
+        Map<String, String> map = parseData(perms);
+        map.forEach((k,v) -> {
+            List<SysMenuVO> filter = permList.stream().filter(e -> k.equals(e.getId().toString())).collect(Collectors.toList());
+            SysMenuVO vo = filter.get(0);
+            // 封装参数
+            SysRoleMenu menuRole = new SysRoleMenu();
+            menuRole.setId(uidGenerator.getUID());
+            menuRole.setRoleId(role.getId());
+            menuRole.setMenuId(vo.getId());
+            menuRole.setMenuCode(vo.getMenuCode());
+            menuRole.setPermission(v);
+            list.add(menuRole);
+        });
+        // 批量插入
+        sysRoleMenuMapper.saveList(list);
+        // 删除缓存
+        cacheManage.delSysRoleMenuAll(role.getId().toString());
+        // 新增缓存
+        for (SysRoleMenu roleMenu : list) {
+            cacheManage.setSysRoleMenu(role.getId(), roleMenu.getMenuCode(), Arrays.asList(roleMenu.getPermission().split(",")));
         }
-
-        // 3. 保存角色菜单权限
-        // 菜单权限列表
-        List<SysMenuVO> permList = dto.getPermList();
-        if (!CollectionUtils.isEmpty(permList)) {
-            List<SysRoleMenu> list = new ArrayList<>();
-            // 处理权限数据
-            List<String> perms = permList.stream().map(SysMenuVO::getTreeId).distinct().collect(Collectors.toList());
-            Map<String, String> map = parseData(perms);
-            map.forEach((k,v) -> {
-                List<SysMenuVO> filter = permList.stream().filter(e -> k.equals(e.getId().toString())).collect(Collectors.toList());
-                SysMenuVO vo = filter.get(0);
-                // 封装参数
-                SysRoleMenu menuRole = new SysRoleMenu();
-                menuRole.setId(uidGenerator.getUID());
-                menuRole.setRoleId(role.getId());
-                menuRole.setMenuId(vo.getId());
-                menuRole.setMenuCode(vo.getMenuCode());
-                menuRole.setPermission(v);
-                menuRole.setCreateBy(currentUserId);
-                menuRole.setCreateTime(currentDateStr);
-                list.add(menuRole);
-            });
-            // 批量插入
-            sysRoleMenuMapper.saveList(list);
-
-            // 删除缓存
-            cacheManage.delSysRoleMenuAll(role.getId().toString());
-            // 新增缓存
-            for (SysRoleMenu roleMenu : list) {
-                cacheManage.setSysRoleMenu(role.getId(), roleMenu.getMenuCode(), Arrays.asList(roleMenu.getPermission().split(",")));
-            }
-        }
-
-        return result;
     }
 
     private Map<String, String> parseData(List<String> permList) {
