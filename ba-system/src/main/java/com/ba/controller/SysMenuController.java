@@ -189,6 +189,7 @@ public class SysMenuController extends BaseController implements BaseCommonContr
     @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @GetMapping("findTreePerms")
     public ResData findTreePerms() {
+        // todo 更改构建菜单树逻辑
 //        List<SysMenu> menus = cacheManage.getSysMenu();
         List<SysMenu> menus = sysMenuService.findList(null);
         List<SysMenuVO> allMenus = BeanUtils.convertListTo(menus, SysMenuVO::new);

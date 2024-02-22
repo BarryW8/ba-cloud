@@ -166,9 +166,8 @@ public class LoginController extends BaseController {
         List<SysRoleMenu> roleMenus = sysRoleService.findRoleMenu(roleId);
         if (CollectionUtils.isNotEmpty(roleMenus)) {
             //处理菜单树结构，得到最终结果
-            List<Long> menuIds = roleMenus.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
             Map<String, Object> queryMap = new HashMap<>();
-            queryMap.put("ids", menuIds);
+            queryMap.put("roleMenus", roleMenus);
             menuMap = sysMenuService.findTree(queryMap);
         }
         return menuMap;

@@ -49,6 +49,7 @@ public class SysRoleController extends BaseController implements BaseCommonContr
     @Resource
     private CachedUidGenerator uidGenerator;
 
+    // todo 角色授权用户功能
 //    @PostMapping("saveRoleUser")
 //    public ResData saveRoleUser(@RequestBody SysUserRoleDTO dto) {
 //        Long roleId = dto.getRoleId();
@@ -139,12 +140,13 @@ public class SysRoleController extends BaseController implements BaseCommonContr
     }
 
     @Permission(menuFlag = MENU_CODE, perms = OperationEnum.EDIT)
-    @PostMapping("save")
-    public ResData save(@RequestBody @Valid SysRoleDTO dto) {
+    @PostMapping("edit")
+    public ResData edit(@RequestBody @Valid SysRoleDTO dto) {
         SysRole model = BeanUtils.convertTo(dto, SysRole::new);
         int result = sysRoleService.edit(model);
         if (result > 0) {
-            // TODO 刷新缓存
+            // 刷新缓存
+            sysRoleService.refreshCache(model, dto.getPermList());
             return ResData.success();
         }
         return ResData.error("保存失败!");

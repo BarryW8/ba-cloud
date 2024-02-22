@@ -49,6 +49,12 @@
         <if test="menuType != null and menuType != ''">
             and menu_type = #{menuType}
         </if>
+        <if test="ids != null and ids.size() > 0">
+            and id in
+            <foreach collection="ids" open="(" separator="," close=")" item="id">
+                #{id}
+            </foreach>
+        </if>
         <if test="parentIds != null and parentIds.size() > 0">
             and parent_id in
             <foreach collection="parentIds" open="(" separator="," close=")" item="id">

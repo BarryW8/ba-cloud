@@ -4,16 +4,24 @@ server:
     context-path: /system
 
 customer:
+  ssh:
+    is-use: T # 是否启用：T-启用 F-禁用
+    username: ubuntu # 服务器登录用户名
+    password: /Users/barryw/Documents/programs/my/ba-cloud/ba-common/src/main/resources/prvkey.pem # 服务器登录密码 或 密钥文件路径
+    host: 43.138.219.96 # 服务器公网IP
+    port: 22 # 跳板机ssh开放的接口   默认端口 22
+    auth-type: PUBLIC_KEY # 连接方式：PUBLIC_KEY-秘钥 PASSWORD-密码
   mysql:
-    host: 43.138.219.96
+    host: 127.0.0.1
     port: 3306
-    database: ba-cloud
+    database: ba_cloud
     username: root
     password: 123456
   redis:
-    host: 43.138.219.96
+    host: 127.0.0.1
     port: 6379
     password: 123456
+    database: 4
 
 spring:
   application:
@@ -47,7 +55,7 @@ spring:
   redis:
     host: ${customer.redis.host}
     port: ${customer.redis.port}
-    database: 4
+    database: ${customer.redis.database}
     timeout: 60000
     password: ${customer.redis.password}
     lettuce:

@@ -8,6 +8,5 @@ import java.util.List;
 import java.util.Map;
 
 public interface SysMenuService extends BaseService<SysMenu> {
-
     Map<String, Object> findTree(Map<String, Object> queryMap);
 }

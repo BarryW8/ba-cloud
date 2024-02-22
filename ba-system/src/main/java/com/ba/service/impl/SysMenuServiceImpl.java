@@ -4,6 +4,7 @@ import com.ba.base.PageView;
 import com.ba.base.SimpleModel;
 import com.ba.mapper.SysMenuMapper;
 import com.ba.model.system.SysMenu;
+import com.ba.model.system.SysRoleMenu;
 import com.ba.response.ResData;
 import com.ba.service.SysMenuService;
 import com.ba.vo.SysMenuVO;
@@ -13,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,7 +74,19 @@ public class SysMenuServiceImpl implements SysMenuService {
         }
         // 查询二级菜单
         queryMap.put("menuType", "C");
+        List<SysRoleMenu> roleMenus = new ArrayList<>();
+        if (queryMap.containsKey("roleMenus")) {
+            roleMenus = (List<SysRoleMenu>) queryMap.get("roleMenus");
+            List<Long> menuIds = roleMenus.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
+            queryMap.put("ids", menuIds);
+        }
         List<SysMenu> subMenus = sysMenuMapper.findList(queryMap);
+        for (SysRoleMenu roleMenu : roleMenus) {
+            List<SysMenu> collect = subMenus.stream().filter(e -> e.getId().equals(roleMenu.getMenuId())).distinct().collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(collect)) {
+                collect.get(0).setPerms(roleMenu.getPermission());
+            }
+        }
         // 封装数据
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("levelOneList", parentMenus);
