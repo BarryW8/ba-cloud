@@ -81,6 +81,7 @@ public class SysMenuServiceImpl implements SysMenuService {
             queryMap.put("ids", menuIds);
         }
         List<SysMenu> subMenus = sysMenuMapper.findList(queryMap);
+        // 将查询出来的菜单按钮权限，替换成角色按钮权限
         for (SysRoleMenu roleMenu : roleMenus) {
             List<SysMenu> collect = subMenus.stream().filter(e -> e.getId().equals(roleMenu.getMenuId())).distinct().collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(collect)) {

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.ba.base.UserInfo;
 import com.ba.model.system.SysMenu;
 import com.ba.enums.TokenEnum;
+import com.ba.util.BusinessUtils;
 import com.ba.util.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
@@ -47,7 +48,8 @@ public class CacheManage {
             return;
         }
         log.info("系统用户缓存设置,ID={},name={}--begin", userInfo.getId(), userInfo.getUserName());
-        String infoKey = CacheConstant.CACHE_KEY_USER_INFO + TokenEnum.WEB.getCode() + ":" + userInfo.getId();
+        String tempUserId = BusinessUtils.getTempUserId(userInfo.getId(), false);
+        String infoKey = String.format(CacheConstant.CACHE_KEY_USER_INFO, TokenEnum.WEB.getCode(), tempUserId);
         redisTemplate.opsForValue().set(infoKey, JSON.toJSONString(userInfo));
         // 设置过期时间（与token一致）
         redisTemplate.expire(infoKey, TokenEnum.WEB.getTime(), TimeUnit.SECONDS);

@@ -43,7 +43,7 @@ public class CacheConstant {
     /**
      * 系统用户
      */
-    public static final String CACHE_KEY_USER_INFO = "system:userInfo:";
+    public static final String CACHE_KEY_USER_INFO = "system:userInfo:%s:%s";
     /**
      * 系统菜单
      */

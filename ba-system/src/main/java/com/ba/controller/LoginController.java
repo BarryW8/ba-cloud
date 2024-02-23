@@ -17,6 +17,7 @@ import com.ba.service.SysUserService;
 import com.ba.enums.TokenEnum;
 import com.ba.token.TokenManage;
 import com.ba.util.BeanUtils;
+import com.ba.util.BusinessUtils;
 import com.ba.util.CommonUtils;
 import com.ba.util.RedisCache;
 import com.ba.vo.SysMenuVO;
@@ -108,7 +109,7 @@ public class LoginController extends BaseController {
 
         // 4. 生成token todo 将token生成和缓存方法解耦
         // 随机生成临时用户id
-        String tempUserId = "qh" + CommonUtils.getRandomCode(1) + userId.toString() + CommonUtils.getRandomCode(3);
+        String tempUserId = BusinessUtils.getTempUserId(userId, false);
         String password10L = user.getPassword().substring(0, 10);
         String token = tokenManage.createToken(
                 userInfo, UserContext.getPlatform(), TokenEnum.WEB.getCode(),

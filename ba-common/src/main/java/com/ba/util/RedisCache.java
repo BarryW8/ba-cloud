@@ -2,6 +2,7 @@ package com.ba.util;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisCallback;
@@ -45,6 +46,34 @@ public class RedisCache {
             return false;
         }
         return redisTemplate.hasKey(cacheKey);
+    }
+
+    /**
+     * 模糊删除
+     * @param fuzzyKey 模糊key（包含星号*）
+     * @return 删除数据量
+     */
+    public int deleteKeyValueFuzzy(String fuzzyKey) {
+        int count = 0;
+        try {
+            if (StringUtils.isEmpty(fuzzyKey)) {
+                log.error("deleteKeyValueFuzzy key 不能为空");
+                return 0;
+            }
+            // 获取所有key，用来判断缓存中是否存在该用户
+            log.info("deleteKeyValueFuzzy key={}", fuzzyKey);
+            Set<String> keys = this.getKeys(fuzzyKey);
+            if (CollectionUtils.isNotEmpty(keys)) {
+                // 删除用户缓存
+                for (String k : keys) {
+                    Boolean delete = redisTemplate.delete(k);
+                    if (delete) count++;
+                }
+            }
+            return count;
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     public boolean setKeyValue(String key, String value, Long timeout, TimeUnit timeUnit) {

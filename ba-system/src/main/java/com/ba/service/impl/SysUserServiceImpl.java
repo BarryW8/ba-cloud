@@ -14,10 +14,13 @@ import com.ba.model.system.SysUser;
 import com.ba.model.system.SysUserRole;
 import com.ba.service.SysUserService;
 import com.ba.enums.TokenEnum;
+import com.ba.token.TokenManage;
 import com.ba.uid.impl.CachedUidGenerator;
 import com.ba.util.BeanUtils;
+import com.ba.util.BusinessUtils;
 import com.ba.util.CommonUtils;
 import com.ba.util.RedisCache;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+@Slf4j
 @Service
 public class SysUserServiceImpl implements SysUserService {
 
@@ -40,6 +44,9 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Resource
     private CacheManage cacheManage;
+
+    @Resource
+    private TokenManage tokenManage;
 
     @Resource
     private RedisCache redisCache;
@@ -194,15 +201,8 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public void delUserCache(Long userId) {
         // 当角色信息修改时，刷新用户信息缓存，只刷新已有缓存中绑定该角色的用户信息
-        String tempUserId = "qh*" + userId.toString() + "*";
+        String tempUserId = BusinessUtils.getTempUserId(userId, true);
         String redisKey = String.format(CacheConstant.CACHE_STR_KEY_TOKEN_KEY, TokenEnum.WEB.getCode(), tempUserId);
-        // 获取所有key，用来判断缓存中是否存在该用户
-        Set<String> keys = redisCache.getKeys(redisKey);
-        if (!org.springframework.util.CollectionUtils.isEmpty(keys)) {
-            // 删除用户缓存
-            for (String k : keys) {
-                redisCache.deleteKeyValue(k);
-            }
-        }
+        redisCache.deleteKeyValueFuzzy(redisKey);
     }
 }

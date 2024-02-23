@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.ba.cache.CacheConstant;
 import com.ba.base.UserInfo;
 import com.ba.enums.TokenEnum;
+import com.ba.util.CommonUtils;
 import com.ba.util.DesUtils;
 import com.ba.util.RedisCache;
 import lombok.extern.slf4j.Slf4j;
