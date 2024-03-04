@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ba.mapper.OrgEmployeeMapper">
+    <resultMap id="BaseResultMap" type="com.ba.model.system.OrgEmployee">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="telephone" property="telephone"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="id_card" property="idCard"/>
+        <result column="org_id" property="orgId"/>
+        <result column="org_name" property="orgName"/>
+        <result column="order_by" property="orderBy"/>
+        <result column="note" property="note"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_by" property="updateBy"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,
+        name,
+        code,
+        telephone,
+        username,
+        password,
+        id_card,
+        org_id,
+        org_name,
+        order_by,
+        note,
+        create_time,
+        create_by,
+        update_time,
+        update_by
+    </sql>
+
+    <sql id="Base_Query_List">
+        <if test="userStatus != null and userStatus != ''">
+            and user_status = #{userStatus}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            and (
+            user_name like '%'#{keyword}'%'
+            or telephone like '%'#{keyword}'%'
+            )
+        </if>
+    </sql>
+
+    <insert id="insert">
+        insert into org_employee (
+            id,
+            name,
+            code,
+            telephone,
+            username,
+            password,
+            id_card,
+            org_id,
+            org_name,
+            order_by,
+            note,
+            create_time,
+            create_by
+        ) values (
+             #{id},
+             #{name},
+             #{code},
+             #{telephone},
+             #{username},
+             #{password},
+             #{idCard},
+             #{orgId},
+             #{orgName},
+             #{orderBy},
+             #{note},
+             #{createTime},
+             #{createBy}
+         )
+    </insert>
+
+    <!-- 逻辑删除 -->
+    <update id="deleteBySm">
+        update org_employee set is_delete=1, update_by=#{delUser}, update_time=#{delDate}
+        where id=#{modelId}
+    </update>
+
+    <update id="update">
+        update org_employee
+        set
+            name = #{name},
+            code = #{code},
+            telephone = #{telephone},
+            username = #{username},
+            password = #{password},
+            id_card = #{idCard},
+            org_id = #{orgId},
+            org_name = #{orgName},
+            order_by = #{orderBy},
+            note = #{note},
+            update_time = #{updateTime},
+            update_by = #{updateBy}
+        where id = #{id}
+    </update>
+
+    <select id="findById" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from org_employee
+        where is_delete=0 and id = #{id}
+    </select>
+
+    <select id="findPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from org_employee
+        where is_delete = 0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+        order by create_time desc
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*)
+        from org_employee
+        where is_delete = 0
+        <if test="tmpSql != '' and tmpSql != null">
+            ${tmpSql}
+        </if>
+    </select>
+
+    <select id="findList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        FROM org_employee WHERE is_delete=0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+    </select>
+
+    <select id="findListBySQL" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        FROM org_employee WHERE is_delete=0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+    </select>
+<!--    <select id="findListHasPwd" resultMap="BaseResultMap">-->
+<!--        select-->
+<!--        password,-->
+<!--        <include refid="Base_Column_List" />-->
+<!--        FROM org_employee WHERE is_delete=0-->
+<!--        <if test="sql != '' and sql != null">-->
+<!--            ${sql}-->
+<!--        </if>-->
+<!--    </select>-->
+
+</mapper>

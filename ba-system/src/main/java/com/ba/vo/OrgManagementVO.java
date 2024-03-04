@@ -1,6 +1,6 @@
 package com.ba.vo;
 
-import com.ba.model.system.Dictionary;
+import com.ba.model.system.OrgManagement;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -9,8 +9,8 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class DictionaryVO extends Dictionary {
+public class OrgManagementVO extends OrgManagement {
 
-    private List<DictionaryVO> children = new ArrayList<>();
+    private List<OrgManagementVO> children = new ArrayList<>();
 
 }

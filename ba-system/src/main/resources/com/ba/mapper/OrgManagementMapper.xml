@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ba.mapper.OrgManagementMapper">
+
+    <resultMap id="BaseResultMap" type="com.ba.model.system.OrgManagement">
+        <id property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="parentName" column="parent_name"/>
+        <result property="type" column="type"/>
+        <result property="isAttendance" column="is_attendance"/>
+        <result property="workBegTime" column="work_beg_time"/>
+        <result property="workEndTime" column="work_end_time"/>
+        <result property="isRest" column="is_rest"/>
+        <result property="restBegTime" column="rest_beg_time"/>
+        <result property="restEndTime" column="rest_end_time"/>
+        <result property="outTime" column="out_time"/>
+        <result property="orderBy" column="order_by"/>
+        <result property="note" column="note"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,
+        code,
+        name,
+        parent_id,
+        parent_name,
+        type,
+        is_attendance,
+        work_beg_time,
+        work_end_time,
+        is_rest,
+        rest_beg_time,
+        rest_end_time,
+        out_time,
+        order_by,
+        note,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+    </sql>
+
+    <sql id="Base_Query_List">
+        <if test="userStatus != null and userStatus != ''">
+            and user_status = #{userStatus}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            and (
+            user_name like '%'#{keyword}'%'
+            or telephone like '%'#{keyword}'%'
+            )
+        </if>
+    </sql>
+
+    <insert id="insert">
+        insert into org_management (
+            id,
+            code,
+            name,
+            parent_id,
+            parent_name,
+            type,
+            is_attendance,
+            work_beg_time,
+            work_end_time,
+            is_rest,
+            rest_beg_time,
+            rest_end_time,
+            out_time,
+            order_by,
+            note,
+            create_by,
+            create_time,
+            update_by,
+            update_time
+        ) values (
+            #{id},
+            #{code},
+            #{name},
+            #{parentId},
+            #{parentName},
+            #{type},
+            #{isAttendance},
+            #{workBegTime},
+            #{workEndTime},
+            #{isRest},
+            #{restBegTime},
+            #{restEndTime},
+            #{outTime},
+            #{orderBy},
+            #{note},
+            #{createBy},
+            #{createTime},
+            #{updateBy},
+            #{updateTime}
+        )
+    </insert>
+
+    <!-- 逻辑删除 -->
+    <update id="deleteBySm">
+        update org_management set is_delete=1, update_by=#{delUser}, update_time=#{delDate}
+        where id=#{modelId}
+    </update>
+
+    <update id="update">
+        update org_management
+        set code = #{code},
+            name = #{name},
+            parent_id = #{parentId},
+            parent_name = #{parentName},
+            type = #{type},
+            is_attendance = #{isAttendance},
+            work_beg_time = #{workBegTime},
+            work_end_time = #{workEndTime},
+            is_rest = #{isRest},
+            rest_beg_time = #{restBegTime},
+            rest_end_time = #{restEndTime},
+            out_time = #{outTime},
+            order_by = #{orderBy},
+            note = #{note},
+            update_by = #{updateBy},
+            update_time = #{updateTime}
+        where id = #{id}
+    </update>
+
+    <select id="findById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from org_management
+        where is_delete=0 and id = #{id}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*)
+        from org_management
+        where is_delete = 0
+        <include refid="Base_Query_List" />
+    </select>
+
+    <select id="findPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from org_management
+        where is_delete = 0
+        <include refid="Base_Query_List" />
+        order by order_by, create_time desc
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <select id="findList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        FROM org_management WHERE is_delete=0
+        <include refid="Base_Query_List" />
+    </select>
+
+    <select id="findListBySQL" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        FROM org_management WHERE is_delete=0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+    </select>
+
+</mapper>
