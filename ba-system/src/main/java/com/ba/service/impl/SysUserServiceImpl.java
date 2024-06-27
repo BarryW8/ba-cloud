@@ -202,7 +202,9 @@ public class SysUserServiceImpl implements SysUserService {
     public void delUserCache(Long userId) {
         // 当角色信息修改时，刷新用户信息缓存，只刷新已有缓存中绑定该角色的用户信息
         String tempUserId = BusinessUtils.getTempUserId(userId, true);
-        String redisKey = String.format(CacheConstant.CACHE_STR_KEY_TOKEN_KEY, TokenEnum.WEB.getCode(), tempUserId);
-        redisCache.deleteKeyValueFuzzy(redisKey);
+        String tokenKey = String.format(CacheConstant.CACHE_STR_KEY_TOKEN_KEY, TokenEnum.WEB.getCode(), tempUserId);
+        redisCache.deleteKeyValueFuzzy(tokenKey);
+        String userInfoKey = String.format(CacheConstant.CACHE_KEY_USER_INFO, TokenEnum.WEB.getCode(), tempUserId);
+        redisCache.deleteKeyValueFuzzy(userInfoKey);
     }
 }

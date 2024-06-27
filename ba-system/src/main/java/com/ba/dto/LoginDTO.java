@@ -29,6 +29,6 @@ public class LoginDTO {
     /**
      * 登录类型0账户密码1扫码登录
      */
-    private Integer loginType;
+    private int loginType;
 
 }
