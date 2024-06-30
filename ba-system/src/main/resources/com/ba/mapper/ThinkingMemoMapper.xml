@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ba.mapper.ThinkingMemoMapper">
+
+    <resultMap id="BaseResultMap" type="com.ba.model.system.ThinkingMemo">
+        <id property="id" column="id"/>
+        <result property="pid" column="pid"/>
+        <result property="type" column="type"/>
+        <result property="ownerId" column="owner_id"/>
+        <result property="title" column="title"/>
+        <result property="subTitle" column="sub_title"/>
+        <result property="content" column="content"/>
+        <result property="icon" column="icon"/>
+        <result property="lastTime" column="last_time"/>
+        <result property="isTop" column="is_top"/>
+        <result property="orderBy" column="order_by"/>
+        <result property="note" column="note"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,
+        pid,
+        type,
+        owner_id,
+        title,
+        sub_title,
+        content,
+        icon,
+        last_time,
+        is_top,
+        order_by,
+        note,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+    </sql>
+
+    <sql id="Base_Query_List">
+        <if test="ownerId != null">
+            and owner_id = #{ownerId}
+        </if>
+    </sql>
+
+    <insert id="insert">
+        insert into thinking_memo (
+            id,
+            pid,
+            type,
+            owner_id,
+            title,
+            sub_title,
+            content,
+            icon,
+            last_time,
+            is_top,
+            order_by,
+            note,
+            create_by,
+            create_time,
+            update_by,
+            update_time
+        ) values (
+            #{id},
+            #{pid},
+            #{type},
+            #{ownerId},
+            #{title},
+            #{subTitle},
+            #{content},
+            #{icon},
+            #{lastTime},
+            #{isTop},
+            #{orderBy},
+            #{note},
+            #{createBy},
+            #{createTime},
+            #{updateBy},
+            #{updateTime}
+        )
+    </insert>
+
+    <!-- 逻辑删除 -->
+    <update id="deleteBySm">
+        update thinking_memo set is_delete=1, update_by=#{delUser}, update_time=#{delDate}
+        where id=#{modelId}
+    </update>
+
+    <update id="update">
+        update thinking_memo
+        set pid = #{pid},
+            type = #{type},
+            owner_id = #{ownerId},
+            title = #{title},
+            sub_title = #{subTitle},
+            content = #{content},
+            icon = #{icon},
+            last_time = #{lastTime},
+            is_top = #{isTop},
+            order_by = #{orderBy},
+            note = #{note},
+            update_by = #{updateBy},
+            update_time = #{updateTime}
+        where id = #{id}
+    </update>
+
+    <select id="findById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from thinking_memo
+        where is_delete=0 and id = #{id}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*)
+        from thinking_memo
+        where is_delete = 0
+        <include refid="Base_Query_List" />
+    </select>
+
+    <select id="findPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from thinking_memo
+        where is_delete = 0
+        <include refid="Base_Query_List" />
+        order by order_by, create_time desc
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <select id="findList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        FROM thinking_memo WHERE is_delete=0
+        <include refid="Base_Query_List" />
+    </select>
+
+    <select id="findListBySQL" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        FROM thinking_memo WHERE is_delete=0
+        <if test="sql != '' and sql != null">
+            ${sql}
+        </if>
+    </select>
+
+</mapper>
