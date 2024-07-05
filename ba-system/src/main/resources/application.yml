@@ -5,7 +5,7 @@ server:
 
 customer:
   ssh:
-    is-use: T # 是否启用：T-启用 F-禁用
+    is-use: F # 是否启用：T-启用 F-禁用
     username: ubuntu # 服务器登录用户名
     password: /Users/barryw/Documents/programs/my/ba-cloud/ba-common/src/main/resources/prvkey.pem # 服务器登录密码 或 密钥文件路径
     host: 43.138.219.96 # 服务器公网IP

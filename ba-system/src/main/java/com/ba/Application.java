@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 @MapperScan("com.ba.mapper")
 @EnableFeignClients
-@EnableDiscoveryClient(autoRegister = false) // 禁用 Nacos客户端
+@EnableDiscoveryClient(autoRegister = false) // 禁用 Nacos 客户端
 public class Application {
 
     public static void main(String[] args) {

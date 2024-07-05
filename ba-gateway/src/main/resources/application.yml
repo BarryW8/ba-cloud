@@ -5,7 +5,7 @@ spring:
     gateway:
       routes: #数组形式
         - id: ba-system  #路由唯一标识
-          uri: http://127.0.0.1:8100  #想要转发到的地址
+          uri: http://127.0.0.1:7100  #想要转发到的地址
 #          uri: lb://ba-system #从nacos进行转发
           order: 1 #优先级，数字越小优先级越高
           #http://127.0.0.1:8888/system-server/sysUser/findById?modelId=5749761161124921344
@@ -15,7 +15,7 @@ spring:
             - StripPrefix=1  #去掉第一层前缀（转发地址：lb://ba-system/**，去掉 /system-server）
             - PrefixPath=/system  # 添加前缀（转发地址：lb://ba-system/system/**，加上 /system）
         - id: ba-file
-          uri: http://127.0.0.1:8101
+          uri: http://127.0.0.1:7101
 #          uri: lb://ba-file #从nacos进行转发
           order: 1
           predicates:
