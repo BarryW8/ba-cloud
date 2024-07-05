@@ -14,10 +14,10 @@ import org.springframework.context.annotation.Bean;
 @MapperScan("com.ba.mapper")
 @EnableFeignClients
 @EnableDiscoveryClient(autoRegister = false) // 禁用 Nacos客户端
-public class SystemApplication {
+public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(SystemApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 
     @Bean
