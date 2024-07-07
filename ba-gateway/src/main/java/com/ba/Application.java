@@ -7,9 +7,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient(autoRegister = false) // 禁用 Nacos客户端
-public class GatewayApplication {
+public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(GatewayApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 }
