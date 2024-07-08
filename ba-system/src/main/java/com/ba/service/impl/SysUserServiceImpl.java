@@ -8,18 +8,17 @@ import com.ba.cache.CacheConstant;
 import com.ba.cache.CacheManage;
 import com.ba.enums.ResEnum;
 import com.ba.exception.ServiceException;
+import com.ba.mapper.SysRoleMapper;
 import com.ba.mapper.SysUserMapper;
 import com.ba.mapper.SysUserRoleMapper;
+import com.ba.model.system.SysRole;
 import com.ba.model.system.SysUser;
 import com.ba.model.system.SysUserRole;
 import com.ba.service.SysUserService;
 import com.ba.enums.TokenEnum;
 import com.ba.token.TokenManage;
 import com.ba.uid.impl.CachedUidGenerator;
-import com.ba.util.BeanUtils;
-import com.ba.util.BusinessUtils;
-import com.ba.util.CommonUtils;
-import com.ba.util.RedisCache;
+import com.ba.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -38,6 +37,9 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Resource
     private SysUserMapper sysUserMapper;
+
+    @Resource
+    private SysRoleMapper sysRoleMapper;
 
     @Resource
     private SysUserRoleMapper sysUserRoleMapper;
@@ -75,10 +77,20 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public SysUserRole findUserRole(Long userId) {
-        List<SysUserRole> list = sysUserRoleMapper.findListBySQL(" and user_id = " + userId);
-        if (CollectionUtils.isEmpty(list)) return null;
-        return list.get(0);
+    public SysRole findUserRoleByAppType(Long userId) {
+        // 查询用户绑定的角色
+        List<SysUserRole> userRoles = sysUserRoleMapper.findListBySQL(" and user_id = " + userId);
+        if (CollectionUtils.isNotEmpty(userRoles)) {
+            List<Long> roleIds = userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+            StringBuilder sql = new StringBuilder();
+            sql.append(" and app_type = ").append(UserContext.getAppType().getCode());
+            sql.append(" and id in (").append(StringUtils.join(roleIds, ",")).append(")");
+            List<SysRole> roles = sysRoleMapper.findListBySQL(sql.toString());
+            if (CollectionUtils.isNotEmpty(roles)) {
+                return roles.get(0);
+            }
+        }
+        return null;
     }
 
     @Transactional
@@ -179,15 +191,15 @@ public class SysUserServiceImpl implements SysUserService {
         UserInfo userInfo = BeanUtils.convertTo(user, UserInfo::new);
 
         // 2. 查询用户绑定角色信息
-        SysUserRole userRole = findUserRole(userId);
-        if (userRole == null) {
+        SysRole role = findUserRoleByAppType(userId);
+        if (role == null) {
             // 用户未绑定角色
             this.delUserCache(userId);
             throw new ServiceException(ResEnum.ACCOUNT_ROLE_ERROR);
         }
-        userInfo.setRoleId(userRole.getRoleId());
+        userInfo.setRoleId(role.getId());
         Long superManager = 6067634233359835136L;
-        if (superManager.equals(userRole.getRoleId())) {
+        if (superManager.equals(role.getId())) {
             userInfo.setSuperManager(true);
         }
 

@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/sysUser")
@@ -106,11 +105,10 @@ public class SysUserController extends BaseController implements BaseCommonContr
         // 封装角色名称字段
         List<SysUserVO> voList = BeanUtils.convertListTo(pageList.getData(), SysUserVO::new);
         for (SysUserVO vo : voList) {
-            SysUserRole userRole = sysUserService.findUserRole(vo.getId());
-            if (Objects.isNull(userRole)) continue;
-            SysRole role = sysRoleService.findById(userRole.getRoleId());
-            if (Objects.isNull(role)) continue;
-            vo.setRoleName(role.getRoleName());
+            SysRole role = sysUserService.findUserRoleByAppType(vo.getId());
+            if (Objects.nonNull(role)) {
+                vo.setRoleName(role.getRoleName());
+            }
         }
 
         // 封装结果集
@@ -167,7 +165,7 @@ public class SysUserController extends BaseController implements BaseCommonContr
     @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @GetMapping("findUserRole")
     public ResData findUserRole(@RequestParam Long modelId) {
-        return ResData.success(sysUserService.findUserRole(modelId));
+        return ResData.success(sysUserService.findUserRoleByAppType(modelId));
     }
 
 }

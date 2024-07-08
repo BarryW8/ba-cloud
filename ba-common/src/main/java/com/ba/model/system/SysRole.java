@@ -19,6 +19,11 @@ public class SysRole extends BaseModel {
     private String roleName;
 
     /**
+     * 应用类型
+     */
+    private Integer appType;
+
+    /**
      * 角色状态 0启用 1停用
      */
     private int status;

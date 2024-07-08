@@ -64,7 +64,6 @@ public class LoginController extends BaseController {
     private RedisCache redisCache;
 
     // 验证码生成
-
     private SysUser checkUser(List<SysUser> userList) {
         if (CollectionUtils.isEmpty(userList)) {
             // 未注册

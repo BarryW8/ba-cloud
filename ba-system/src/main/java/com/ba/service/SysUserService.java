@@ -2,10 +2,9 @@ package com.ba.service;
 
 import com.ba.base.BaseService;
 import com.ba.base.UserInfo;
-import com.ba.dto.SysUserRoleDTO;
+import com.ba.model.system.SysRole;
 import com.ba.model.system.SysUser;
 import com.ba.model.system.SysUserRole;
-import com.ba.vo.SysUserRoleVO;
 
 import java.util.List;
 
@@ -24,5 +23,5 @@ public interface SysUserService extends BaseService<SysUser> {
 
     int saveUserRole(SysUserRole model);
 
-    SysUserRole findUserRole(Long userId);
+    SysRole findUserRoleByAppType(Long userId);
 }
