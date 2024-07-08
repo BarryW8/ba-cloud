@@ -79,6 +79,10 @@ public class LoginController extends BaseController {
             // 账号已停用
             throw new ServiceException(ResEnum.ACCOUNT_DISABLED);
         }
+        if (StringUtils.isEmpty(user.getAppType()) || !user.getAppType().contains(UserContext.getAppType().getCode())) {
+            // 账号未授权应用
+            throw new ServiceException(ResEnum.ACCOUNT_APP_ERROR);
+        }
         return user;
     }
 

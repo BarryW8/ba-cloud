@@ -20,7 +20,7 @@ public enum ResEnum {
     ACCOUNT_PWD_ERROR(250003, "账号或者密码错误"),
     ACCOUNT_EXPIRED(250004, "登录过期，请重新登录"),
     ACCOUNT_CUSTOMER_ERROR(250005, "客户信息不存在"),
-    ACCOUNT_COMPANY_ERROR(250006, "未授权商家"),
+    ACCOUNT_APP_ERROR(250006, "未授权应用"),
     ACCOUNT_ROLE_ERROR(250007, "未授权角色"),
     ACCOUNT_PARKING_ERROR(250008, "未授权车场"),
     ACCOUNT_CAPTCHA_ERROR(250009, "验证码错误"),
