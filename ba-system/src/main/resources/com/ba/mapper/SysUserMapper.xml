@@ -10,6 +10,10 @@
         <result column="email" property="email"/>
         <result column="sex" property="sex"/>
         <result column="user_status" property="userStatus"/>
+        <result column="user_source" property="userSource"/>
+        <result column="app_type" property="appType"/>
+        <result column="login_num" property="loginNum"/>
+        <result column="login_time" property="loginTime"/>
         <result column="order_by" property="orderBy"/>
         <result column="note" property="note"/>
         <result column="create_time" property="createTime"/>
@@ -28,6 +32,10 @@
         email,
         sex,
         user_status,
+        user_source,
+        app_type,
+        login_num,
+        login_time,
         order_by,
         note,
         create_time,
@@ -60,6 +68,10 @@
             email,
             sex,
             user_status,
+            user_source,
+            app_type,
+            login_num,
+            login_time,
             order_by,
             note,
             create_time,
@@ -75,6 +87,10 @@
              #{email},
              #{sex},
              #{userStatus},
+             #{userSource},
+             #{appType},
+             #{loginNum},
+             #{loginTime},
              #{orderBy},
              #{note},
              #{createTime},
@@ -99,6 +115,10 @@
             email = #{email},
             sex = #{sex},
             user_status = #{userStatus},
+            user_source = #{userSource},
+            app_type = #{appType},
+            login_num = #{loginNum},
+            login_time = #{loginTime},
             order_by = #{orderBy},
             note = #{note},
             update_time = #{updateTime},

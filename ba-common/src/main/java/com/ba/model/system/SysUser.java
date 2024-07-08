@@ -64,12 +64,17 @@ public class SysUser extends BaseModel {
     private int userSource;
 
     /**
+     * 应用类型 多个逗号拼接
+     */
+    private String appType;
+
+    /**
      * 登录次数
      */
     private int loginNum;
 
     /**
-     * 最新登录时间
+     * 最后登录时间
      */
     private String loginTime;
 

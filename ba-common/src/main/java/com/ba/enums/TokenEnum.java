@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public enum TokenEnum {
     OTHER("0", "其他", 60 * 30L),
-    WEB("1", "Web", 60 * 30L),
-    APP("2", "App", 60 * 60 * 24 * 7L),
+    WEB("1", "WEB", 60 * 30L),
+    APP("2", "Thinking App", 60 * 60 * 24 * 7L),
     APPLET("3", "小程序", 60 * 60 * 24L),
     ;
 
