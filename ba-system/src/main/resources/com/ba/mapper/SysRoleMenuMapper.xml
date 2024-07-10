@@ -22,6 +22,18 @@
         ,    role_id,    menu_id,    menu_code,    permission,note,       order_by,    create_time,    create_by,    update_time,    update_by
     </sql>
 
+    <sql id="Base_Query_List">
+        <!--        <if test="userStatus != null and userStatus != ''">-->
+        <!--            and user_status = #{userStatus}-->
+        <!--        </if>-->
+        <!--        <if test="keyword != null and keyword != ''">-->
+        <!--            and (-->
+        <!--            user_name like '%'#{keyword}'%'-->
+        <!--            or telephone like '%'#{keyword}'%'-->
+        <!--            )-->
+        <!--        </if>-->
+    </sql>
+
     <insert id="insert" parameterType="com.ba.model.system.SysRoleMenu">
         insert into sys_role_menu (id, role_id, menu_id, menu_code, permission, note, order_by, create_time, create_by,
                                    update_time, update_by)
@@ -77,9 +89,7 @@
         <include refid="Base_Column_List"/>
         from sys_role_menu
         where is_delete = 0
-        <if test="sql != '' and sql != null">
-            ${sql}
-        </if>
+        <include refid="Base_Query_List" />
         order by create_time desc,order_by desc
         limit #{pageNum},#{pageSize}
     </select>
@@ -88,18 +98,14 @@
         select count(*)
         from sys_role_menu
         where is_delete = 0
-        <if test="tmpSql != '' and tmpSql != null">
-            ${tmpSql}
-        </if>
+        <include refid="Base_Query_List" />
     </select>
 
     <select id="findList" parameterType="String" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         FROM sys_role_menu WHERE is_delete=0
-        <if test="sql != '' and sql != null">
-            ${sql}
-        </if>
+        <include refid="Base_Query_List" />
         order by create_time desc,order_by desc
     </select>
 

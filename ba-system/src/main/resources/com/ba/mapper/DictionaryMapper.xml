@@ -32,6 +32,18 @@
         update_by
     </sql>
 
+    <sql id="Base_Query_List">
+<!--        <if test="userStatus != null and userStatus != ''">-->
+<!--            and user_status = #{userStatus}-->
+<!--        </if>-->
+<!--        <if test="keyword != null and keyword != ''">-->
+<!--            and (-->
+<!--            user_name like '%'#{keyword}'%'-->
+<!--            or telephone like '%'#{keyword}'%'-->
+<!--            )-->
+<!--        </if>-->
+    </sql>
+
     <insert id="insert">
         insert into dictionary (
             id,
@@ -99,9 +111,7 @@
         <include refid="Base_Column_List"/>
         from dictionary
         where is_delete = 0
-        <if test="sql != '' and sql != null">
-            ${sql}
-        </if>
+        <include refid="Base_Query_List" />
         order by create_time desc
         limit #{pageNum},#{pageSize}
     </select>
@@ -110,18 +120,14 @@
         select count(*)
         from dictionary
         where is_delete = 0
-        <if test="tmpSql != '' and tmpSql != null">
-            ${tmpSql}
-        </if>
+        <include refid="Base_Query_List" />
     </select>
 
     <select id="findList" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         FROM dictionary WHERE is_delete=0
-        <if test="sql != '' and sql != null">
-            ${sql}
-        </if>
+        <include refid="Base_Query_List" />
         order by order_by
     </select>
 

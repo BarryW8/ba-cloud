@@ -2,7 +2,9 @@ package com.ba.dto;
 
 import com.ba.base.BasePage;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class SysRolePage extends BasePage {
 

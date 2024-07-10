@@ -145,9 +145,7 @@
         <include refid="Base_Column_List"/>
         from sys_menu
         where is_delete = 0
-        <if test="sql != '' and sql != null">
-            ${sql}
-        </if>
+        <include refid="Base_Query_List" />
         order by order_by, create_time desc
         limit #{pageNum},#{pageSize}
     </select>
@@ -156,9 +154,7 @@
         select count(*)
         from sys_menu
         where is_delete = 0
-        <if test="tmpSql != '' and tmpSql != null">
-            ${tmpSql}
-        </if>
+        <include refid="Base_Query_List" />
     </select>
 
     <select id="findList" resultMap="BaseResultMap">

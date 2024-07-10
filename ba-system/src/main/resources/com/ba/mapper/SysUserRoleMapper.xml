@@ -31,6 +31,18 @@
         r.role_name
     </sql>
 
+    <sql id="Base_Query_List">
+        <!--        <if test="userStatus != null and userStatus != ''">-->
+        <!--            and user_status = #{userStatus}-->
+        <!--        </if>-->
+        <!--        <if test="keyword != null and keyword != ''">-->
+        <!--            and (-->
+        <!--            user_name like '%'#{keyword}'%'-->
+        <!--            or telephone like '%'#{keyword}'%'-->
+        <!--            )-->
+        <!--        </if>-->
+    </sql>
+
     <insert id="insert" parameterType="com.ba.vo.SysUserRoleVO">
         insert into sys_user_role (
             id,
@@ -116,9 +128,7 @@
         where ur.is_delete=0
         and u.is_delete=0
         and r.is_delete=0
-        <if test="sql != '' and sql != null">
-            ${sql}
-        </if>
+        <include refid="Base_Query_List" />
         order by ur.create_time desc, ur.order_by desc
         limit #{pageNum},#{pageSize}
     </select>
@@ -131,9 +141,7 @@
         where ur.is_delete=0
         and u.is_delete=0
         and r.is_delete=0
-        <if test="tmpSql != '' and tmpSql != null">
-            ${tmpSql}
-        </if>
+        <include refid="Base_Query_List" />
     </select>
 
     <select id="findList" parameterType="String" resultMap="BaseResultMap">
@@ -145,9 +153,7 @@
         where ur.is_delete=0
         and u.is_delete=0
         and r.is_delete=0
-        <if test="sql != '' and sql != null">
-            ${sql}
-        </if>
+        <include refid="Base_Query_List" />
         order by ur.create_time desc, ur.order_by desc
     </select>
 

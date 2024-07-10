@@ -77,13 +77,13 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public SysRole findUserRoleByAppType(Long userId) {
+    public SysRole findUserRoleByAppType(Long userId, Integer appType) {
         // 查询用户绑定的角色
         List<SysUserRole> userRoles = sysUserRoleMapper.findListBySQL(" and user_id = " + userId);
         if (CollectionUtils.isNotEmpty(userRoles)) {
             List<Long> roleIds = userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
             StringBuilder sql = new StringBuilder();
-            sql.append(" and app_type = ").append(UserContext.getAppType().getCode());
+            sql.append(" and app_type = ").append(appType);
             sql.append(" and id in (").append(StringUtils.join(roleIds, ",")).append(")");
             List<SysRole> roles = sysRoleMapper.findListBySQL(sql.toString());
             if (CollectionUtils.isNotEmpty(roles)) {
@@ -191,7 +191,7 @@ public class SysUserServiceImpl implements SysUserService {
         UserInfo userInfo = BeanUtils.convertTo(user, UserInfo::new);
 
         // 2. 查询用户绑定角色信息
-        SysRole role = findUserRoleByAppType(userId);
+        SysRole role = findUserRoleByAppType(userId, Integer.parseInt(UserContext.getAppType().getCode()));
         if (role == null) {
             // 用户未绑定角色
             this.delUserCache(userId);

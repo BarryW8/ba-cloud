@@ -23,5 +23,5 @@ public interface SysUserService extends BaseService<SysUser> {
 
     int saveUserRole(SysUserRole model);
 
-    SysRole findUserRoleByAppType(Long userId);
+    SysRole findUserRoleByAppType(Long userId, Integer appType);
 }

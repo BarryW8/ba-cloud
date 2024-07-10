@@ -138,9 +138,7 @@
         <include refid="Base_Column_List"/>
         from sys_user
         where is_delete = 0
-        <if test="sql != '' and sql != null">
-            ${sql}
-        </if>
+        <include refid="Base_Query_List" />
         order by create_time desc
         limit #{pageNum},#{pageSize}
     </select>
@@ -149,18 +147,14 @@
         select count(*)
         from sys_user
         where is_delete = 0
-        <if test="tmpSql != '' and tmpSql != null">
-            ${tmpSql}
-        </if>
+        <include refid="Base_Query_List" />
     </select>
 
     <select id="findList" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         FROM sys_user WHERE is_delete=0
-        <if test="sql != '' and sql != null">
-            ${sql}
-        </if>
+        <include refid="Base_Query_List" />
     </select>
 
     <select id="findListBySQL" resultMap="BaseResultMap">

@@ -2,13 +2,11 @@ package com.ba.controller;
 
 import cn.hutool.crypto.SecureUtil;
 import com.ba.annotation.Log;
-import com.ba.base.BaseCommonController;
-import com.ba.base.BaseController;
-import com.ba.base.PageView;
+import com.ba.base.*;
 import com.ba.annotation.Permission;
-import com.ba.base.SimpleModel;
 import com.ba.cache.CacheManage;
 import com.ba.dto.SysUserPage;
+import com.ba.dto.UserRoleDTO;
 import com.ba.enums.OperationEnum;
 import com.ba.model.system.SysRole;
 import com.ba.model.system.SysUser;
@@ -22,12 +20,7 @@ import com.ba.response.ResData;
 import com.ba.util.StringUtils;
 import com.ba.vo.SysUserVO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -103,19 +96,19 @@ public class SysUserController extends BaseController implements BaseCommonContr
         PageView<SysUser> pageList = sysUserService.findPage(queryMap);
 
         // 封装角色名称字段
-        List<SysUserVO> voList = BeanUtils.convertListTo(pageList.getData(), SysUserVO::new);
-        for (SysUserVO vo : voList) {
-            SysRole role = sysUserService.findUserRoleByAppType(vo.getId());
-            if (Objects.nonNull(role)) {
-                vo.setRoleName(role.getRoleName());
-            }
-        }
+//        List<SysUserVO> voList = BeanUtils.convertListTo(pageList.getData(), SysUserVO::new);
+//        for (SysUserVO vo : voList) {
+//            SysRole role = sysUserService.findUserRoleByAppType(vo.getId());
+//            if (Objects.nonNull(role)) {
+//                vo.setRoleName(role.getRoleName());
+//            }
+//        }
 
         // 封装结果集
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("data", voList);
-        resultMap.put("total", pageList.getTotal());
-        return ResData.success(resultMap);
+//        Map<String, Object> resultMap = new HashMap<>();
+//        resultMap.put("data", voList);
+//        resultMap.put("total", pageList.getTotal());
+        return ResData.success(pageList);
     }
 
     private Map<String, Object> queryCondition(SysUserPage dto) {
@@ -163,9 +156,13 @@ public class SysUserController extends BaseController implements BaseCommonContr
      * 查询用户授权角色信息
      */
     @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
-    @GetMapping("findUserRole")
-    public ResData findUserRole(@RequestParam Long modelId) {
-        return ResData.success(sysUserService.findUserRoleByAppType(modelId));
+    @PostMapping("findUserRole")
+    public ResData findUserRole(@RequestBody UserRoleDTO dto) {
+        Integer appType = dto.getAppType();
+        if (appType == null) {
+            appType = Integer.parseInt(UserContext.getAppType().getCode());
+        }
+        return ResData.success(sysUserService.findUserRoleByAppType(dto.getUserId(), appType));
     }
 
 }
