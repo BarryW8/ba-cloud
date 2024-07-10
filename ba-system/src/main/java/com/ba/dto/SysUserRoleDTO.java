@@ -2,30 +2,17 @@ package com.ba.dto;
 
 import com.ba.model.system.SysUserRole;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class SysUserRoleDTO {
+public class SysUserRoleDTO extends SysUserRole {
 
     /**
-     * 系统id
+     * 应用类型
      */
-    private Long id;
-
-    /**
-     * 用户id
-     */
-    private Long userId;
-
-    /**
-     * 角色id
-     */
-    private Long roleId;
-
-    /**
-     * 保存的数据
-     */
-    private List<SysUserRole> userRoles;
+    private Integer appType;
 
 }

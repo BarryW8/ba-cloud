@@ -2,31 +2,25 @@ package com.ba.controller;
 
 import cn.hutool.crypto.SecureUtil;
 import com.ba.annotation.Log;
-import com.ba.base.*;
 import com.ba.annotation.Permission;
+import com.ba.base.*;
 import com.ba.cache.CacheManage;
 import com.ba.dto.SysUserPage;
-import com.ba.dto.UserRoleDTO;
+import com.ba.dto.SysUserRoleDTO;
 import com.ba.enums.OperationEnum;
-import com.ba.model.system.SysRole;
 import com.ba.model.system.SysUser;
 import com.ba.model.system.SysUserRole;
+import com.ba.response.ResData;
 import com.ba.service.SysMenuService;
 import com.ba.service.SysRoleService;
 import com.ba.service.SysUserService;
 import com.ba.uid.impl.CachedUidGenerator;
-import com.ba.util.BeanUtils;
-import com.ba.response.ResData;
 import com.ba.util.StringUtils;
-import com.ba.vo.SysUserVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/sysUser")
@@ -143,8 +137,8 @@ public class SysUserController extends BaseController implements BaseCommonContr
     @Log(business = BUSINESS, operationType = OperationEnum.AUTH)
     @Permission(menuFlag = MENU_CODE, perms = OperationEnum.AUTH)
     @PostMapping("saveUserRole")
-    public ResData saveUserRole(@RequestBody SysUserRole model) {
-        int result = sysUserService.saveUserRole(model);
+    public ResData saveUserRole(@RequestBody SysUserRoleDTO dto) {
+        int result = sysUserService.saveUserRole(dto);
         if (result > 0) {
             // todo 刷新缓存
             return ResData.success();
@@ -157,7 +151,7 @@ public class SysUserController extends BaseController implements BaseCommonContr
      */
     @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @PostMapping("findUserRole")
-    public ResData findUserRole(@RequestBody UserRoleDTO dto) {
+    public ResData findUserRole(@RequestBody SysUserRoleDTO dto) {
         Integer appType = dto.getAppType();
         if (appType == null) {
             appType = Integer.parseInt(UserContext.getAppType().getCode());

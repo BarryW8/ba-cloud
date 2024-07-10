@@ -6,6 +6,7 @@ import com.ba.base.UserContext;
 import com.ba.base.UserInfo;
 import com.ba.cache.CacheConstant;
 import com.ba.cache.CacheManage;
+import com.ba.dto.SysUserRoleDTO;
 import com.ba.enums.ResEnum;
 import com.ba.exception.ServiceException;
 import com.ba.mapper.SysRoleMapper;
@@ -58,22 +59,33 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Transactional
     @Override
-    public int saveUserRole(SysUserRole model) {
+    public int saveUserRole(SysUserRoleDTO dto) {
         Long currentUserId = UserContext.getUserId();
         String currentDateStr = CommonUtils.getCurrentDate();
-        Long roleId = model.getRoleId();
-        Long userId = model.getUserId();
-        // 1. 删除旧数据
-        sysUserRoleMapper.deleteByUserId(userId);
+        Long roleId = dto.getRoleId();
+        Long userId = dto.getUserId();
+        Integer appType = dto.getAppType();
+        // 1. 根据appType查询所有角色id，防止误删
+        StringBuilder sql = new StringBuilder();
+        sql.append(" and app_type = ").append(appType);
+        List<SysRole> roles = sysRoleMapper.findListBySQL(sql.toString());
+        List<Long> roleIds = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(roles)) {
+            roleIds = roles.stream().map(SysRole::getId).collect(Collectors.toList());
+        }
+        // 2. 删除旧数据
+        sysUserRoleMapper.deleteByUserId(userId, roleIds);
         // 判断是否需要新增，同时防止空删除保存失败
         if (roleId == null) {
             return 1;
         }
-        // 2. 保存新数据
-        model.setId(uidGenerator.getUID());
-        model.setCreateBy(currentUserId);
-        model.setCreateTime(currentDateStr);
-        return sysUserRoleMapper.insert(model);
+        // 3. 保存新数据
+        SysUserRole userRole = new SysUserRole();
+        BeanUtils.copyProperties(dto, userRole);
+        userRole.setId(uidGenerator.getUID());
+        userRole.setCreateBy(currentUserId);
+        userRole.setCreateTime(currentDateStr);
+        return sysUserRoleMapper.insert(userRole);
     }
 
     @Override

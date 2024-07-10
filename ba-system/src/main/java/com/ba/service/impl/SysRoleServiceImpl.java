@@ -1,37 +1,23 @@
 package com.ba.service.impl;
 
-import com.ba.base.Page;
 import com.ba.base.PageView;
 import com.ba.base.SimpleModel;
-import com.ba.base.UserContext;
-import com.ba.base.UserInfo;
 import com.ba.cache.CacheManage;
-import com.ba.dto.SysRoleDTO;
-import com.ba.dto.SysUserRoleDTO;
-import com.ba.exception.ServiceException;
 import com.ba.mapper.SysRoleMapper;
 import com.ba.mapper.SysRoleMenuMapper;
 import com.ba.mapper.SysUserRoleMapper;
 import com.ba.model.system.SysRole;
 import com.ba.model.system.SysRoleMenu;
-import com.ba.model.system.SysUserRole;
 import com.ba.service.SysRoleService;
 import com.ba.uid.impl.CachedUidGenerator;
-import com.ba.util.BeanUtils;
-import com.ba.util.CommonUtils;
 import com.ba.util.StringUtils;
 import com.ba.vo.SysMenuVO;
-import com.ba.vo.SysUserRoleVO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
