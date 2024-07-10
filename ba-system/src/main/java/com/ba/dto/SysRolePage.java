@@ -18,4 +18,9 @@ public class SysRolePage extends BasePage {
      */
     private Integer status;
 
+    /**
+     * 应用类型
+     */
+    private Integer appType;
+
 }
