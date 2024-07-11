@@ -43,7 +43,7 @@ public class ThinkingMemoController extends BaseController implements BaseCommon
     @Resource
     private CachedUidGenerator uidGenerator;
 
-    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
+//    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @GetMapping("findById")
     @Override
     public ResData findById(@RequestParam Long modelId) {
@@ -51,7 +51,7 @@ public class ThinkingMemoController extends BaseController implements BaseCommon
     }
 
     @Log(business = BUSINESS, operationType = OperationEnum.ADD)
-    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.ADD)
+//    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.ADD)
     @PostMapping("add")
     @Override
     public ResData add(@RequestBody ThinkingMemo model) {
@@ -70,7 +70,7 @@ public class ThinkingMemoController extends BaseController implements BaseCommon
     }
 
     @Log(business = BUSINESS, operationType = OperationEnum.EDIT)
-    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.EDIT)
+//    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.EDIT)
     @PostMapping("edit")
     @Override
     public ResData edit(@RequestBody ThinkingMemo model) {
@@ -82,7 +82,7 @@ public class ThinkingMemoController extends BaseController implements BaseCommon
         return ResData.error("保存失败!");
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
+//    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @PostMapping("findPage")
     @Override
     public ResData findPage(@RequestBody ThinkingMemoPageDTO dto) {
@@ -92,7 +92,7 @@ public class ThinkingMemoController extends BaseController implements BaseCommon
         return ResData.success(pageList);
     }
 
-    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
+//    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.VIEW)
     @GetMapping("findTree")
     public ResData findTree() {
         UserInfo currentUser = UserContext.getUserInfo();
@@ -113,7 +113,7 @@ public class ThinkingMemoController extends BaseController implements BaseCommon
     }
 
     @Log(business = BUSINESS, operationType = OperationEnum.DELETE)
-    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.DELETE)
+//    @Permission(menuFlag = MENU_CODE, perms = OperationEnum.DELETE)
     @GetMapping("deleteById")
     @Override
     public ResData deleteById(@RequestParam Long modelId) {
@@ -130,10 +130,22 @@ public class ThinkingMemoController extends BaseController implements BaseCommon
      * 过滤出根节点
      */
     private List<ThinkingMemoVO> builderTree(List<ThinkingMemoVO> nodes) {
-        return nodes.stream()
-                .filter(n -> n.getPid() == -1L)
+        // 找出所有顶级文件夹，构建children
+        List<ThinkingMemoVO> topFolders = nodes.stream()
+                .filter(n -> n.getPid() == -1L && "M".equals(n.getType()))
                 .peek(pn -> pn.setChildren(builderChildren(pn, nodes)))
                 .collect(Collectors.toList());
+        // 找出所有无文件夹的备忘录（pid=-1,type=F），放入<备忘录>文件夹
+        List<ThinkingMemoVO> topMemoChildren = nodes.stream()
+                .filter(n -> n.getPid() == -1L && "F".equals(n.getType()))
+                .collect(Collectors.toList());
+        ThinkingMemoVO topMemoFolder = new ThinkingMemoVO();
+        topMemoFolder.setTitle("备忘录");
+        topMemoFolder.setId(-1L);
+        topMemoFolder.setPid(-1L);
+        topMemoFolder.setChildren(topMemoChildren);
+        topFolders.add(0, topMemoFolder); // 插入第一个位置
+        return topFolders;
     }
 
     /**
