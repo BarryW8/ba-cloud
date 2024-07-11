@@ -108,16 +108,16 @@ public class LoginController extends BaseController {
         // 3. 刷新用户缓存
         Long userId = user.getId();
         UserInfo userInfo = sysUserService.setUserCache(userId);
-        userInfo.setType(TokenEnum.WEB.getCode());
+        userInfo.setType(UserContext.getAppType().getCode());
 
         // 4. 生成token todo 将token生成和缓存方法解耦
         // 随机生成临时用户id
         String tempUserId = BusinessUtils.getTempUserId(userId, false);
         String password10L = user.getPassword().substring(0, 10);
         String token = tokenManage.createToken(
-                userInfo, UserContext.getPlatform(), TokenEnum.WEB.getCode(),
+                userInfo, UserContext.getPlatform(), UserContext.getAppType().getCode(),
                 UserContext.getDeviceId(), user.getId().toString(), tempUserId,
-                "-2000", password10L, TokenEnum.WEB.getTime());
+                userInfo.getRoleId().toString(), password10L, UserContext.getAppType().getTime());
         if (StringUtils.isEmpty(token)) {
             log.error("缓存服务器异常 生成token失败 accessToken={}", token);
             return ResData.error("登录异常");

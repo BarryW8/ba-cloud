@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum TokenEnum {
-    OTHER("0", "其他", 60 * 30L),
-    WEB("1", "WEB", 60 * 30L),
-    APP("2", "Thinking App", 60 * 60 * 24 * 7L),
-    APPLET("3", "小程序", 60 * 60 * 24L),
+    OTHER("0", "其他", 60 * 30L), // 30分钟
+    WEB("1", "WEB", 60 * 30L), // 30分钟
+    APP("2", "Thinking App", 60 * 60 * 24 * 7L), // 7天
+    APPLET("3", "小程序", 60 * 60 * 24L), // 1天
     ;
 
     String code;
